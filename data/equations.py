@@ -1,13 +1,2 @@
-equations = []
-
-
-def equation(func):
-    def _inject_params():
-        pass
-    equations.append(func)
-    return func
-
-
-@equation
-def equation_aaa():
-    return ""
+# re-export
+from generator.equation import equations

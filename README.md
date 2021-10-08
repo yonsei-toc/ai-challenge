@@ -24,3 +24,8 @@ python main.py train --epoch=1 \
 cd data_generator
 python generator.py
 ```
+
+## Dataset devbranch
+```shell
+python3 generator_example.py
+```
