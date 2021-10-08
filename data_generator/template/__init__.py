@@ -1,8 +1,10 @@
 from .namespace import Namespace
-from .tokenregistry import templates, register, TokenRegistry, TokenSelector
+from .tokenregistry import problem_templates, register, TokenRegistry, TokenSelector
 
 clskey = Namespace()
-def format(body, question, equation, variable = None, answer = None):
+
+
+def format(body, question, equation, variable=None, answer=None):
     if variable is None:
         variable = 'ans'
         equation = 'ans = ' + equation

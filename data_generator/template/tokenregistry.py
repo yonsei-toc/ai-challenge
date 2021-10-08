@@ -2,17 +2,17 @@ from . import korutil
 import random
 
 
-class _Templates():
+class _ProblemTemplates():
     def __init__(self):
-        self.fns = set()
+        self.problem_fns = []
 
     def register(self, fn):
-        self.fns.add(fn)
+        self.problem_fns.append(fn)
         return fn
 
 
-templates = _Templates()
-register = templates.register
+problem_templates = _ProblemTemplates()
+register = problem_templates.register
 
 
 class EntityToken():

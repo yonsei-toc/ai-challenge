@@ -1,7 +1,6 @@
-import data_generator.template as template
-from data_generator.template import register, clskey
-
 import random
+import data_generator.template as template
+from data_generator.template import clskey, register
 
 
 # add this!
@@ -90,13 +89,6 @@ def showcase(tokens):
     # be careful for rounding, especially for a real number!
     return template.format(body, question, equation, 'ans',
                            answer=round((num1.value + num2.value / 2), 2))
-
-
-def init():
-    dictionary = template.TokenRegistry()
-
-    setup_dictionary(clskey, dictionary)
-    return dictionary
 
 
 # You may register additional tokens/classes
@@ -255,17 +247,3 @@ def setup_dictionary(clskey, dictionary):
 
     # for i in "가나다라마바사아자차카타파하":
     #     dictionary.add_token(clskey.name, '(' + i + ')')
-
-
-if __name__ == '__main__':
-    _dictionary = init()
-    for fn in template.templates.fns:
-        i = 0
-        while i < 3:
-            tokens = template.TokenSelector(_dictionary)
-            ret = fn(tokens)
-            if ret is None:
-                continue
-            else:
-                i += 1
-                print(ret)
