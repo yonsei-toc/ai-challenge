@@ -3,10 +3,11 @@ import random
 
 # it accepts an id. if it is not provided, use the function name.
 @gen.equations.register
-def eqn(*args):
+def eqn(all_nums, *signs):
     # the arguments can be number or string. be careful.
     # return variable is ALWAYS [ans].
-    return 'ans = sum([{}])'.format(', '.join(map(str, args)))
+    # TODO : need to be changed to deal with [ALL NUMBERS] * [(0/1/-1), (0/1/-1), ... ]
+    return 'ans = sum({0} * [{1}])'.format(all_nums, ', '.join(map(str, signs)))
 
 @gen.problems.register
 def prob01(selector, tokenpool, clskey):
@@ -25,6 +26,12 @@ def prob01(selector, tokenpool, clskey):
     # the following is equiv. to count1_k = tokenpool.new(random.randint(1, 100))
     count1_k = tokenpool.new(count1)
     count2_k = tokenpool.new(count2)
+
+    # TODO: token ALL_NUMS type is needed to be add. To deal with multiple numbers
+    all_nums_k = tokenpool.new([count1_k, count2_k])
+
+    sign1_k = tokenpool.new(1)
+    sign2_k = tokenpool.new(-1)
 
     # str
     unit = item.of('unit')
@@ -47,7 +54,7 @@ def prob01(selector, tokenpool, clskey):
                 '{name}#{이?}가 {container}에서 {item} {count2.to_korunit()}#{을} 꺼냈{sent_trailing}'
             ]),
             question='{container}에 있는 {item}#{은} {total}몇 {unit}{ques_trailing}',
-            equation=gen.EqnRef('eqn', count1_k, -count2_k),
+            equation=gen.EqnRef('eqn', all_nums_k, sign1_k, sign2_k),
 
             env = gen.fnmap(
                 container=container_k,
@@ -58,7 +65,11 @@ def prob01(selector, tokenpool, clskey):
                 total=total,
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing,
-                unit=unit
+                unit=unit,
+
+                all_nums=all_nums_k,
+                sign1=sign1_k,
+                sign2=sign2_k,
             ))
 
 @gen.equations.register
