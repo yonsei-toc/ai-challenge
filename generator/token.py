@@ -133,6 +133,9 @@ class TokenPool():
             return TextToken(self._get_token_id(), obj)
         elif isinstance(obj, numbers.Number):
             return NumberToken(self._get_token_id(), obj)
+        elif isinstance(obj, list):
+            # TODO: deal with ALL_NUMS or ALL_NAMES
+            return None
         else:
             raise RuntimeError("Unknown type: {}".format(repr(obj)))
 
