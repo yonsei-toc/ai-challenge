@@ -1,4 +1,5 @@
 from typing import Callable, Iterable, Optional
+import functools
 
 class Equations():
     id_t = str
@@ -6,8 +7,7 @@ class Equations():
     def __init__(self):
         self.equations = dict()
 
-    # decorator
-    def register(self, func: Callable[..., str], id: Optional[id_t] = None, *, variable = None):
+    def _decorator(self, func: Callable[..., str], id: Optional[id_t] = None):
         if id is None:
             id = func.__name__
 
@@ -15,8 +15,11 @@ class Equations():
             raise RuntimeError("Duplicated equation ID: {id}.".format(id=id))
 
         self.equations[id] = func
-
         return func
+
+    # decorator
+    def register(self, id: Optional[id_t] = None, *, variable: Optional[str] = None):
+        return functools.partial(self._decorator, id=id)
 
     def get(self, key: id_t) -> Callable[..., str]:
         return self.equations[key]

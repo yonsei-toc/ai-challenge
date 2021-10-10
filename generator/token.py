@@ -10,15 +10,22 @@ class Token():
     def __init__(self, token_id):
         self._token_id = token_id
 
+    def __str__(self):
+        return self._token_id
+
+    # token context
     @property
     def token(self) -> str:
         return '#{}'.format(self._token_id)
 
-    def __str__(self):
-        return self._token_id
-
+    # expression context
     @property
     def value(self):
+        raise NotImplementedError()
+
+    # string context
+    @property
+    def text(self):
         raise NotImplementedError()
 
 
@@ -44,16 +51,22 @@ class TextToken(Token):
         super().__init__(token_id)
         self._text = text
 
-    @property
-    def value(self):
-        return self._text
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return self.value
 
     @property
     def text(self):
-        if type(self.value) == DictItem:
-            return self.value.text
+        if type(self._text) == DictItem:
+            return self._text.text
         else:
-            return self.value
+            return self._text
+
+    @property
+    def value(self):
+        return repr(self.text)
 
     def of(self, name):
         if type(self.value) == DictItem:
@@ -70,9 +83,11 @@ class NumberToken(Token):
 
         self.sgn = 1
 
-    @property
-    def value(self):
-        return self._value * self.sgn
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return self.value
 
     @property
     def text(self):
@@ -86,6 +101,19 @@ class NumberToken(Token):
         else:
             return '0' + unit
 
+    @property
+    def value(self):
+        return self._value * self.sgn
+
+    @property
+    def token(self):
+        tkn = super().token
+        if self.sgn == 1:
+            return tkn
+        elif self.sgn == 0:
+            return '0' + tkn
+        elif self.sgn == -1:
+            return '-' + tkn
 
     @property
     def unit(self):
@@ -100,7 +128,9 @@ class NumberToken(Token):
         self._unit = None
 
     def __neg__(self):
-        return self
+        x = copy.deepcopy(self)
+        x.sgn *= -1
+        return x
 
     def to_kor(self):
         return korutil.num2kor(self.value)
