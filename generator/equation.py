@@ -7,7 +7,7 @@ class Equations():
         self.equations = dict()
 
     # decorator
-    def register(self, func: Callable[..., str], id: Optional[id_t] = None, /, variable = None):
+    def register(self, func: Callable[..., str], id: Optional[id_t] = None, *, variable = None):
         if id is None:
             id = func.__name__
 

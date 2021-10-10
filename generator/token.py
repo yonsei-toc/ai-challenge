@@ -124,7 +124,7 @@ class TokenPool():
         self._token_id += 1
         return self._token_id
 
-    def new(self, obj, /, type=None):
+    def new(self, obj, *, type=None):
         if isinstance(obj, Token):
             return obj
         elif type is not None:
