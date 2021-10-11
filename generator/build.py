@@ -82,8 +82,12 @@ def _format(fstr, env=None):
 
                 if var[0] == '#':
                     c = korutil.append_connection(nl_string[-1], var[1:])
-                    nl_string += c
-                    tk_string += c
+                    if c is not None:
+                        nl_string += c
+                        tk_string += c
+                    else:
+                        nl_string += var[1:]
+                        tk_string += var[1:]
                 else:
                     local = env.copy()
                     local['repr'] = _text

@@ -61,7 +61,7 @@ def prob01(selector, tokenpool, clskey):
     return gen.build(
             # body is the background of problem settings
             body=' '.join([
-                '{container}에 {item} {count1}{#이} 있{sent_trailing}',
+                '{container}{#에} {item} {count1}{#이} 있{sent_trailing}',
                 '{name}{#이?}가 {container}에서 {item} {count2.to_korunit()}{#을} 꺼냈{sent_trailing}'
                 # note that we did not specify a unit.
             ]),

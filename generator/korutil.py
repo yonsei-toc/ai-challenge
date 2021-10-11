@@ -171,6 +171,9 @@ def append_connection(target, type):
             '으?': ['으', ''],
     }
 
+    if type not in tbl:
+        return None
+
     if len(target) == 0:
         return ''
     if is_hangul_char(target[-1]):
