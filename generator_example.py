@@ -97,7 +97,7 @@ def prob02(selector, tokenpool, clskey):
     n2 = tokenpool.new(b)
 
     return gen.build(
-            body='어떤 수에 {n1}을 곱하면 {n2}가 나온다.',
+            body='어떤 수에 {n1}{#을} 곱하면 {n2}{#가} 나온다.',
             question='어떤 수를 구하시오.',
             equation=gen.EqnRef('eqn2', n1, n2),
 
@@ -133,24 +133,26 @@ def eqn3(*args):
 def showcase(sel, pl, clskey):
     # get a real number from [0, 2]
     # this will round the numbers to the 1/100's digit.
-    num1 = randreal(0, 2)
-    num2 = randreal(0, 2, ndigits=3)  # 10^-3's digit.
+    n = random.randint(2, 5)
 
-    num1_k = pl.new(num1)
-    num2_k = pl.new(num2)
+    nums = [ randreal(0, 4, ndigits=2) for _ in range(n) ]
+    nums_k = list(map(pl.new, nums))
+
+    question = f'{gen.korutil.num2korunit(n)} 수 '
+    question += ', '.join('{' + 'num{}'.format(x) + '}' for x in range(n))
+    question += '의 평균은 얼마입니까?'
+
+    envdict = { f'num{i}': nums_k[i] for i in range(n) }
 
     return gen.build(
             body='',
-            question='{n1}{#과} {n2}의 평균은 얼마입니까?',
-            equation=gen.EqnRef('average', num1_k, num2_k),
+            question=question,
+            equation=gen.EqnRef('average', *nums_k),
             # if answer is not stable (due to floating point arithmetic)
             # specify a stable answer.
-            answer=round((num1 + num2) / 2, ndigits=2),
+            answer=round(sum(nums) / n, ndigits=2),
 
-            env=gen.fnmap(
-                n1=num1_k,
-                n2=num2_k
-            ))
+            env=envdict)
 
 
 def build_dictionary(clskey, dictionary):

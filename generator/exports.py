@@ -4,3 +4,4 @@ from .equation import equations
 from .dictionary import Dictionary, DictItem
 from .dictselector import DictionarySelector
 from .token import TokenPool
+from . import korutil
