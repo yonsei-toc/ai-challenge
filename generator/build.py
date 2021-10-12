@@ -24,7 +24,7 @@ def fnmap(**kwargs):
 def _value(tkn):
     if isinstance(tkn, token.Token):
         return repr(tkn.value)
-    if isinstance(tkn, DictItem):
+    elif isinstance(tkn, DictItem):
         return repr(tkn.text)
     else:
         return repr(tkn)
@@ -33,7 +33,7 @@ def _value(tkn):
 def _text(tkn):
     if isinstance(tkn, token.Token):
         return str(tkn.text)
-    if isinstance(tkn, DictItem):
+    elif isinstance(tkn, DictItem):
         return tkn.text
     else:
         return str(tkn)
@@ -45,7 +45,7 @@ def _token(tkn):
         return tkn.token
     elif isinstance(tkn, str):
         return tkn
-    if isinstance(tkn, DictItem):
+    elif isinstance(tkn, DictItem):
         return tkn.text
     elif isinstance(tkn, numbers.Number):
         return str(tkn)
