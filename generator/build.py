@@ -43,22 +43,20 @@ def _text(tkn):
 def _token(tkn):
     if isinstance(tkn, token.Token):
         return tkn.token
-    elif isinstance(tkn, str):
-        return tkn
     elif isinstance(tkn, DictItem):
         return tkn.text
+    elif isinstance(tkn, str):
+        return tkn
     elif isinstance(tkn, numbers.Number):
         return str(tkn)
     elif isinstance(tkn, list):
-        return list(map(_token, tkn))
+        return '[{}]'.format(' '.join(map(_token, tkn)))
     elif isinstance(tkn, tuple):
-        return tuple(map(_token, tkn))
+        return '({})'.format(' '.join(map(_token, tkn)))
     elif isinstance(tkn, set):
-        return set(map(_token, tkn))
+        return '{' + ' '.join(map(_token, tkn)) + '}'
     elif isinstance(tkn, dict):
-        return dict(map(
-            lambda x: (_token(x[0]), _token(x[1])),
-            tkn.items()))
+        return '{' + ' '.join(map(lambda x: '{}:{}'.format(_token(x[0]), _token(x[1])), tkn.items())) + '}'
 
 
 def _format(fstr, env=None):
