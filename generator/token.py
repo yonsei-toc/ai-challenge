@@ -66,7 +66,7 @@ class TextToken(Token):
 
     @property
     def value(self):
-        return repr(self.text)
+        return self.text
 
     def of(self, name):
         if type(self.value) == DictItem:

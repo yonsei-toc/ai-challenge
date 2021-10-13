@@ -27,7 +27,7 @@ def _value(tkn):
     elif isinstance(tkn, DictItem):
         return repr(tkn.text)
     else:
-        return repr(tkn)
+        return str(tkn)
 
 # text context
 def _text(tkn):
