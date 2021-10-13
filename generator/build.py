@@ -11,9 +11,8 @@ import numbers
 
 def _read_brace(s, i):
     assert s[i] == '{'
-    j = i
-    while j < len(s) and s[j] != '}':
-        j += 1
+    j = s.find('}', i)
+    assert j != -1
     return s[i+1:j], j+1
 
 
@@ -27,7 +26,7 @@ def _value(tkn):
     elif isinstance(tkn, DictItem):
         return repr(tkn.text)
     else:
-        return str(tkn)
+        return repr(tkn)
 
 # text context
 def _text(tkn):

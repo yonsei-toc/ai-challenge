@@ -16,5 +16,6 @@ while ! [ "$(resolve "$dir")" = "/" ]; do
   dir="$(resolve "$dir/..")"
 done
 
+echo "It seems that you did not clone the repository"
 exit 1
 

@@ -19,17 +19,13 @@ python main.py train --epoch=1 \
 - `--epoch` : epoch
 - `--language-model` : language model path
 
-# 데이터셋 테스트
-```shell
-cd data_generator
-python generator.py
-```
-
-## export dict
+## build dictionary
+You must build dictionary at first or after it changes.
 ```shell
 script/run dictionary.py
 ```
-## Dataset devbranch
+## generate dataset
 ```shell
 script/run gen_example.py
 ```
+You should place your copy of `script/gen_example.py` either in `script` directory or in the root directory. if you place it in the root directory, you can execute it directly.
