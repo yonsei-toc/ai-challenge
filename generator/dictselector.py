@@ -16,6 +16,7 @@ class DictionarySelector():
                     .format(self._picked))
 
         ret = random.choice(list(tokens))
+        self._picked.add(ret)
 
         return ret
 
