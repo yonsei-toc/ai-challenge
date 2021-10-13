@@ -22,7 +22,7 @@ def randreal(st, ed, *, ndigits = 2):
 @gen.equations.register('sum')
 def eqn00(*args):
     # return variable is ALWAYS [ans].
-    return 'ans = sum([{}])'.format(', '.join(map(str, args)))
+    return 'ans = sum({})'.format(repr(args))
 
 
 @gen.problems.register
@@ -85,7 +85,7 @@ def prob01(selector, tokenpool, clskey):
 
 @gen.equations.register()
 def eqn2(factor, result):
-    return 'ans = {} // {}'.format(result, factor)
+    return 'ans = {} // {}'.format(repr(result), repr(factor))
 
 
 @gen.problems.register
@@ -125,7 +125,7 @@ def prob02(selector, tokenpool, clskey):
 
 @gen.equations.register('average')
 def eqn3(*args):
-    return 'ans = sum([{}]) / {}'.format(', '.join(map(str, args)), str(len(args)))
+    return 'ans = sum({}) / {}'.format(repr(args), len(args))
 
 
 # You must prepend @register for each function!
