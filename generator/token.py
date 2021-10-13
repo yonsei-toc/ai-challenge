@@ -87,7 +87,7 @@ class NumberToken(Token):
         return self.text
 
     def __repr__(self):
-        return self.value
+        return self.text
 
     @property
     def text(self):
