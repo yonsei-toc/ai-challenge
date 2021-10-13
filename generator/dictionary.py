@@ -61,8 +61,7 @@ class Dictionary():
         return d, a
 
     def add_token(self, key: key_t, value: DictItem):
-        value.tags.add(key)
-        self.tokens.append(value)
+        return self.add_token_tag(value, key)
 
     def add_token_tag(self, value: DictItem, *tags: List[str]):
         value.tags |= set(tags)
