@@ -82,15 +82,18 @@ class Dictionary():
             res.add(c)
 
             if c in self.children_of:
-                for k in self.children_of[c]:
-                    if k not in res:
-                        q.append(k)
+                for k in self.children_of[c] - res:
+                    q.append(k)
 
         return res
 
-    def resolve_items(self, key) -> Set[DictItem]:
-        keys = self.resolve_keys(key)
-        return set(filter(lambda x: keys & x.tags, self.tokens))
+    def resolve_items(self, *keys) -> Set[DictItem]:
+        # retrieve common keys
+        resolved_keys = functools.reduce(
+                operator.and_,
+                map(self.resolve_keys, keys))
+
+        return set(filter(lambda x: resolved_keys & x.tags, self.tokens))
 
 
 # alias
