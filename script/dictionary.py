@@ -1,4 +1,7 @@
 import generator.exports as gen
+
+import string
+
 def build_dictionary(dictionary, clskey):
     # add mappings; use distinct keys!
     clskey.container = 'entity.container'
