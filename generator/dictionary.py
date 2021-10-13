@@ -16,6 +16,9 @@ class DictItem():
         self.tags = set(tags)
         self.props = kwargs
 
+    def __str__(self):
+        return self.text
+
     def of(self, name):
         return self.props[name]
 

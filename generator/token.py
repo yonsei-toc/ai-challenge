@@ -55,7 +55,7 @@ class TextToken(Token):
         return self.text
 
     def __repr__(self):
-        return self.value
+        return repr(self.text)
 
     @property
     def text(self):
