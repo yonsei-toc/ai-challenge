@@ -25,7 +25,11 @@ cd data_generator
 python generator.py
 ```
 
+## export dict
+```shell
+script/run dictionary.py
+```
 ## Dataset devbranch
 ```shell
-python3 generator_example.py
+script/run gen_example.py
 ```
