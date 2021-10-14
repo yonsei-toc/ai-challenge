@@ -1,64 +1,43 @@
 import torch
 import torch.nn as nn
 
+import base_models as base
+
 
 class QuestionEncoder(nn.Module):
-    def __init__(self, language_model):
+    def __init__(self):
         super(QuestionEncoder, self).__init__()
-        self.language_model = language_model
+
+    def forward(self, batch, features):
+        print(self)
+        return None
 
 
 class NamedEntityRecognition(nn.Module):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(NamedEntityRecognition, self).__init__()
-
-
-class SentenceClassifier(nn.Module):
-    def __init__(self):
-        super(SentenceClassifier, self).__init__()
+        self.tag_names = base.SequenceTagging(hidden_size, 3, p_drop)
 
     def forward(self, batch, features):
-        pass
+        outputs, loss = self.tag_names(features, labels, mask)
+
+        return outputs, loss
 
 
-class SequenceClassifier(nn.Module):
-    def __init__(self, hidden_size, n_labels, p_drop):
-        super(SequenceClassifier, self).__init__()
-        self.dropout = nn.Dropout(p_drop)
-        self.dense = nn.Linear(hidden_size, hidden_size)
-        self.activation = nn.GELU()
-        self.proj = nn.Linear(hidden_size, n_labels)
-        self.loss = nn.CrossEntropyLoss()
+class QuestionTargetRecognition(nn.Module):
+    def __init__(self, hidden_size, p_drop):
+        super(QuestionTargetRecognition, self).__init__()
+        self.tag_target = base.BinaryTagging(hidden_size, p_drop)
 
-    def forward(self, features, labels, mask):
-        x = features[:, 0, :]
-        x = self.dropout(x)
-        x = self.dense(x)
-        x = self.activation(x)
-        x = self.dropout(x)
-        x = self.proj(x)
+    def forward(self, batch, features):
+        outputs, loss, accuracy = self.tag_target(features, batch['question_targets'], batch['attention_mask'])
 
-        active_loss = mask.view(-1) == 1
-        active_logits = x.view(-1, self.config.num_labels)
-        active_labels = torch.where(
-            active_loss, labels.view(-1), torch.tensor(self.loss.ignore_index).type_as(labels)
-        )
-        loss = self.loss(active_logits, active_labels)
-        return x
+        return outputs, loss, accuracy
 
 
 class TemplateSolver(nn.Module):
     def __init__(self):
         super(TemplateSolver, self).__init__()
 
-
-class SequenceTagging(nn.Module):
-    def __init__(self, hidden_size, n_tags, p_drop):
-        super(SequenceTagging, self).__init__()
-        self.dropout = nn.Dropout(p_drop)
-        self.classifier = nn.Linear(hidden_size, n_tags)
-
-    def forward(self, batch, features):
-        x = self.dropout(features)
-        x = self.classifier(x)
-        return x
+    def forward(self, batch):
+        pass
