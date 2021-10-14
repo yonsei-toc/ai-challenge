@@ -114,11 +114,12 @@ def build(body, question, equation, variable=None, answer=None, env=None):
     equn_p = '{}({})'.format(eqid, ', '.join(map(str, map(_value, args))))
     equn_k = '{} {}'.format(eqid, ' '.join(map(_token, args)))
 
-    if answer is None:
-        local = dict()
-        local[equation.eqnid] = equations.get(equation.eqnid)
-        eqn = eval(equn_p, local)
+    local = {
+        equation.eqnid: equations.get(equation.eqnid)
+        }
+    eqn = eval(equn_p, local)
 
+    if answer is None:
         local = dict()
         answer = exec('import math, itertools\n' + eqn, local)
         answer = local['ans']
@@ -128,7 +129,8 @@ def build(body, question, equation, variable=None, answer=None, env=None):
                 body=body_p,
                 question=ques_p,
                 equation=equn_p,
-                answer=answer
+                answer=answer,
+                code=eqn
                 ),
             token=fnmap(
                 body=body_k,
