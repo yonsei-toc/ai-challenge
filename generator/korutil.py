@@ -177,7 +177,15 @@ def append_connection(target, type):
     if len(target) == 0:
         return ''
     if is_hangul_char(target[-1]):
-        return tbl[type][0 if has_last_syllable(target) else 1]
+        if type == '으?':
+            # 으 should not appended after a character trailing with ㄹ.
+            if (has_last_syllable(target[-1])
+                and split_hangul_char(target[-1])[2] != _hangul_last_syllables.index('ㄹ')):
+                return tbl[type][0]
+            else:
+                return tbl[type][1]
+        else:
+            return tbl[type][0 if has_last_syllable(target) else 1]
     elif target[-1] in '0123456789':
         ntbl = [0, 0, 1, 0, 1, 1, 0, 0, 0, 1]
         return tbl[type][ntbl[int(target[-1])]]
