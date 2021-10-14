@@ -92,7 +92,10 @@ def _format(fstr, env=None):
                     nl_string += s
 
                     item = var.partition('.')[0]
-                    tk_string += _token(env[item])
+                    if isinstance(env[item], token.Token):
+                        tk_string += _token(env[item])
+                    else:
+                        tk_string += s
                 i = ni
         else:
             nl_string += fstr[i]
