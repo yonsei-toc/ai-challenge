@@ -46,7 +46,7 @@ def c5p1(sel, tokenpool, clskey):
             '{name1}{#는} {num1}보다 {num2} 큰 수이고, {name2}보다 {num3} 작은 수는 {num4}입니다.'
             ])
         question0 = '{name1}{#와} {name2}의 합을 구하시오.'
-        equation0 = gen.EqnRef('sum',num1_token, num2_token, num3_token, num4_token)
+        equation0 = gen.EqnRef('eqn_sum',num1_token, num2_token, num3_token, num4_token)
         return gen.build(
             body = body0, 
             question = question0,
@@ -67,7 +67,7 @@ def c5p1(sel, tokenpool, clskey):
         num3_token = tokenpool.new(num3)
         body1 = '{name_aug}{#는} {name1}에 {num1}{#을} 더해 {num2}{#을} 얻었습니다.'
         question1 = '{name1}에 {num3}{#을} 더한 결과를 구하시오.'
-        equation1 = gen.EqnRef('sum',num1_token, num2_token, num3_token)
+        equation1 = gen.EqnRef('eqn_sum',num1_token, num2_token, num3_token)
         return gen.build(
             body = body1, 
             question = question1,
@@ -85,7 +85,7 @@ def c5p1(sel, tokenpool, clskey):
 # body2 -> name1, name2, num1
     if choose==2:
         question2 = '덧셈식 \'{name1}+{name2}={num1}\'에서 {name1}{#와} {name2}의 합을 구하시오.'
-        equation2 = gen.EqnRef('sum',num1_token)
+        equation2 = gen.EqnRef('eqn_sum',num1_token)
 
         return gen.build(
             body='',

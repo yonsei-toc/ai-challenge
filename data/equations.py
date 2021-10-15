@@ -1,33 +1,37 @@
 from typing import Callable, Iterable, Optional
-import functools
 import random
 
 
 class Equations:
-    id_t = str
+    key_t = str
 
     def __init__(self):
-        self.equations = dict()
+        self.equation_keys = {}
+        self.equations = []
 
-    def _decorator(self, func: Callable[..., str], id: Optional[id_t] = None):
-        if id is None:
-            id = func.__name__
+    def _decorator(self, func: Callable[..., str], key: Optional[key_t] = None):
+        if key is None:
+            key = func.__name__
 
-        if id in self.equations:
-            raise RuntimeError("Duplicated equation ID: {id}.".format(id=id))
+        if key in self.equation_keys:
+            raise RuntimeError("Duplicated equation ID: {}.".format(key))
 
-        self.equations[id] = func
+        self.equations.append(func)
+        self.equation_keys[key] = len(self.equations) - 1
         return func
 
     # decorator
-    def register(self, id: Optional[id_t] = None, *, variable: Optional[str] = None):
-        return functools.partial(self._decorator, id=id)
+    def register(self, func, key=None):
+        return self._decorator(func, key)
 
-    def get(self, key: id_t) -> Callable[..., str]:
-        return self.equations[key]
+    def get(self, key: key_t) -> Callable[..., str]:
+        return self.equations[self.equation_keys[key]]
+
+    def get_id(self, key: key_t):
+        return self.equation_keys[key]
 
     def __iter__(self) -> Iterable[Callable[..., str]]:
-        return iter(self.equations.values())
+        return iter(self.equations)
 
 
 equations = Equations()
@@ -51,8 +55,8 @@ equations
 
 # it accepts an id. if it is not provided, use the function name.
 # the name must be unique.
-@equations.register('max_from_n_comb')
-def eqn030101(n, *L):
+@equations.register
+def max_from_n_comb(n, *L):
     """
      > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 큰 {n} 자리 수
     """
@@ -65,8 +69,8 @@ def eqn030101(n, *L):
         f"itertools.permutations(L, {n}))))"])
 
 
-@equations.register('min_from_n_comb')
-def eqn030102(n, *L):
+@equations.register
+def min_from_n_comb(n, *L):
     """
      > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
     """
@@ -79,8 +83,8 @@ def eqn030102(n, *L):
         f"itertools.permutations(L, {n}))))"])
 
 
-@equations.register('max_diff_from_n_comb')
-def eqn030201(n, *L):
+@equations.register
+def max_diff_from_n_comb(n, *L):
     """
      > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n} 자리 수의 차의 최대 값
     """
@@ -94,8 +98,8 @@ def eqn030201(n, *L):
         "ans = max(L) - min(L)"])
 
 
-@equations.register('writing_n_to_m_count_c')
-def eqn030301(n, m, c):
+@equations.register
+def writing_n_to_m_count_c(n, m, c):
     """
      > {n}부터 {m}까지 적었을 때 등장하는 {c}의 수
     """
@@ -107,8 +111,8 @@ def eqn030301(n, m, c):
     ])
 
 
-@equations.register('n_comb')
-def eqn030401(n, *L):
+@equations.register
+def n_comb(n, *L):
     """
      > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n}자리 수의 수
     """
@@ -120,8 +124,8 @@ def eqn030401(n, *L):
     ])
 
 
-@equations.register('c_sum_in_range_n_is_m')
-def eqn030401(c, n, m):
+@equations.register
+def c_sum_in_range_n_is_m(c, n, m):
     """
      > 1부터 n까지의 수 중 c개의 수를 동시에 뽑아 그 합이 m이 되는 경우의 수
     """
@@ -137,35 +141,48 @@ def eqn030401(c, n, m):
     ])
 
 
-@equations.register('wrong_multiplication_greater')
-def eqn060301(n, d, a, b, A, B):
+@equations.register
+def wrong_multiplication_less(n, d, a, b, A, B):
     """
-    > {n} 자리수 X, Y의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
+    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
+    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 작은 수
+    """
+
+    # (X + ( b - a ) * d) * Y = A
+    # X * Y + ( b - a ) * d * Y = A
+
+    # X * Y = B
+    # B + ( b - a ) * d * Y = A
+
+    # Y = ( A - B ) // ( ( b - a ) * d )
+
+    return "".join([
+        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
+        f"X = {B} // Y\n",
+        "ans = min(X, Y)"
+    ])
+
+
+@equations.register
+def wrong_multiplication_greater(n, d, a, b, A, B):
+    """
+    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
     > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 큰 수
     """
+
     return "".join([
-        f"X = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
-        f"Y = {B} // X\n",
+        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
+        f"X = {B} // Y\n",
         "ans = max(X, Y)"
     ])
 
 
-# TODO
-# @equations.register('wrong_multiplication_smaller')
-def eqn060302(n, d, a, b, A, B):
-    """
-    > {n} 자리수 X, Y의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
-    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 작은 수
-    """
-    return
-
-
-# NOTE: 이거 망했는데요
+# NOTE:
 # 모델이 '#1 무겁다 #2', '#1 가볍다 #2'에 따라 순서만 바꿔서 넣을 수 있도록 하겠습니다.
-# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 가벼운 사람은 누구입니까?'라면
+# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 가벼운 사람은 누구인가?'라면
 # equation 호출은 'order_least #2 #1 #2 #3' 이런식으로.
-@equations.register('order_least')
-def eqn070301(*pairs):
+@equations.register
+def order_least(*pairs):
     """
     > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
     """
@@ -179,8 +196,8 @@ def eqn070301(*pairs):
 
 # 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 무거운 사람은 누구입니까?'라면
 # equation 호출은 'order_greatest #2 #1 #2 #3' 이런식으로.
-@equations.register('order_greatest')
-def eqn070302(*pairs):
+@equations.register
+def order_greatest(*pairs):
     """
     > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
     """
@@ -192,20 +209,20 @@ def eqn070302(*pairs):
     ])
 
 
-@equations.register('a_div_two_sub_b')
-def eqn080301(a, b):
+@equations.register
+def a_div_two_sub_b(a, b):
     return f"ans = {a} // 2 - {b}"
 
 
 # it accepts an id. if it is not provided, use the function name.
 # the name must be unique.
-@equations.register('sum')
-def sum(*args):
+@equations.register
+def eqn_sum(*args):
     # return variable is ALWAYS [ans].
     return 'ans = sum([{}])'.format(', '.join(map(str, args)))
 
 
-@equations.register('c5p2')
+@equations.register
 def eq_c5p2(n1, n2, n3, n4):
     # 상수 사용
     # range -> 한 자리 수 범위
@@ -215,7 +232,7 @@ def eq_c5p2(n1, n2, n3, n4):
 ans = sum([var1,var2])'''
 
 
-@equations.register('c5p3')
+@equations.register
 def eq_c5p3(n1, n2, n3, n4, n5):
     # 상수 사용
     # range -> 한 자리 수 범위
@@ -226,13 +243,13 @@ def eq_c5p3(n1, n2, n3, n4, n5):
 ans = var4'''
 
 
-@equations.register('c5p4')
+@equations.register
 def eq_c5p4(divisor, quotient, remainder):
     return f'''{remainder} = max(range({divisor}))
 ans = {divisor}*{quotient}+{remainder}'''
 
 
-@equations.register('c5p5')
+@equations.register
 def eq_c5p5(n1, n4, n5, n6):
     # 상수 사용
     # 반올림 확인 위해 비교 -> 1000 곱함
@@ -243,27 +260,27 @@ else:
     ans = len([var for var in range({n5},{n6}) if var >= 5])'''
 
 
-@equations.register('c6p5')
+@equations.register
 def eq_c6p5(n1, n2, n3):
     return f'ans = {n1}*{n2}*{n3}'
 
 
-@equations.register('c7p5')
+@equations.register
 def eq_c7p5(t1, t2, t3, t4, t5, index):
     return f'''sorted_ts=["{t1}","{t5}","{t2}","{t4}","{t3}"]; ans = sorted_ts[{index}-1]'''
 
 
-@equations.register('c8p5')
+@equations.register
 def eq_c8p5(e1, e2, n1, n2):
     return f'''{e2}={n1} // (2 * ({n2}+1)); {e1} = {e2}*{n2}; ans = {e1}'''
 
 
-@equations.register('average')
-def average(*args):
+@equations.register
+def eqn_avg(*args):
     return 'ans = sum({}) / {}'.format(repr(args), len(args))
 
 
-@equations.register('max_sub_min')
+@equations.register
 def max_sub_min(*args):
     # return variable is ALWAYS [ans].
 
@@ -271,14 +288,14 @@ def max_sub_min(*args):
     return 'ans = max([{}]) - min([{}])'.format(input, input)
 
 
-@equations.register('half_odd')
+@equations.register
 def half_odd(*args):
     # return variable is ALWAYS [ans].
 
     return 'ans = ({}//2) + 1'.format(args[0])
 
 
-@equations.register('get_deci')
+@equations.register
 def get_deci(*args):
     # return variable is ALWAYS [ans].
 
@@ -292,14 +309,14 @@ def get_deci(*args):
         return 'ans = round(float((1*{}))/1,2)'.format(args[0])
 
 
-@equations.register('prob06_04')
+@equations.register
 def prob06_04(*args):
     # return variable is ALWAYS [ans].
     # args0 args1 args2
     return 'ans = round(((({}*{})+{}) / {}) - {})'.format(args[2], args[1], args[2], args[0], args[0])
 
 
-@equations.register('prob07_04')
+@equations.register
 def prob07_04(name0, name1, name2, name3, *args):
     # return variable is ALWAYS [ans].
 
@@ -309,7 +326,7 @@ def prob07_04(name0, name1, name2, name3, *args):
     return 'ans = {}[max({}.keys())]'.format(str(dict), str(dict))
 
 
-@equations.register('prob08_04')
+@equations.register
 def prob08_04(*args):
     # return variable is ALWAYS [ans].
     # item1_k, l_k)
@@ -326,13 +343,13 @@ def prob08_04(*args):
         return 'ans = "%.2f" % float(({}*7) / {})'.format(args[1], 8)
 
 
-@equations.register('prob04_03')
+@equations.register
 def prob04_03(over, *args):
     # return variable is ALWAYS [ans]..
     return 'ans = list(map(lambda x: x> {}, [{}])).count(True)'.format(int(over), ','.join(list(map(str, args))))
 
 
-@equations.register('prob04_02')
+@equations.register
 def prob04_02(n, *number_list):
     """
      > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
@@ -347,26 +364,26 @@ def prob04_02(n, *number_list):
 
 
 # factor
-@equations.register('factor')
-def eqn2(factor, result):
+@equations.register
+def factor(factor, result):
     return 'ans = {} // {}'.format(repr(result), repr(factor))
 
 
 # total_before_split
-@equations.register('total_before_split')
-def eqn4(split_num, num, leftover=0):
+@equations.register
+def total_before_split(split_num, num, leftover=0):
     return 'ans = {} * {} + {}'.format(split_num, num, leftover)
 
 
 # split_oops_split
-@equations.register('split_oops_split')
-def eqn5(split_num, num, split, leftover=0):
+@equations.register
+def split_oops_split(split_num, num, split, leftover=0):
     return 'ans = ({} * {} + {})//{}'.format(split_num, num, leftover, split)
 
 
 # multiple fraction
-@equations.register('multi_frac')
-def eqn6(origin, *args):
+@equations.register
+def multi_frac(origin, *args):
     ans_str = 'ans = {}'.format(origin)
     for i in range(len(args)):
         if i % 2 == 0:
@@ -377,8 +394,8 @@ def eqn6(origin, *args):
 
 
 # select smallest from list
-@equations.register('select_small_from_three')
-def sel_small_list(*args):
+@equations.register
+def select_small_from_three(*args):
     ans_str = '\n'.join(["val = [0,0,0]",
                          "val[0] = " + str(args[3]),
                          "val[1] = val[0]+" + str(args[4]),
@@ -393,6 +410,6 @@ def sel_small_list(*args):
 
 
 # 수열
-@equations.register('num_sequence_with_diff')
-def eqn7(start, diff, length):
+@equations.register
+def num_sequence_with_diff(start, diff, length):
     return 'ans = [{}]'.format(','.join(map(str, [start + diff * i for i in range(length)])))

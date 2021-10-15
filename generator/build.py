@@ -125,14 +125,19 @@ def build(body, question, equation, variable=None, answer=None, env=None):
     eqn = eval(equn_p, local)
 
     if answer is None:
-        local = dict()
-        answer = exec('import math, itertools\n' + eqn, local)
+        local = {'ans': None}
+        # answer = exec('import math, itertools\n' + eqn, local)
         answer = local['ans']
 
     return fnmap(
         body=body_p,
         question=ques_p,
         equation=equn_p,
+        equation_types=equations.get_id(eqid),
+        tokens=list(zip(map(_token, args), args)),
+        equation_values=list(map(_value, args)),
+        equation_tokens=list(map(_token, args)),
+        equation_args=args,
         answer=answer,
         code=eqn,
         token_body=body_k,

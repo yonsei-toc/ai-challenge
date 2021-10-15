@@ -4,7 +4,7 @@ from data.numerics import NumericProcessor
 
 
 class Preprocessor:
-    __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask'
+    __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask', 'equation_type'
 
     def __init__(self, tokenizer, max_seq_len):
         self.tokenizer = tokenizer
