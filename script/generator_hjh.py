@@ -17,14 +17,6 @@ def randreal(st, ed, *, ndigits = 2):
         return round(random.uniform(st, ed), ndigits=ndigits)
 
 
-# it accepts an id. if it is not provided, use the function name.
-# the name must be unique.
-@gen.equations.register('sum')
-def eqn00(*args):
-    # return variable is ALWAYS [ans].
-    return 'ans = sum([{}])'.format(', '.join(map(str, args)))
-
-
 #names of equations t.b.d --> c{#n}p{#n}
 
 @gen.problems.register
@@ -106,14 +98,7 @@ def c5p1(sel, tokenpool, clskey):
                 num1=num1_token
         ))
 
-@gen.equations.register('c5p2')
-def eq_c5p2(n1,n2,n3,n4):
-    # 상수 사용
-    # range -> 한 자리 수 범위
-    # cand이 여러 후보군이 될 수 있음에 따라 indexing
-    return  f'''cand = [(var1,var2) for var1 in range(10) for var2 in range(10) if {n1}*10 + var1 - var2*10 - {n2} == {n3}*10 + {n4} and var1!=var2]
-(var1,var2)=cand[0]
-ans = sum([var1,var2])'''
+
 
 @gen.problems.register
 def c5p2(sel,tokenpool,clskey):
@@ -216,15 +201,6 @@ def c5p2(sel,tokenpool,clskey):
                 school=school
                 ))
 
-@gen.equations.register('c5p3')
-def eq_c5p3(n1,n2,n3,n4,n5):
-    # 상수 사용
-    # range -> 한 자리 수 범위
-    # cand이 여러 후보군이 될 수 있음에 따라 indexing
-    # 자릿수에 해당 -> 100,10 등을 곱함
-    return f'''cand = [(var1,var2,var3,var4) for var1 in range(10) for var2 in range(10) for var3 in range(10) for var4 in range(10) if {n1}*100 + var1*10 + {n2} + var2*100 + {n3}*10 + var3 == var4*100 + {n4}*10 + {n5} and var1!=var2!=var3!=var4]
-(var1,var2,var3,var4)=cand[0]
-ans = var4'''
 @gen.problems.register
 def c5p3(sel,tokenpool,clskey):
     choose = random.randint(0,2)
@@ -344,10 +320,6 @@ def c5p3(sel,tokenpool,clskey):
     ))
 
 
-@gen.equations.register('c5p4')
-def eq_c5p4(divisor,quotient,remainder):
-    return f'''{remainder} = max(range({divisor}))
-ans = {divisor}*{quotient}+{remainder}'''
 @gen.problems.register
 def c5p4(sel,tokenpool,clskey):
     choose = random.randint(0,2)
@@ -430,16 +402,6 @@ def c5p4(sel,tokenpool,clskey):
                 num2 = num2_token,
                 name_aug = name_aug
             ))
-
-@gen.equations.register('c5p5')
-def eq_c5p5(n1,n4,n5,n6):
-    # 상수 사용
-    # 반올림 확인 위해 비교 -> 1000 곱함
-    # 반올림 조건 확인 숫자 -> 5
-    return f'''if {n4} == {n1}*1000:
-    ans = len([var for var in range({n5},{n6}) if var < 5])
-else:
-    ans = len([var for var in range({n5},{n6}) if var >= 5])'''
 
 @gen.problems.register
 def c5p5(sel,tokenpool,clskey):
@@ -553,10 +515,6 @@ def c5p5(sel,tokenpool,clskey):
             ))
 
 
-@gen.equations.register('c6p5')
-def eq_c6p5(n1,n2,n3):
-    return f'ans = {n1}*{n2}*{n3}'
-
 @gen.problems.register
 def c6p5(sel,tokenpool,clskey):
     choose = random.randint(0,2)
@@ -641,9 +599,7 @@ def c6p5(sel,tokenpool,clskey):
         ))
 
 
-@gen.equations.register('c7p5')
-def eq_c7p5(t1,t2,t3,t4,t5,index):
-    return f'''sorted_ts=["{t1}","{t5}","{t2}","{t4}","{t3}"]; ans = sorted_ts[{index}-1]'''
+
 @gen.problems.register
 def c7p5(sel,tokenpool,clskey):
     choose = random.randint(0,2)
@@ -769,9 +725,7 @@ def c7p5(sel,tokenpool,clskey):
         ))
 
 
-@gen.equations.register('c8p5')
-def eq_c8p5(e1,e2,n1,n2):
-    return f'''{e2}={n1} // (2 * ({n2}+1)); {e1} = {e2}*{n2}; ans = {e1}'''
+
 @gen.problems.register
 def c8p5(sel,tokenpool,clskey):
     choose = random.randint(0,2)

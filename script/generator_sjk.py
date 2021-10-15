@@ -6,8 +6,9 @@ import math
 import random
 import string
 
+
 # utils
-def randreal(st, ed, *, ndigits = 2):
+def randreal(st, ed, *, ndigits=2):
     if ed is None:
         st, ed = 0, st
 
@@ -19,88 +20,7 @@ def randreal(st, ed, *, ndigits = 2):
 
 # it accepts an id. if it is not provided, use the function name.
 # the name must be unique.
-@gen.equations.register('sum')
-def eqn00(*args):
-    # return variable is ALWAYS [ans].
-    return 'ans = sum([{}])'.format(', '.join(map(str, args)))
 
-@gen.equations.register('maxSubmin')
-def eqn01(*args):
-    # return variable is ALWAYS [ans].
-
-    input = ','.join(list(map(str,args)))
-    return 'ans = max([{}]) - min([{}])'.format(input,input)
-
-
-@gen.equations.register('halfOdd')
-def eqn03(*args):
-    # return variable is ALWAYS [ans].
-
-    return 'ans = ({}//2) + 1'.format(args[0])
-
-@gen.equations.register('getDeci')
-def eqn04(*args):
-    # return variable is ALWAYS [ans].
-
-    if args[1] == 2:
-        return 'ans = round(float((100*{})/99),2)'.format(args[0])
-    elif args[1] == 3:
-        return 'ans = round(float((1000*{})/999),2)'.format(args[0])
-    elif args[1] == 1:
-        return 'ans = round(float((10*{})/9),2)'.format(args[0])
-    else:
-        return 'ans = round(float((1*{}))/1,2)'.format(args[0])
-
-@gen.equations.register('prob06_04')
-def eqn06(*args):
-    # return variable is ALWAYS [ans].
-    # args0 args1 args2
-    return 'ans = round(((({}*{})+{}) / {}) - {})'.format(args[2], args[1],args[2],args[0],args[0])
-
-@gen.equations.register('prob07_04')
-def eqn07(name0, name1, name2, name3, *args):
-    # return variable is ALWAYS [ans].
-
-    dict = {args[0] : name0,args[0] - args[1] : name1,
-            args[2]: name2,args[0] + args[3] : name3}
-
-    return 'ans = {}[max({}.keys())]'.format(str(dict),str(dict))
-
-
-@gen.equations.register('prob08_04')
-def eqn08(*args):
-    # return variable is ALWAYS [ans].
-    # item1_k, l_k)
-
-    if args[0] == "'정삼각형'":
-        return 'ans = "%.2f" % float(({}*3) / {})'.format(args[1],8)
-    elif args[0] == "'정사각형'":
-        return 'ans = "%.2f" % float(({}*4) / {})'.format(args[1],8)
-    elif args[0] == "'정오각형'":
-        return 'ans = "%.2f" % float(({}*5) / {})'.format(args[1],8)
-    elif args[0] == "'정팔각형'":
-        return 'ans = "%.2f" % float(({}*8) / {})'.format(args[1],8)
-    else:
-        return 'ans = "%.2f" % float(({}*7) / {})'.format(args[1],8)
-
-@gen.equations.register('prob04_03')
-def eqn10(over,*args):
-    # return variable is ALWAYS [ans]..
-    return 'ans = list(map(lambda x: x> {}, [{}])).count(True)'.format(int(over),','.join(list(map(str,args))))
-
-
-@gen.equations.register('prob04_02')
-def eqn030102(n, *number_list):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
-    """
-    return "".join([
-            "L = [{}]\n".format(', '.join(map(str, number_list))),
-            f"ans = min(filter(",
-                f"lambda e: e >= 10 ** ({n} - 1),",
-                f"map(",
-                    f"lambda e: int(''.join(map(str, e))),",
-                    f"itertools.permutations(L, {n}))))"])
 
 @gen.problems.register
 def prob4_01_01(selector, tokenpool, clskey):
@@ -109,9 +29,9 @@ def prob4_01_01(selector, tokenpool, clskey):
     '''
     # this may be a meta-token (e.g., #1), referring a number.
     nums_len = random.randint(2, 5)
-    nums_l   = [ i for i in range(0,100)]
-    nums     = random.sample(nums_l, nums_len)
-    nums_k   = list(map(tokenpool.new, nums))
+    nums_l = [i for i in range(0, 100)]
+    nums = random.sample(nums_l, nums_len)
+    nums_k = list(map(tokenpool.new, nums))
 
     # syntactic randomize
     ques_trailing = random.choice(['입니까?', '인지 구하시오.', '인가?'])
@@ -121,12 +41,12 @@ def prob4_01_01(selector, tokenpool, clskey):
 
     # print 포함
     return gen.build(
-            # body is the background of problem settings
-            body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
-            ]),
-            question='그중에서 가장 큰 수에서 가장 작은 수를 뺀 값은 얼마{ques_trailing}',
-            equation=gen.EqnRef('maxSubmin', *nums_k),
-            env=envdict)
+        # body is the background of problem settings
+        body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
+                       ]),
+        question='그중에서 가장 큰 수에서 가장 작은 수를 뺀 값은 얼마{ques_trailing}',
+        equation=gen.EqnRef('max_sub_min', *nums_k),
+        env=envdict)
 
 
 @gen.problems.register
@@ -136,14 +56,14 @@ def prob04_02(selector, tokenpool, clskey):
     '''
 
     # this may be a meta-token (e.g., #1), referring a number.
-    nums_len  = random.randint(2, 5)
-    nums_l   = [ i for i in range(0,9)]
-    nums     = random.sample(nums_l, nums_len)
-    catL     = random.randint(1,nums_len)
+    nums_len = random.randint(2, 5)
+    nums_l = [i for i in range(0, 9)]
+    nums = random.sample(nums_l, nums_len)
+    catL = random.randint(1, nums_len)
 
-    nums_k     = list(map(tokenpool.new, nums))
+    nums_k = list(map(tokenpool.new, nums))
     nums_len_k = tokenpool.new(nums_len)
-    catL_k     = tokenpool.new(catL)
+    catL_k = tokenpool.new(catL)
 
     # syntactic randomize
     ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
@@ -151,19 +71,18 @@ def prob04_02(selector, tokenpool, clskey):
     question = ' '.join(['그 중에서 서로 다른 숫자 {catL}개를 뽑아 만들 수 있는',
                          f'{gen.korutil.num2korunit(catL)} 자리 수',
                          ' 중에서 가장 작은 수{ques_trailing}'])
-    envdict = {f'num{i}': nums_k[i] for i in range(0,nums_len)}
-    envdict['nums_len']      = nums_len_k
+    envdict = {f'num{i}': nums_k[i] for i in range(0, nums_len)}
+    envdict['nums_len'] = nums_len_k
     envdict['ques_trailing'] = ques_trailing
-    envdict['catL']          = catL_k
+    envdict['catL'] = catL_k
 
     # print 포함
     return gen.build(
-            body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
-            ]),
-            question=question,
-            equation=gen.EqnRef('prob04_02', catL_k,*nums_k),
-            env=envdict)
-
+        body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
+                       ]),
+        question=question,
+        equation=gen.EqnRef('prob04_02', catL_k, *nums_k),
+        env=envdict)
 
 
 @gen.problems.register
@@ -171,28 +90,28 @@ def prob04_03(selector, tokenpool, clskey):
     '''
     5개의 수 1.4, 9/10, 1, 0.5, 13/10이 있습니다.이 중에서 1보다 큰 수는 모두 몇 개입니까?
     '''
-    len_ = random.randint(0,6)
-    nums = [ round(float(random.uniform(0,3)),1) for _ in range(0,len_) ]
-    over = random.randint(0,2)
+    len_ = random.randint(0, 6)
+    nums = [round(float(random.uniform(0, 3)), 1) for _ in range(0, len_)]
+    over = random.randint(0, 2)
 
-    len_k  = tokenpool.new(len_)
+    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
     envdict = {f'num{i}': nums_k[i] for i in range(len_)}
-    envdict['over']   = over_k
-    envdict['len_']   = len_k
+    envdict['over'] = over_k
+    envdict['len_'] = len_k
 
     return gen.build(
-            # body is the background of problem settings
-            body=' '.join([
-                '{len_}개의 수 ',
-                ', '.join('{' + 'num{}'.format(x) + '}' for x in range(len_)),
-                '가 있습니다.'
-            ]),
-            question='이 중에서 {over}보다 큰 수는 모두 몇 개입니까?',
-            equation=gen.EqnRef('prob04_03', over_k,*nums_k),
-            env=envdict)
+        # body is the background of problem settings
+        body=' '.join([
+            '{len_}개의 수 ',
+            ', '.join('{' + 'num{}'.format(x) + '}' for x in range(len_)),
+            '가 있습니다.'
+        ]),
+        question='이 중에서 {over}보다 큰 수는 모두 몇 개입니까?',
+        equation=gen.EqnRef('prob04_03', over_k, *nums_k),
+        env=envdict)
 
 
 @gen.problems.register
@@ -201,30 +120,31 @@ def prob04_1_04(selector, tokenpool, clskey):
     유나가 책을 펼쳤는데 두 쪽수의 합이 125이었습니다. 유나가 펼친 두 쪽수 중 큰 수를 쓰시오.
     '''
     # Claim items at first. They will not overlap (even for different keys).
-    name     = selector.get(clskey.name)
-    count1   = random.randrange(1, 400, 2)
+    name = selector.get(clskey.name)
+    count1 = random.randrange(1, 400, 2)
     count1_k = tokenpool.new(count1)
 
     # syntactic randomize
-    sent_trailing = random.choice(['다.','습니다.'])
+    sent_trailing = random.choice(['다.', '습니다.'])
     ques_trailing = random.choice(['를 쓰시오', '는 무엇입니까?', '는 무엇인가?'])
 
     return gen.build(
-            # body is the background of problem settings
-            body=' '.join([
-                '{name}{#가} 책을 펼쳤는데 두 쪽수의 합이 {count1} 이{sent_trailing}',
-            ]),
-            # question is the main sentence of the problem
-            question='{name}{#가} 펼친 두 쪽수중 큰 수{ques_trailing}',
-            equation= gen.EqnRef('halfOdd',count1_k),
+        # body is the background of problem settings
+        body=' '.join([
+            '{name}{#가} 책을 펼쳤는데 두 쪽수의 합이 {count1} 이{sent_trailing}',
+        ]),
+        # question is the main sentence of the problem
+        question='{name}{#가} 펼친 두 쪽수중 큰 수{ques_trailing}',
+        equation=gen.EqnRef('half_odd', count1_k),
 
-            # specify every variables used in above strings
-            env=gen.fnmap(
-                name=name,
-                count1=count1_k,
-                sent_trailing=sent_trailing,
-                ques_trailing=ques_trailing
-            ))
+        # specify every variables used in above strings
+        env=gen.fnmap(
+            name=name,
+            count1=count1_k,
+            sent_trailing=sent_trailing,
+            ques_trailing=ques_trailing
+        ))
+
 
 @gen.problems.register
 def prob04_1_05(selector, tokenpool, clskey):
@@ -232,34 +152,35 @@ def prob04_1_05(selector, tokenpool, clskey):
     어떤 소수의 소수점을 왼쪽으로 두 자리 옮기면 원래의 소수보다 1.782만큼 작아집니다. 원래의 소수를 구하시오.
     '''
     # Claim items at first. They will not overlap (even for different keys).
-    n     = random.randint(0,3)
-    count1   = round(float(random.random()),2) + random.randint(0,10)
+    n = random.randint(0, 3)
+    count1 = round(float(random.random()), 2) + random.randint(0, 10)
 
-    n_k   = tokenpool.new(n)
+    n_k = tokenpool.new(n)
     count1_k = tokenpool.new(count1)
 
     # syntactic randomize
-    sent_trailing = random.choice(['집니다.','졌습니다.'])
+    sent_trailing = random.choice(['집니다.', '졌습니다.'])
     ques_trailing = random.choice(['를 쓰시오', '는 무엇입니까?', '는 무엇인가?'])
 
     return gen.build(
-            body=' '.join([
-                f'어떤 소수의 소수점을 왼쪽으로 {gen.korutil.num2korunit(n)}', '자리 옮기면 원래의 소수보다 {count1} 만큼 작아{sent_trailing}',
-            ]),
-            question='원래의 소수{ques_trailing}',
-            equation= gen.EqnRef('getDeci',count1_k, n_k),
-            env=gen.fnmap(
-                n= n_k,
-                count1=count1_k,
-                sent_trailing=sent_trailing,
-                ques_trailing=ques_trailing
-            ))
+        body=' '.join([
+            f'어떤 소수의 소수점을 왼쪽으로 {gen.korutil.num2korunit(n)}', '자리 옮기면 원래의 소수보다 {count1} 만큼 작아{sent_trailing}',
+        ]),
+        question='원래의 소수{ques_trailing}',
+        equation=gen.EqnRef('get_deci', count1_k, n_k),
+        env=gen.fnmap(
+            n=n_k,
+            count1=count1_k,
+            sent_trailing=sent_trailing,
+            ques_trailing=ques_trailing
+        ))
+
 
 @gen.problems.register
 def prob06_04(selector, tokenpool, clskey):
     '''어떤 수에 14를 더한 후 14를 곱하고, 24를 뺀 값을 24로 나누면 13이 됩니다. 어떤 수의 소수를 제거한 수를 구하시오'''
     # Claim items at first. They will not overlap (even for different keys).
-    count1   = random.randrange(1, 100)
+    count1 = random.randrange(1, 100)
     count2 = random.randrange(1, 100)
     count3 = random.randrange(1, 100)
     count1_k = tokenpool.new(count1)
@@ -270,17 +191,18 @@ def prob06_04(selector, tokenpool, clskey):
     ques_trailing = random.choice(['를 쓰시오', '는 무엇입니까?', '는 무엇인가?'])
 
     return gen.build(
-            body=' '.join([
-                '어떤 수에 를 {count1}{#를} 더한 후 {count1}{#를} 곱하고, {count2}{#를} 뺀 값을 {count2}로 나누면 {count3}{#이} 됩니다.',
-            ]),
-            question='어떤 수의 소수를 제거한 수{ques_trailing}',
-            equation=gen.EqnRef('prob06_04', count1_k, count2_k, count3_k),
-            env=gen.fnmap(
-                count1=count1_k,
-                count2=count2_k,
-                count3=count3_k,
-                ques_trailing= ques_trailing
-            ))
+        body=' '.join([
+            '어떤 수에 를 {count1}{#를} 더한 후 {count1}{#를} 곱하고, {count2}{#를} 뺀 값을 {count2}로 나누면 {count3}{#이} 됩니다.',
+        ]),
+        question='어떤 수의 소수를 제거한 수{ques_trailing}',
+        equation=gen.EqnRef('prob06_04', count1_k, count2_k, count3_k),
+        env=gen.fnmap(
+            count1=count1_k,
+            count2=count2_k,
+            count3=count3_k,
+            ques_trailing=ques_trailing
+        ))
+
 
 @gen.problems.register
 def prob07_04(selector, tokenpool, clskey):
@@ -290,8 +212,8 @@ def prob07_04(selector, tokenpool, clskey):
     '''
     item = selector.get(clskey.drink)
     unit = selector.get(clskey.volume_unit)
-    name = [ selector.get(clskey.name) for _ in range(0,4)]
-    nums = [ round(float(random.uniform(0,2)),1) for _ in range(0,4) ]
+    name = [selector.get(clskey.name) for _ in range(0, 4)]
+    nums = [round(float(random.uniform(0, 2)), 1) for _ in range(0, 4)]
 
     ## name overlab check
     while len(set(name)) != len(name):
@@ -308,46 +230,43 @@ def prob07_04(selector, tokenpool, clskey):
     envdict['item'] = item_k
 
     return gen.build(
-            body=' '.join([
-                '{name0}{#이}는 {item}{#를} {nums0}{unit} 마셨습니다.',
-                '{name1}{#이}는 {name0}{#이}보다 {nums1}{unit} 더 적게 마셨습니다. ',
-                '{name2}{#는} {nums2}{unit} 마셨고, {name3}{#는} {name0}{#이}보다 {nums3}{unit} 더 많이 마셨습니다.'
-            ]),
-            question='주스를 가장 많이 마신사람은 누구입니까?',
-            equation=gen.EqnRef('prob07_04', name_k[0], name_k[1], name_k[2], name_k[3], *nums_k),
-            env=envdict
+        body=' '.join([
+            '{name0}{#이}는 {item}{#를} {nums0}{unit} 마셨습니다.',
+            '{name1}{#이}는 {name0}{#이}보다 {nums1}{unit} 더 적게 마셨습니다. ',
+            '{name2}{#는} {nums2}{unit} 마셨고, {name3}{#는} {name0}{#이}보다 {nums3}{unit} 더 많이 마셨습니다.'
+        ]),
+        question='주스를 가장 많이 마신사람은 누구입니까?',
+        equation=gen.EqnRef('prob07_04', name_k[0], name_k[1], name_k[2], name_k[3], *nums_k),
+        env=envdict
     )
+
 
 @gen.problems.register
 def prob08_04(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형과 둘레가 같은 정팔각형이 있습니다. 이 정팔각형의 한 변의 길이는 몇 cm인지 소수점 둘째자리까지 구하시오.'''
-    item1  = selector.get(clskey.jshape)
-    item2  = selector.get(clskey.jshape)
-    l      = random.randint(1,100)
-    unit   = selector.get(clskey.length_unit)
+    item1 = selector.get(clskey.jshape)
+    item2 = selector.get(clskey.jshape)
+    l = random.randint(1, 100)
+    unit = selector.get(clskey.length_unit)
 
-    item1_k  = tokenpool.new(item1)
-    item2_k  = tokenpool.new(item2)
-    l_k      = tokenpool.new(l)
-    unit_k   = tokenpool.new(unit)
+    item1_k = tokenpool.new(item1)
+    item2_k = tokenpool.new(item2)
+    l_k = tokenpool.new(l)
+    unit_k = tokenpool.new(unit)
 
     return gen.build(
-            body=' '.join([
-                '한 변의 길이가 {l}{unit}인 {item1}{#과} 둘레가 같은 정팔각형이 있습니다.',
-            ]),
-            question='이 정팔각형의 한 변의 길이는 몇 {unit}인지 소수 둘째자리 까지 쓰시오.',
-            equation=gen.EqnRef('prob08_04', item1_k, l_k),
-            env=gen.fnmap(
-                item1=item1_k,
-                item2=item2_k,
-                l=l_k,
-                unit = unit_k
-            ))
+        body=' '.join([
+            '한 변의 길이가 {l}{unit}인 {item1}{#과} 둘레가 같은 정팔각형이 있습니다.',
+        ]),
+        question='이 정팔각형의 한 변의 길이는 몇 {unit}인지 소수 둘째자리 까지 쓰시오.',
+        equation=gen.EqnRef('prob08_04', item1_k, l_k),
+        env=gen.fnmap(
+            item1=item1_k,
+            item2=item2_k,
+            l=l_k,
+            unit=unit_k
+        ))
 
-
-@gen.equations.register('average')
-def eqn3(*args):
-    return 'ans = sum([{}]) / {}'.format(', '.join(map(str, args)), str(len(args)))
 
 def build_dictionary(clskey, dictionary):
     # add mappings; use distinct keys!
@@ -376,10 +295,10 @@ def build_dictionary(clskey, dictionary):
     clskey.alpha = 'entity.alpha'
     clskey.edge = 'entity.edge'
 
-    clskey.liquid   = 'entity.liquid'
-    clskey.drink    = 'entity.drink'
+    clskey.liquid = 'entity.liquid'
+    clskey.drink = 'entity.drink'
 
-    #clskey.num     = 'entity.num'
+    # clskey.num     = 'entity.num'
 
     # groups
     clskey.fruit_group = 'group.fruit'
@@ -392,7 +311,6 @@ def build_dictionary(clskey, dictionary):
     clskey.school = 'entity.school'
     clskey.gender = 'prop.gender'
     clskey.age = 'prop.age'
-
 
     clskey.length_unit = 'prop.unit.length'
     clskey.area_unit = 'prop.unit.area'
@@ -634,7 +552,7 @@ def build_dictionary(clskey, dictionary):
     dictionary.add_token(clskey.length_unit, gen.DictItem('mm', factor=0.001, kor="밀리미터", symbol="㎜"))
 
     dictionary.add_token(clskey.volume_unit, gen.DictItem('kl', factor=1000, kor="킬로리터", symbol="㎘"))
-    dictionary.add_token(clskey.volume_unit, gen.DictItem('l', factor=1, kor="리터", symbol="ℓ")	)
+    dictionary.add_token(clskey.volume_unit, gen.DictItem('l', factor=1, kor="리터", symbol="ℓ"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('ml', factor=0.001, kor="밀리리터", symbol="㎖"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('m3', factor=1000, kor="세제곱미터", symbol="㎥"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('cm3', factor=0.001, kor="세제곱센티미터", symbol="㎤"))
@@ -659,7 +577,7 @@ def build_dictionary(clskey, dictionary):
     # dictionary.add_token(clskey.ord_rel, gen.DictItem('앞', reverse=['뒤']))
 
     ######## ADD MAPPINGS ########
-    clskey.jshape       = 'entity.jshape'
+    clskey.jshape = 'entity.jshape'
     ######## ADJUST HIERARCHY ########
     ######## ADD TOKENS ########
     dictionary.add_token(clskey.jshape, gen.DictItem('정사각형'))
@@ -668,10 +586,10 @@ def build_dictionary(clskey, dictionary):
     dictionary.add_token(clskey.jshape, gen.DictItem('정오각형'))
 
 
-
 if __name__ == '__main__':
     class _Namespace():
         def __init__(self): pass
+
 
     clskey = _Namespace()
     dictionary = gen.Dictionary()
@@ -679,9 +597,9 @@ if __name__ == '__main__':
     for fn in gen.problems:
         i = 0
         while i < 8:
-            selector  = gen.DictionarySelector(dictionary)
+            selector = gen.DictionarySelector(dictionary)
             tokenpool = gen.TokenPool()
             ret = fn(selector, tokenpool, clskey)
             if ret is not None:
-                print (ret)
+                print(ret)
                 i += 1

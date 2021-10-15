@@ -17,7 +17,7 @@ class AGCDataModule(LightningDataModule):
 
     def setup(self, stage=None):
         if stage == "fit":
-            from data_generator.build import build_problems
+            from generator.build import build_problems
             generate_problem, problem_ids = build_problems()
             targets = problem_ids * self.n_aug_per_question
             self.train_dataset = AGCTrainDataset(targets, generate_problem)

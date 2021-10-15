@@ -123,10 +123,6 @@ def prob02(selector, tokenpool, clskey):
 #     return template.format(body, question, equation, variable)
 
 
-@gen.equations.register('average')
-def eqn3(*args):
-    return 'ans = sum({}) / {}'.format(repr(args), len(args))
-
 
 # You must prepend @register for each function!
 @gen.problems.register

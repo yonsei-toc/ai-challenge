@@ -2,6 +2,7 @@ from .dictselector import DictionarySelector
 from .token import TokenPool
 from typing import Callable
 
+
 class Problems():
     def __init__(self):
         self.problems = []
@@ -30,6 +31,7 @@ class EqnRef():
 
     @property
     def args(self): return self._args
+
 
 problems = Problems()
 

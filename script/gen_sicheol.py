@@ -6,170 +6,6 @@ import math
 import random
 import string
 
-# utils
-def randreal(st, ed, *, ndigits = 2):
-    if ed is None:
-        st, ed = 0, st
-
-    if ndigits is None:
-        return random.uniform(st, ed)
-    else:
-        return round(random.uniform(st, ed), ndigits=ndigits)
-
-"""
-equations
-"""
-# it accepts an id. if it is not provided, use the function name.
-# the name must be unique.
-@gen.equations.register('max_from_n_comb')
-def eqn030101(n, *L):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 큰 {n} 자리 수
-    """
-    return "".join([
-            "L = [{}]\n".format(', '.join(map(str, L))),
-            f"ans = max(filter(",
-                f"lambda e: e >= 10 ** ({n} - 1),",
-                f"map(",
-                    f"lambda e: int(''.join(map(str, e))),",
-                    f"itertools.permutations(L, {n}))))"])
-
-@gen.equations.register('min_from_n_comb')
-def eqn030102(n, *L):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
-    """
-    return "".join([
-            "L = [{}]\n".format(', '.join(map(str, L))),
-            f"ans = min(filter(",
-                f"lambda e: e >= 10 ** ({n} - 1),",
-                f"map(",
-                    f"lambda e: int(''.join(map(str, e))),",
-                    f"itertools.permutations(L, {n}))))"])
-
-@gen.equations.register('max_diff_from_n_comb')
-def eqn030201(n, *L):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n} 자리 수의 차의 최대 값
-    """
-    return "".join([
-            "L = [{}]\n".format(', '.join(map(str, L))),
-            f"L = list(filter(",
-                f"lambda e: e >= 10 ** ({n} - 1),",
-                f"map(",
-                    f"lambda e: int(''.join(map(str, e))),",
-                    f"itertools.permutations(L, {n}))))\n",
-            "ans = max(L) - min(L)"])
-
-@gen.equations.register('writing_n_to_m_count_c')
-def eqn030301(n, m, c):
-    """
-     > {n}부터 {m}까지 적었을 때 등장하는 {c}의 수
-    """
-    return "".join([
-        "ans = len(list(",
-            f"filter(lambda e: '{c}' == e, ",
-            f"''.join(map(str, range({n}, {m} + 1))))",
-        "))"
-    ])
-
-@gen.equations.register('n_comb')
-def eqn030401(n, *L):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n}자리 수의 수
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, L))),
-        f"ans = math.perm(len(L) - 1, {n} - 1) * (len(L) - 1) ",
-            "if 0 in L ",
-            f"else math.perm(len(L), {n})"
-    ])
-
-@gen.equations.register('c_sum_in_range_n_is_m')
-def eqn030401(c, n, m):
-    """
-     > 1부터 n까지의 수 중 c개의 수를 동시에 뽑아 그 합이 m이 되는 경우의 수
-    """
-    return "".join([
-        f"L = range(1, {n})\n",
-        "ans = len(list(filter(",
-            f"lambda e: e == {m}, ",
-            "map(",
-                "sum, ",
-                f"itertools.combinations(L, {c})",
-            ")",
-        ")))"
-    ])
-
-@gen.equations.register('wrong_multiplication_less')
-def eqn060301(n, d, a, b, A, B):
-    """
-    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
-    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 작은 수
-    """
-
-    # (X + ( b - a ) * d) * Y = A
-    # X * Y + ( b - a ) * d * Y = A
-
-    # X * Y = B
-    # B + ( b - a ) * d * Y = A
-
-    # Y = ( A - B ) // ( ( b - a ) * d )
-
-    return "".join([
-        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
-        f"X = {B} // Y\n",
-        "ans = min(X, Y)"
-    ])
-
-
-@gen.equations.register('wrong_multiplication_greater')
-def eqn060302(n, d, a, b, A, B):
-    """
-    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
-    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 큰 수
-    """
-
-    return "".join([
-        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
-        f"X = {B} // Y\n",
-        "ans = max(X, Y)"
-    ])
-
-# NOTE: 
-# 모델이 '#1 무겁다 #2', '#1 가볍다 #2'에 따라 순서만 바꿔서 넣을 수 있도록 하겠습니다.
-# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 가벼운 사람은 누구인가?'라면
-# equation 호출은 'order_least #2 #1 #2 #3' 이런식으로.
-@gen.equations.register('order_least')
-def eqn070301(*pairs):
-    """
-    > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(lambda e: "'" + str(e) + "'", pairs))),
-        "names = { name: True for name in L }\n",
-        "for i in range(0, len(L), 2): names[L[i]] = False\n",
-        "ans = [ name for name in names.keys() if names[name] ][0]"
-    ])
-
-# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 무거운 사람은 누구입니까?'라면
-# equation 호출은 'order_greatest #2 #1 #2 #3' 이런식으로.
-@gen.equations.register('order_greatest')
-def eqn070302(*pairs):
-    """
-    > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(lambda e: "'" + str(e) + "'", pairs))),
-        "names = { name: True for name in L }\n",
-        "for i in range(1, len(L), 2): names[L[i]] = False\n",
-        "ans = [ name for name in names.keys() if names[name] ][0]"
-    ])
-
-@gen.equations.register('a_div_two_sub_b')
-def eqn080301(a, b):
-    return f"ans = {a} // 2 - {b}"
-
 """
 problems
 """
@@ -592,7 +428,7 @@ def prob030202(sel, pl, clskey):
         "{#를} 구하시오.", 
         "{#를} 쓰시오.",
 
-        "{#는} 얼마"+question_trailing, 
+        "{#는} 얼마"+question_trailing,
     ])
 
     # equation
@@ -1023,7 +859,7 @@ def prob060302(sel, pl, clskey):
     ])
     question += "두 개의 {n.to_korunit()} 자리 수 중 "
     question += random.choice([
-        "더 ", 
+        "더 ",
         ""
     ])
     question += "큰 수"
@@ -1033,9 +869,9 @@ def prob060302(sel, pl, clskey):
     equation = gen.EqnRef("wrong_multiplication_greater", n_k, d_k, a_k, b_k, A_k, B_k)
 
     return gen.build(
-            body=body, 
-            question=question, 
-            equation=equation, 
+            body=body,
+            question=question,
+            equation=equation,
 
             env=envdict)
 
