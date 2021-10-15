@@ -309,7 +309,7 @@ def prob1_5(selector, tokenpool, clskey):
     group1 = selector.get(random.choice([clskey.gender,clskey.school]))
     item1 = selector.get(clskey.item)
     # entity numbers
-    count1 = random.randint(1,100)
+    count1 = random.randint(2,100)
     count2 = random.choice(list(filter(lambda n: count1%n==0,range(2,count1+1))))
     count3 = random.randint(1,count2)
     midnum = count1//count2*count3
@@ -375,7 +375,7 @@ def prob6_1(selector, tokenpool, clskey):
     return gen.build(
         # body(background of question)
         body = ' '.join([
-            '어떤 수에서 {count1}{#을} 뺏더니 {count2}가 되었{sent_trailing}'
+            '어떤 수에서 {count1}{#을} 뺐더니 {count2}가 되었{sent_trailing}'
         ]),
         # what to ask
         question = '어떤 수를 구하시오.',
