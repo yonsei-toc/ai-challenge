@@ -337,5 +337,5 @@ class _Namespace():
 clskey = _Namespace()
 dictionary = gen.Dictionary()
 build_dictionary(dictionary, clskey)
-with open('dict.json', 'wt') as f:
+with open('dict.json', 'wt', encoding='utf8') as f:
     f.write(dictionary.export(clskey, ensure_ascii=False, indent=2))
