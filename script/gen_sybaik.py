@@ -24,63 +24,6 @@ def randreal(st, ed, *, ndigits = 2):
 ##   equations   ##
 ###################
 
-# sum
-@gen.equations.register('sum')
-def eqn00(*args):
-    # return variable is ALWAYS [ans].
-    return 'ans = sum({})'.format(repr(args))
-
-# factor
-@gen.equations.register('factor')
-def eqn2(factor, result):
-    return 'ans = {} // {}'.format(repr(result), repr(factor))
-
-# average
-@gen.equations.register('average')
-def eqn3(*args):
-    return 'ans = sum({}) / {}'.format(repr(args), len(args))
-
-# total_before_split
-@gen.equations.register('total_before_split')
-def eqn4(split_num,num,leftover=0):
-    return 'ans = {} * {} + {}'.format(split_num,num,leftover)
-
-# split_oops_split
-@gen.equations.register('split_oops_split')
-def eqn5(split_num,num,split,leftover=0):
-    return 'ans = ({} * {} + {})//{}'.format(split_num,num,leftover,split)
-
-# multiple fraction
-@gen.equations.register('multi_frac')
-def eqn6(origin,*args):
-    ans_str = 'ans = {}'.format(origin)
-    for i in range(len(args)):
-        if i%2==0:
-            ans_str += ' * {}'.format(args[i])
-        else:
-            ans_str += ' / {}'.format(args[i])
-    return ans_str
-
-# select smallest from list
-@gen.equations.register('select_small_from_three')
-def sel_small_list(*args):
-    ans_str = '\n'.join(["val = [0,0,0]",
-    "val[0] = "+str(args[3]),
-    "val[1] = val[0]+"+str(args[4]),
-    "val[2] = val[1]-"+str(args[5]),
-    "max_i = 0",
-    "for i in range(1,3):",
-    "    if val[i]>val[max_i]:",
-    "        max_i = i",
-    "ans = [\""+"\",\"".join([args[0],args[1],args[2]])+"\"][max_i]"
-    ])
-    return ans_str
-
-# 수열
-@gen.equations.register('num_sequence_with_diff')
-def eqn7(start,diff,length):
-    return 'ans = [{}]'.format(','.join(map(str,[start+diff*i for i in range(length)])))
-
 
 ###################
 ##   problems    ##
@@ -122,7 +65,7 @@ def prob1_1(selector, tokenpool, clskey):
         # question
         question = '{container1} 안에 있는 {item1}{#는} {total}몇 {unit}{ques_trailing}',
         # equation
-        equation = gen.EqnRef('sum', count1_k, count2_k),
+        equation = gen.EqnRef('eqn_sum', count1_k, count2_k),
         
         # env
         env=gen.fnmap(
@@ -180,7 +123,7 @@ def prob1_2(selector, tokenpool, clskey):
         # question
         question = '{init_time}{name1}{#이}가 {own_item}{item1}은 몇 {unit}{ques_trailing}',
         # equation
-        equation = gen.EqnRef('sum', count1_k, count2_k, count3_k),
+        equation = gen.EqnRef('eqn_sum', count1_k, count2_k, count3_k),
 
         # env
         env=gen.fnmap(
@@ -234,7 +177,7 @@ def prob1_3(selector, tokenpool, clskey):
         # what to ask
         question = '{item1}{#이} {item2}보다 {count2}{#가} 더 적다면 {item1}{#은} 몇 {unit} 있습니까?',
         # equation for question
-        equation = gen.EqnRef('average', count3_k, -count2_k),
+        equation = gen.EqnRef('avg', count3_k, -count2_k),
 
         # env
         env=gen.fnmap(
@@ -380,7 +323,7 @@ def prob6_1(selector, tokenpool, clskey):
         # what to ask
         question = '어떤 수를 구하시오.',
         # equation for question
-        equation = gen.EqnRef('sum',count1,count2),
+        equation = gen.EqnRef('eqn_sum',count1,count2),
         env = gen.fnmap(
             count1 = count1_k,
             count2 = count2_k,
@@ -469,7 +412,7 @@ def prob8_1(selector, tokenpool, clskey):
         # what to ask
         question = '{count1.to_kor()}각형의 변의 개수와 {count2.to_kor()}각형의 변의 개수의 합을 구하시오.',
         # equation for question
-        equation = gen.EqnRef('sum',count1_k,count2_k),
+        equation = gen.EqnRef('eqn_sum',count1_k,count2_k),
         env = gen.fnmap(
             count1 = count1_k,
             count2 = count2_k

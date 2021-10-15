@@ -344,3 +344,55 @@ def prob04_02(n, *number_list):
         f"map(",
         f"lambda e: int(''.join(map(str, e))),",
         f"itertools.permutations(L, {n}))))"])
+
+
+# factor
+@equations.register('factor')
+def eqn2(factor, result):
+    return 'ans = {} // {}'.format(repr(result), repr(factor))
+
+
+# total_before_split
+@equations.register('total_before_split')
+def eqn4(split_num, num, leftover=0):
+    return 'ans = {} * {} + {}'.format(split_num, num, leftover)
+
+
+# split_oops_split
+@equations.register('split_oops_split')
+def eqn5(split_num, num, split, leftover=0):
+    return 'ans = ({} * {} + {})//{}'.format(split_num, num, leftover, split)
+
+
+# multiple fraction
+@equations.register('multi_frac')
+def eqn6(origin, *args):
+    ans_str = 'ans = {}'.format(origin)
+    for i in range(len(args)):
+        if i % 2 == 0:
+            ans_str += ' * {}'.format(args[i])
+        else:
+            ans_str += ' / {}'.format(args[i])
+    return ans_str
+
+
+# select smallest from list
+@equations.register('select_small_from_three')
+def sel_small_list(*args):
+    ans_str = '\n'.join(["val = [0,0,0]",
+                         "val[0] = " + str(args[3]),
+                         "val[1] = val[0]+" + str(args[4]),
+                         "val[2] = val[1]-" + str(args[5]),
+                         "max_i = 0",
+                         "for i in range(1,3):",
+                         "    if val[i]>val[max_i]:",
+                         "        max_i = i",
+                         "ans = [\"" + "\",\"".join([args[0], args[1], args[2]]) + "\"][max_i]"
+                         ])
+    return ans_str
+
+
+# 수열
+@equations.register('num_sequence_with_diff')
+def eqn7(start, diff, length):
+    return 'ans = [{}]'.format(','.join(map(str, [start + diff * i for i in range(length)])))

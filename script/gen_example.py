@@ -19,7 +19,7 @@ def randreal(st, ed, *, ndigits = 2):
 
 # it accepts an id. if it is not provided, use the function name.
 # the name must be unique.
-@gen.equations.register('sum')
+@gen.equations.register('eqn_sum')
 def eqn00(*args):
     # return variable is ALWAYS [ans].
     return 'ans = sum({})'.format(repr(args))
@@ -67,7 +67,7 @@ def prob01(selector, tokenpool, clskey):
             ]),
             # question is the main sentence of the problem
             question='{container}에 있는 {item}{#은} {total}몇 {unit}{ques_trailing}',
-            equation=gen.EqnRef('sum', count1_k, -count2_k),
+            equation=gen.EqnRef('eqn_sum', count1_k, -count2_k),
 
             # specify every variables used in above strings
             env=gen.fnmap(
@@ -143,7 +143,7 @@ def showcase(sel, pl, clskey):
     return gen.build(
             body='',
             question=question,
-            equation=gen.EqnRef('average', *nums_k),
+            equation=gen.EqnRef('avg', *nums_k),
             # if answer is not stable (due to floating point arithmetic)
             # specify a stable answer.
             answer=round(sum(nums) / n, ndigits=2),
