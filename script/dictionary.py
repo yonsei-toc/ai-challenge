@@ -38,7 +38,8 @@ def build_dictionary(dictionary, clskey):
     clskey.fruit_group = 'group.fruit'
     clskey.animal_group = 'group.animal'
     clskey.flower_group = 'group.flower'
-    clskey.school_group = 'gruop.school'
+
+    clskey.school_group = 'group.school'
     clskey.gender_group = 'group.gender'
     clskey.age_group = 'group.age'
 
