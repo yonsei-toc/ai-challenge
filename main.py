@@ -3,7 +3,7 @@ from transformers import AutoModel, AutoTokenizer, ElectraForTokenClassification
 from pytorch_lightning import Trainer
 
 from agc_model import AGCModel
-import data
+from data.datamodule import AGCDataModule
 
 
 def init_language(model_name):
@@ -34,7 +34,7 @@ def train(epoch=4, gpu=0, resume=None,
 
     model = AGCModel(language_model, tokenizer, **model_kwargs)
 
-    datamodule = data.AGCDataModule(tokenizer, max_seq_len, batch_size=batch_size, n_aug_per_question=augments)
+    datamodule = AGCDataModule(tokenizer, max_seq_len, batch_size=batch_size, n_aug_per_question=augments)
 
     trainer = Trainer(max_epochs=epoch, gpus=[gpu], resume_from_checkpoint=resume, stochastic_weight_avg=True)
     trainer.fit(model, datamodule=datamodule)
