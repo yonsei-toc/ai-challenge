@@ -1183,7 +1183,7 @@ if __name__ == '__main__':
     build_dictionary(clskey, dictionary)
     for fn in gen.problems:
         i = 0
-        while i < 8:
+        while i < 1000:
             selector = gen.DictionarySelector(dictionary)
             tokenpool = gen.TokenPool()
             ret = fn(selector, tokenpool, clskey)
