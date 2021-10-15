@@ -316,8 +316,18 @@ def build_dictionary(dictionary, clskey):
     # dictionary.add_token(clskey.ord_rel, gen.DictItem('앞', reverse=['뒤']))
 
     ######## ADD MAPPINGS ########
+
+    clskey.writable = 'entity.writable'
+
     ######## ADJUST HIERARCHY ########
+
+    dictionary.set_child_relation(clskey.item, clskey.writable)
+
     ######## ADD TOKENS ########
+
+    dictionary.add_token(clskey.writable, gen.DictItem('카드', unit='장'))
+    dictionary.add_token(clskey.writable, gen.DictItem('종이', unit='장'))
+    dictionary.add_token(clskey.writable, gen.DictItem('공', unit='개'))
 
 
 class _Namespace():
