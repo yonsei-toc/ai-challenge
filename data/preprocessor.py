@@ -9,7 +9,7 @@ class Preprocessor:
     def __init__(self, tokenizer, max_seq_len):
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
-        self.numeric_processor = NumericProcessor('[NUM]')
+        self.numeric_processor = NumericProcessor("[NUM]", "[NUMS]")
 
         self._endings = tokenizer.convert_tokens_to_ids(['.', '?'])
 
