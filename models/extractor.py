@@ -1,7 +1,6 @@
-import torch
 import torch.nn as nn
 
-import base_models as base
+import models.base as base
 
 
 class QuestionEncoder(nn.Module):
@@ -35,9 +34,13 @@ class QuestionTargetRecognition(nn.Module):
         return outputs, loss, accuracy
 
 
-class TemplateSolver(nn.Module):
-    def __init__(self):
-        super(TemplateSolver, self).__init__()
+class AnswerTypeClassification(nn.Module):
+    def __init__(self, hidden_size, p_drop, n_types):
+        super(AnswerTypeClassification, self).__init__()
+        self.classifier = base.SequenceClassifier(hidden_size, n_types, p_drop)
 
-    def forward(self, batch):
-        pass
+    def forward(self, batch, features):
+        outputs, loss, accuracy = self.classifier(features, batch['equation_type'])
+        answer_types = outputs.argmax(-1)
+
+        return answer_types, loss, accuracy

@@ -1,5 +1,7 @@
+import math, itertools
 from typing import Callable, Iterable, Optional
 import random
+import inspect
 
 
 class Equations:
@@ -9,16 +11,27 @@ class Equations:
         self.equation_keys = {}
         self.equations = []
 
-    def _decorator(self, func: Callable[..., str], key: Optional[key_t] = None):
+    def _decorator(self, func: Callable[..., Callable], key: Optional[key_t] = None):
         if key is None:
             key = func.__name__
 
         if key in self.equation_keys:
             raise RuntimeError("Duplicated equation ID: {}.".format(key))
 
-        self.equations.append(func)
+        def _func_to_source(*args):
+            codes = inspect.getsourcelines(func(*args))[0][1:]
+
+            indents = len(codes[0]) - len(codes[0].lstrip())
+            codes = ['import math, itertools\n'] + [c[indents:] for c in codes]  # + ['print(ans)']
+
+            _replaced = ''.join(codes)
+            for i, arg in enumerate(args):
+                _replaced = _replaced.replace(f'_args_[{i}]', repr(args[i]))
+            return _replaced
+
+        self.equations.append(_func_to_source)
         self.equation_keys[key] = len(self.equations) - 1
-        return func
+        return _func_to_source
 
     # decorator
     def register(self, func, key=None):
@@ -53,173 +66,160 @@ equations
 """
 
 
-# it accepts an id. if it is not provided, use the function name.
-# the name must be unique.
+# 0
 @equations.register
-def max_from_n_comb(n, *L):
+def diff_perm(*_args_):
     """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 큰 {n} 자리 수
+    {1} 중에서 서로 다른 숫자 {0}개를 뽑아 -> 만들 수 있는 {0} 자리 수의 {2}
+
+    :param
+        {0} : 숫자
+        {1} : 숫자 리스트
+        {2} :   0 - 가장 큰 값 (max)
+                1 - 가장 작은 값 (min)
+                2 - 차이의 최대값 (max - min)
+                3 - 경우의 수의 개수
     """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, L))),
-        f"ans = max(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))"])
+
+    if _args_[2] == 0:
+        def _equation():
+            ans = max(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+    elif _args_[2] == 1:
+        def _equation():
+            ans = min(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+    elif _args_[2] == 2:
+        def _equation():
+            ans = list(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = max(ans) - min(ans)
+    else:
+        def _equation():
+            ans = math.perm(len(_args_[1]) - 1, _args_[0] - 1) * (len(_args_[1]) - 1) if 0 in _args_[1] else math.perm(len(_args_[1]), _args_[0])
+
+    return _equation
 
 
+# 1
 @equations.register
-def min_from_n_comb(n, *L):
+def count_from_range(*_args_):
     """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
+    {0}부터 {1}까지 적었을 때 등장하는 {2}의 수
+
+    :param
+        {0}, {1}, {2} : 숫자
     """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, L))),
-        f"ans = min(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))"])
+
+    def _equation():
+        ans = len(list(filter(lambda e: _args_[2] == e, ''.join(map(str, range(_args_[0], _args_[1] + 1))))))
+
+    return _equation
 
 
+# 2
 @equations.register
-def max_diff_from_n_comb(n, *L):
+def find_sum_from_range(*_args_):
+    """ncm
+    {0} ~ {1}까지의 수 중 {2}개의 수를 동시에 뽑아 그 합이 {3}이 되는 경우의 수
     """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n} 자리 수의 차의 최대 값
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, L))),
-        f"L = list(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))\n",
-        "ans = max(L) - min(L)"])
+
+    def _equation():
+        ans = len(list(filter(lambda e: e == _args_[3], map(sum, itertools.combinations(range(_args_[0], _args_[1]), _args_[2])))))
+
+    return _equation
 
 
+# 3
 @equations.register
-def writing_n_to_m_count_c(n, m, c):
+def wrong_multiply(*_args_):
     """
-     > {n}부터 {m}까지 적었을 때 등장하는 {c}의 수
+    {0} 자리수 X, Y중 한 수의 {1}의 자리 숫자 {2}를 {3}로 잘못 보고 계산하여
+    {4}를 얻었다. 올바르게 계산한 값이 {5}일 때 X, Y 중 {6}
+    :param
+        {0} : 2, 3
+        {1} : 1, 10, (100)
+        {2}, {3} : 0 ~ 9
+        {4}, {5} : 숫자
+        {6} :   0 - 작은 수
+                1 - 큰 수
+                2 - X
+                3 - Y
+
     """
-    return "".join([
-        "ans = len(list(",
-        f"filter(lambda e: '{c}' == e, ",
-        f"''.join(map(str, range({n}, {m} + 1))))",
-        "))"
-    ])
+
+    if _args_[6] == 0:
+        def _equation():
+            y = (_args_[4] - _args_[5]) // ((_args_[3] - _args_[2]) * _args_[1])
+            ans = min(_args_[5] // y, y)
+    elif _args_[6] == 1:
+        def _equation():
+            y = (_args_[4] - _args_[5]) // ((_args_[3] - _args_[2]) * _args_[1])
+            ans = max(_args_[5] // y, y)
+    elif _args_[6] == 2:
+        def _equation():
+            ans = _args_[5] // ((_args_[4] - _args_[5]) // ((_args_[3] - _args_[2]) * _args_[1]))
+    else:
+        def _equation():
+            ans = (_args_[4] - _args_[5]) // ((_args_[3] - _args_[2]) * _args_[1])
+
+    return _equation
 
 
+# 4
+# TODO : 이 부분은 autoregressive 로 구현해야 함
 @equations.register
-def n_comb(n, *L):
+def order_by_comp(*_args_):
     """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 {n}자리 수의 수
+    {2k} < {2k+1} 일 때, 가장 {0}인 사람은?
+    :param
+        {0}  :  0 - 가장 작은
+                1 - 가장 큰
+        {1~} : 토큰
     """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, L))),
-        f"ans = math.perm(len(L) - 1, {n} - 1) * (len(L) - 1) ",
-        "if 0 in L ",
-        f"else math.perm(len(L), {n})"
-    ])
+
+    if _args_[0] == 0:
+        def _equation():
+            L = _args_[1:]
+            names = {name: True for name in L}
+            for i in range(0, len(L), 2):
+                names[L[i]] = False
+            ans = [name for name in names.keys() if name[name]][0]
+    else:
+        def _equation():
+            L = _args_[1:]
+            names = {name: True for name in L}
+            for i in range(0, len(L), 2):
+                names[L[i]] = False
+            ans = [name for name in names.keys() if name[name]][-1]
+
+    return _equation
 
 
+# 5
 @equations.register
-def c_sum_in_range_n_is_m(c, n, m):
+def half_sub(*_args_):
     """
-     > 1부터 n까지의 수 중 c개의 수를 동시에 뽑아 그 합이 m이 되는 경우의 수
+    길이가 {0}인 철사로 직사각형을 만들었더니 철사가 남지도 모자라지도 않았습니다.
+    직사각형의 가로 길이가 {1}일 때, 세로 길이는 몇 cm입니까?
     """
-    return "".join([
-        f"L = range(1, {n})\n",
-        "ans = len(list(filter(",
-        f"lambda e: e == {m}, ",
-        "map(",
-        "sum, ",
-        f"itertools.combinations(L, {c})",
-        ")",
-        ")))"
-    ])
+
+    def _equation():
+        ans = _args_[0] // 2 - _args_[1]
+
+    return _equation
 
 
+# 6
 @equations.register
-def wrong_multiplication_less(n, d, a, b, A, B):
-    """
-    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
-    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 작은 수
-    """
-
-    # (X + ( b - a ) * d) * Y = A
-    # X * Y + ( b - a ) * d * Y = A
-
-    # X * Y = B
-    # B + ( b - a ) * d * Y = A
-
-    # Y = ( A - B ) // ( ( b - a ) * d )
-
-    return "".join([
-        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
-        f"X = {B} // Y\n",
-        "ans = min(X, Y)"
-    ])
-
-
-@equations.register
-def wrong_multiplication_greater(n, d, a, b, A, B):
-    """
-    > {n} 자리수 X, Y중 한 수의 {d}의 자리 숫자 {a}를 {b}로 잘못 보고 계산하여
-    > {A}를 얻었다. 올바르게 계산한 값이 {B}일 때 X, Y 중 큰 수
-    """
-
-    return "".join([
-        f"Y = ( {A} - {B} ) // ( ( {b} - {a} ) * {d} )\n",
-        f"X = {B} // Y\n",
-        "ans = max(X, Y)"
-    ])
-
-
-# NOTE:
-# 모델이 '#1 무겁다 #2', '#1 가볍다 #2'에 따라 순서만 바꿔서 넣을 수 있도록 하겠습니다.
-# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 가벼운 사람은 누구인가?'라면
-# equation 호출은 'order_least #2 #1 #2 #3' 이런식으로.
-@equations.register
-def order_least(*pairs):
-    """
-    > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(lambda e: "'" + str(e) + "'", pairs))),
-        "names = { name: True for name in L }\n",
-        "for i in range(0, len(L), 2): names[L[i]] = False\n",
-        "ans = [ name for name in names.keys() if names[name] ][0]"
-    ])
-
-
-# 문제가 '#1 은 #2보다 가볍다. #2 는 #3보다 무겁다. 가장 무거운 사람은 누구입니까?'라면
-# equation 호출은 'order_greatest #2 #1 #2 #3' 이런식으로.
-@equations.register
-def order_greatest(*pairs):
-    """
-    > pairs[2k] < pairs[2k+1]를 만족하도록 들어온다.
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(lambda e: "'" + str(e) + "'", pairs))),
-        "names = { name: True for name in L }\n",
-        "for i in range(1, len(L), 2): names[L[i]] = False\n",
-        "ans = [ name for name in names.keys() if names[name] ][0]"
-    ])
-
-
-@equations.register
-def a_div_two_sub_b(a, b):
-    return f"ans = {a} // 2 - {b}"
-
-
-# it accepts an id. if it is not provided, use the function name.
-# the name must be unique.
-@equations.register
-def eqn_sum(*args):
+def eqn_sum1(*_args_):
     # return variable is ALWAYS [ans].
-    return 'ans = sum([{}])'.format(', '.join(map(str, args)))
+    def _equation():
+        ans = sum(_args_)
+    # return 'ans = sum([{}])'.format(', '.join(map(str, args)))
+
+
+# def eqn_sum2(*_args_):
 
 
 @equations.register
@@ -413,3 +413,12 @@ def select_small_from_three(*args):
 @equations.register
 def num_sequence_with_diff(start, diff, length):
     return 'ans = [{}]'.format(','.join(map(str, [start + diff * i for i in range(length)])))
+
+
+if __name__ == "__main__":
+    def eval_eq(eq):
+        eq += '\nprint(ans)'
+        exec(eq)
+
+
+    eval_eq(diff_perm(1, [22, 33], 2))

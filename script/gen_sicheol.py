@@ -24,12 +24,14 @@ def prob030101(sel, pl, clskey):
     numN_k = pl.randint(2, n)
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
     envdict.update({ 'c': numN_k })
 
     body = ''
 
-    question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    question = '{nums}'
     question += f" 중{random.choice(['','에서'])} "
     question += random.choice([
         "서로 다른 숫자 {c.to_korunit()} 개",
@@ -52,7 +54,7 @@ def prob030101(sel, pl, clskey):
         "를 쓰시오."
     ])
 
-    equation = gen.EqnRef("max_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 0)
 
     return gen.build(
             body='', 
@@ -76,12 +78,14 @@ def prob030102(sel, pl, clskey):
     numN_k = pl.randint(2, n)
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
     envdict.update({ 'c': numN_k })
 
     body = ''
 
-    question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    question = '{nums}'
     question += f" 중{random.choice(['','에서'])} "
     question += random.choice([
         "서로 다른 숫자 {c.to_korunit()} 개",
@@ -104,7 +108,7 @@ def prob030102(sel, pl, clskey):
         "를 쓰시오."
     ])
 
-    equation = gen.EqnRef("min_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 1)
 
     return gen.build(
             body='', 
@@ -143,7 +147,8 @@ def prob030103(sel, pl, clskey):
     ])
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
     envdict.update({ 'c': numN_k })
     envdict.update({ 'container': container })
     envdict.update({ 'item': item })
@@ -151,7 +156,8 @@ def prob030103(sel, pl, clskey):
     # body
     body = '{container}에 '
     body += random.choice(["숫자 ", ""])
-    body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    body += '{nums}'
     body += '{#이} '
     body += random.choice([
         "적혀 있는 ", # 둘 다 표준임...
@@ -189,7 +195,7 @@ def prob030103(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("max_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 0)
 
     return gen.build(
             body=body, 
@@ -228,7 +234,8 @@ def prob030104(sel, pl, clskey):
     ])
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
     envdict.update({ 'c': numN_k })
     envdict.update({ 'container': container })
     envdict.update({ 'item': item })
@@ -236,7 +243,8 @@ def prob030104(sel, pl, clskey):
     # body
     body = '{container}에 '
     body += random.choice(["숫자 ", ""])
-    body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    body += '{nums}'
     body += '{#이} '
     body += random.choice([
         "적혀 있는 ",
@@ -274,7 +282,7 @@ def prob030104(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("min_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 1)
 
     return gen.build(
             body=body, 
@@ -308,12 +316,14 @@ def prob030201(sel, pl, clskey):
     numN_k = pl.randint(2, n)
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
     envdict.update({ 'c': numN_k })
 
     body = ''
 
-    question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # question = ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    question = '{nums}'
     question += f" 중{random.choice(['','에서'])} "
     question += random.choice([
         "서로 다른 숫자 {c.to_korunit()} 개",
@@ -346,7 +356,7 @@ def prob030201(sel, pl, clskey):
         "{#를} 쓰시오."
     ])
 
-    equation = gen.EqnRef("max_diff_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 2)
 
     return gen.build(
             body='', 
@@ -376,7 +386,8 @@ def prob030202(sel, pl, clskey):
     # numN_k.unit = item.of('unit')
 
     # envdict
-    envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    # envdict = { f'num{i}': nums_k[i] for i in range(n) }
+    envdict = {'nums': nums_k}
     envdict.update({ 'c': numN_k })
     envdict.update({ 'container': container })
     envdict.update({ 'item': item })
@@ -390,7 +401,8 @@ def prob030202(sel, pl, clskey):
     # body
     body = '{container}에 '
     body += random.choice(["숫자 ", ""])
-    body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    # body += ', '.join('{' + f'num{i}' +'}' for i in range(n))
+    body += '{nums}'
     body += '{#이} '
     body += random.choice([
         "적혀 있는 ",
@@ -432,7 +444,7 @@ def prob030202(sel, pl, clskey):
     ])
 
     # equation
-    equation = gen.EqnRef("max_diff_from_n_comb", numN_k, *nums_k)
+    equation = gen.EqnRef("diff_perm", numN_k, nums_k, 2)
 
     return gen.build(
             body=body, 
@@ -440,7 +452,7 @@ def prob030202(sel, pl, clskey):
             equation=equation, 
 
             env=envdict)
-
+# TODO : diff_perm 에서 {1} 대신에 range 가 들어가는 문제 만들기
 @gen.problems.register
 def prob030301(sel, pl, clskey):
     """
@@ -495,7 +507,7 @@ def prob030301(sel, pl, clskey):
     question += "{c}{#는}"
     question += random.choice([
         "모두 ", 
-        ""
+        " "
     ])
     question += random.choice([
         "몇 번 써야 ",
@@ -505,7 +517,7 @@ def prob030301(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("writing_n_to_m_count_c", n_k, m_k, c_k)
+    equation = gen.EqnRef("count_from_range", n_k, m_k, c_k)
 
     return gen.build(
             body=body, 
@@ -530,7 +542,8 @@ def prob030401(sel, pl, clskey):
     c_k = pl.randint(1, L)
 
     # envdict
-    envdict = { f'n{i}': ns_k[i] for i in range(L) }
+    # envdict = { f'n{i}': ns_k[i] for i in range(L) }
+    envdict = {'ns': ns_k}
     envdict.update({ 'c': c_k })
 
     # trailing
@@ -542,7 +555,8 @@ def prob030401(sel, pl, clskey):
 
     body = ''
 
-    body += ', '.join('{' + f'n{i}' +'}' for i in range(L))
+    # body += ', '.join('{' + f'n{i}' +'}' for i in range(L))
+    body += '{ns}'
     body += f" 중{random.choice(['','에서'])} "
     body += random.choice([
         "서로 다른 숫자 {c.to_korunit()} 개",
@@ -581,7 +595,7 @@ def prob030401(sel, pl, clskey):
     question += "몇 개"
     question += question_trailing
 
-    equation = gen.EqnRef("n_comb", c_k, *ns_k)
+    equation = gen.EqnRef("diff_perm", c_k, ns_k, 3)
 
     return gen.build(
             body=body, 
@@ -663,7 +677,7 @@ def prob030501(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("c_sum_in_range_n_is_m", c_k, n_k, m_k)
+    equation = gen.EqnRef("find_sum_from_range", c_k, n_k, m_k)
 
     return gen.build(
             body=body, 
@@ -681,6 +695,7 @@ def prob030502(sel, pl, clskey):
     """
     return
 
+# TODO : X, Y 문제
 @gen.problems.register
 def prob060301(sel, pl, clskey):
     """
@@ -769,7 +784,7 @@ def prob060301(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("wrong_multiplication_less", n_k, d_k, a_k, b_k, A_k, B_k)
+    equation = gen.EqnRef("wrong_multiply", n_k, d_k, a_k, b_k, A_k, B_k, 0)
 
     return gen.build(
             body=body, 
@@ -866,7 +881,7 @@ def prob060302(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("wrong_multiplication_greater", n_k, d_k, a_k, b_k, A_k, B_k)
+    equation = gen.EqnRef("wrong_multiply", n_k, d_k, a_k, b_k, A_k, B_k, 1)
 
     return gen.build(
             body=body,
@@ -1080,7 +1095,7 @@ def prob080301(sel, pl, clskey):
     ])
 
     # equation
-    equation = gen.EqnRef("a_div_two_sub_b", a_k, b_k)
+    equation = gen.EqnRef("half_sub", a_k, b_k)
 
     return gen.build(
             body=body, 

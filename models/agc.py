@@ -1,6 +1,7 @@
 import torch
 from pytorch_lightning import LightningModule
-from models import QuestionEncoder, NamedEntityRecognition, QuestionTargetRecognition, TemplateSolver
+from models.extractor import QuestionEncoder, NamedEntityRecognition, QuestionTargetRecognition, AnswerTypeClassification
+from models.solver import TemplateSolver
 
 
 class AGCModel(LightningModule):
@@ -22,10 +23,8 @@ class AGCModel(LightningModule):
             self.encoder = QuestionEncoder()
         self.ner = NamedEntityRecognition(hidden_size, p_drop)
         self.qtr = QuestionTargetRecognition(hidden_size, p_drop)
-        # self.find_question = SentenceClassifier(hidden_size, p_drop, tokenizer.sep_token_id, tokenizer.cls_token_id)
-        # self.type_classifier = SequenceClassifier(hidden_size, n_types, p_drop)
-        # self.template_classifier = SequenceClassifier(hidden_size, n_templates, p_drop)
-        self.template_solver = TemplateSolver()
+        self.template_solver = TemplateSolver(hidden_size, p_drop)
+        self.classify_answer_type = AnswerTypeClassification(hidden_size, p_drop, self.template_solver.n_solvers)
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
@@ -37,14 +36,15 @@ class AGCModel(LightningModule):
         return features
 
     def get_action_results(self, batch):
+        print(batch)
         features = self(batch)
         # ner_outputs, ner_loss = self.ner(batch, features)
         qtr_outputs, qtr_loss, qtr_accuracy = self.qtr(batch, features)
 
-        # question_outputs, question_loss, question_accuracy = self.find_question(batch, features)
-        # type_outputs, type_loss = self.type_classifier(features)
+        answer_types, answer_type_loss, answer_type_accuracy = self.classify_answer_type(batch, features)
+        solve_outputs, solve_loss, solve_accuracy = self.template_solver(batch, features, answer_types)
 
-        loss = qtr_loss
+        loss = qtr_loss + answer_type_loss + solve_loss
 
         return qtr_outputs, loss, qtr_accuracy
 

@@ -1,8 +1,8 @@
 import fire
-from transformers import AutoModel, AutoTokenizer, ElectraForTokenClassification, ElectraTokenizer, BertForNextSentencePrediction
+from transformers import AutoModel, AutoTokenizer
 from pytorch_lightning import Trainer
 
-from agc_model import AGCModel
+from models.agc import AGCModel
 from data.datamodule import AGCDataModule
 
 

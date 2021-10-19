@@ -40,32 +40,59 @@ class TrainingPreprocessor(Preprocessor):
 
     def __call__(self, batch):
         # Shuffle question and body with [SEP] token
-        sep = ' '  # f" {self.tokenizer.sep_token} "
+        sep = ' '
         question_pos = []
         for d in batch:
-            body, question = d.pop('body'), d.pop('question')
+            body, question = d.pop('origin_body'), d.pop('origin_question')
+            t_body, t_question = d.pop('token_body'), d.pop('token_question')
 
-            sentences = [sb for b in body.replace('다.', '다.||').replace('요.', '요.||').split('||') if len(sb := b.strip()) > 0]
-            sentences.append(question)
+            sentences = [sb for b in _split_seq(body) if (sb := b.strip())] + [question]
+            t_sentences = [sb for b in _split_seq(t_body) if (sb := b.strip())] + [t_question]
 
-            random.shuffle(sentences)
+            random.shuffle(z := list(zip(sentences, t_sentences)))
+            sentences, t_sentences = zip(*z)
 
             question_pos.append(sentences.index(question))
             d['question'] = sep.join(sentences)
+            d['t_question'] = sep.join(t_sentences)
 
         batch = super(TrainingPreprocessor, self).__call__(batch)
 
-        # Make Question Targets
-        question_targets = [([0] * (s[q - 1] + 1) + [1.] * (s[q] - s[q - 1] - 1) + [0] * (len(batch['question_ids'][0]) - s[q])) for q, s in zip(
-            question_pos, batch['separator_pos'])]
-        for qts, qids in zip(question_targets, batch['question_ids']):
-            for i, qt, qid in zip(range(len(qts)), qts, qids):
-                if qt != 1:
-                    continue
+        # Map Numerics with Token
+        batch['matched_tokens'] = []
+        for question, t_question, tokens in zip(batch['question'], batch['t_question'], batch['tokens']):
+            # Calculate ltrs = list of (left, token, right) for each numeric token
+            qs = [(q[1:], '[NUM]') if q.startswith(']') else (q[2:], '[NUMS]') if q.startswith('S]') else (q, None) for q in question.split('[NUM')]
+            ltrs = [(_split_seq(qs[i][0])[-1].strip(), qs[i + 1][1], _split_seq(qs[i + 1][0])[0].strip()) for i in range(len(qs) - 1)]
 
-                if qid in self._question_suffixes:
-                    qts[i:] = [0] * (len(qts) - i)
+            t_pos = 0
+            matched_tokens = []
+            for left, token, right in ltrs:
+                lp = t_question.find(left, t_pos) if left else t_pos
+                rp = t_question.find(right, t_pos) if right else t_pos
+                if not (rp > (lp := lp + len(left)) >= 0):
+                    raise ValueError(f"err on parsing : {lp=} {rp=} {left=}, {right=}, {t_question[t_pos]=}, {t_pos=}, {t_question=}")
+
+                target = t_question[lp:rp]
+                matched_token = next((k for k in reversed(tokens.keys()) if k in target), None)
+                if not matched_token:
+                    raise ValueError(f"err on matching : {lp=} {rp=} {left=}, {right=}, {target=} {t_question[t_pos]=}, {t_pos=}, {t_question=}")
+
+                matched_tokens.append((token, matched_token, tokens[matched_token]))
+                t_pos = rp
+
+            batch['matched_tokens'].append(matched_tokens)
+
+        # Make Question Targets
+        length = len(batch['question_ids'][0])
+        question_targets = []
+        for qp, sp, qids in zip(question_pos, batch['separator_pos'], batch['question_ids']):
+            qt = [0.0] * length
+            for i in range(sp[qp - 1] + 1, sp[qp]):
+                qt[i] = 1.0
+                if qids[i] in self._question_suffixes:
                     break
+            question_targets.append(qt)
         batch['question_targets'] = _collate(question_targets)
 
         return batch
@@ -73,10 +100,6 @@ class TrainingPreprocessor(Preprocessor):
 
 def _collate(batch):
     elem = batch[0]
-    for b in batch:
-        if type(elem) != type(b):
-            return batch
-
     if isinstance(elem, float):
         return torch.tensor(batch, dtype=torch.float64)
     elif isinstance(elem, int):
@@ -84,8 +107,6 @@ def _collate(batch):
     elif isinstance(elem, str):
         return batch
     elif isinstance(elem, list):
-        # if len(elem) == 0 or isinstance(elem[0], tuple):
-        #     return batch
         try:
             return torch.as_tensor(batch)
         except ValueError:
@@ -94,3 +115,7 @@ def _collate(batch):
         return batch
     else:
         raise TypeError(f"wrong type of collate batch : {type(batch)}")
+
+
+def _split_seq(s):
+    return s.replace('다.', '다.||').replace('요.', '요.||').split('||')

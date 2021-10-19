@@ -10,9 +10,10 @@ class SequenceClassifier(nn.Module):
         self.dense = nn.Linear(hidden_size, hidden_size)
         self.activation = nn.GELU()
         self.proj = nn.Linear(hidden_size, n_labels)
-        self.loss = MaskedCrossEntropyLoss(n_labels)
+        self.loss = nn.CrossEntropyLoss()
+        self.accuracy = torchmetrics.Accuracy(num_classes=n_labels)
 
-    def forward(self, features, labels, mask):
+    def forward(self, features, labels):
         x = features[:, 0, :]
         x = self.dropout(x)
         x = self.dense(x)
@@ -20,9 +21,10 @@ class SequenceClassifier(nn.Module):
         x = self.dropout(x)
         x = self.proj(x)
 
-        loss = self.loss(x, labels, mask)
+        loss = self.loss(x, labels)
+        accuracy = self.accuracy(x, labels)
 
-        return x, loss
+        return x, loss, accuracy
 
 
 class SequenceTagging(nn.Module):
