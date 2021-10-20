@@ -23,7 +23,7 @@ class AGCModel(LightningModule):
             self.encoder = QuestionEncoder()
         self.ner = NamedEntityRecognition(hidden_size, p_drop)
         self.qtr = QuestionTargetRecognition(hidden_size, p_drop)
-        self.template_solver = TemplateSolver(hidden_size, p_drop)
+        self.template_solver = TemplateSolver(hidden_size, p_drop, language_model.config)
         self.classify_answer_type = AnswerTypeClassification(hidden_size, p_drop, self.template_solver.n_solvers)
 
     def configure_optimizers(self):
@@ -36,7 +36,6 @@ class AGCModel(LightningModule):
         return features
 
     def get_action_results(self, batch):
-        print(batch)
         features = self(batch)
         # ner_outputs, ner_loss = self.ner(batch, features)
         qtr_outputs, qtr_loss, qtr_accuracy = self.qtr(batch, features)
@@ -44,9 +43,13 @@ class AGCModel(LightningModule):
         answer_types, answer_type_loss, answer_type_accuracy = self.classify_answer_type(batch, features)
         solve_outputs, solve_loss, solve_accuracy = self.template_solver(batch, features, answer_types)
 
-        loss = qtr_loss + answer_type_loss + solve_loss
+        if qtr_loss and answer_type_loss and solve_loss:
+            loss = qtr_loss + answer_type_loss + solve_loss
+            accuracy = (qtr_accuracy + answer_type_accuracy + solve_accuracy) / 3
 
-        return qtr_outputs, loss, qtr_accuracy
+            return qtr_outputs, loss, accuracy
+        else:
+            return qtr_outputs, None, None
 
     def training_step(self, batch, batch_idx):
         output, loss, accuracy = self.get_action_results(batch)

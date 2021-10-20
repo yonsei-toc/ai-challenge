@@ -1,5 +1,5 @@
 import fire
-from transformers import AutoModel, AutoTokenizer
+from transformers import ElectraModel, ElectraTokenizerFast
 from pytorch_lightning import Trainer
 
 from models.agc import AGCModel
@@ -7,10 +7,10 @@ from data.datamodule import AGCDataModule
 
 
 def init_language(model_name):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
     tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", "[NAME]"]})
 
-    language_model = AutoModel.from_pretrained(model_name)
+    language_model = ElectraModel.from_pretrained(model_name)
     language_model.resize_token_embeddings(len(tokenizer.vocab))
     return tokenizer, language_model
 

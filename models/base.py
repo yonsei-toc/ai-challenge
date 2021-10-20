@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchmetrics
+from transformers.models.electra.modeling_electra import ElectraLayer
 
 
 class SequenceClassifier(nn.Module):
@@ -21,10 +22,12 @@ class SequenceClassifier(nn.Module):
         x = self.dropout(x)
         x = self.proj(x)
 
-        loss = self.loss(x, labels)
-        accuracy = self.accuracy(x, labels)
+        if labels is not None:
+            loss = self.loss(x, labels)
+            accuracy = self.accuracy(x, labels)
 
-        return x, loss, accuracy
+            return x, loss, accuracy
+        return x, None, None
 
 
 class SequenceTagging(nn.Module):
@@ -38,9 +41,12 @@ class SequenceTagging(nn.Module):
         x = self.dropout(features)
         x = self.classifier(x)
 
-        loss = self.loss(x, labels, mask)
+        if labels is not None:
+            loss = self.loss(x, labels, mask)
+            accuracy = 0
 
-        return x, loss
+            return x, loss, accuracy
+        return x, None, None
 
 
 class BinaryTagging(nn.Module):
@@ -54,10 +60,23 @@ class BinaryTagging(nn.Module):
         x = self.dropout(features)
         x = self.proj(x).squeeze(-1)
 
-        loss_fct = nn.BCEWithLogitsLoss(pos_weight=mask)
-        loss = loss_fct(x, labels)
-        accuracy = self.accuracy(x.sigmoid(), labels == 1)
-        return x, loss, accuracy
+        if labels is not None:
+            loss_fct = nn.BCEWithLogitsLoss(pos_weight=mask)
+            loss = loss_fct(x, labels)
+            accuracy = self.accuracy(x.sigmoid(), labels == 1)
+
+            return x, loss, accuracy
+        return x, None, None
+
+
+class AttentionLayer(nn.Module):
+    def __init__(self, config):
+        super(AttentionLayer, self).__init__()
+
+        self.layer = ElectraLayer(config=config)
+
+    def forward(self, features, mask):
+        return self.layer(features, attention_mask=mask[:, None, None, :])[0]
 
 
 class MaskedCrossEntropyLoss(nn.Module):
@@ -76,3 +95,28 @@ class MaskedCrossEntropyLoss(nn.Module):
 
         loss = self.ce_loss(active_logits, active_labels)
         return loss
+
+
+class SingleTokenMatcher(nn.Module):
+    def __init__(self, hidden_size, p_drop):
+        super(SingleTokenMatcher, self).__init__()
+
+        self.dropout = nn.Dropout(p_drop)
+        self.dense = nn.Linear(hidden_size, hidden_size)
+        self.activation = nn.GELU()
+        self.proj = nn.Linear(hidden_size, 1)
+        self.loss = nn.CrossEntropyLoss()
+
+    def forward(self, features, labels):
+        x = self.dropout(features)
+        x = self.dense(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        x = self.proj(x).squeeze(-1)
+        output = x.argmax(-1)
+
+        if labels is not None:
+            loss = self.loss(x.unsqueeze(0), labels)
+            accuracy = (output == labels).float()
+            return output, loss, accuracy
+        return output, None, None

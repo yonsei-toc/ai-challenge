@@ -910,7 +910,8 @@ def prob070301(sel, pl, clskey):
     names_k = pl.sample([ sel.get(clskey.name) for _ in range(n) ], n)
 
     # envdict
-    envdict = { f'name{i}': names_k[i] for i in range(n) }
+    # envdict = { f'name{i}': names_k[i] for i in range(n) }
+    envdict = {'names': names_k}
     envdict.update({ 'n': n_k })
     envdict.update({ 'order': order })
 
@@ -957,7 +958,7 @@ def prob070301(sel, pl, clskey):
     ])
 
     equation = gen.EqnRef(
-        "order_least", 
+        "order_by_comp", 0,
         *[ names_k[pair[i]] for pair in pairs for i in range(2) ])
 
     return gen.build(
@@ -1032,7 +1033,7 @@ def prob070302(sel, pl, clskey):
     ])
 
     equation = gen.EqnRef(
-        "order_greatest", 
+        "order_by_comp", 1,
         *[ names_k[pair[i]] for pair in pairs for i in range(2) ])
 
     return gen.build(

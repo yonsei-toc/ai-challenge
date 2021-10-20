@@ -83,16 +83,13 @@ def diff_perm(*_args_):
 
     if _args_[2] == 0:
         def _equation():
-            ans = max(
-                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = max(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
     elif _args_[2] == 1:
         def _equation():
-            ans = min(
-                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = min(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
     elif _args_[2] == 2:
         def _equation():
-            ans = list(
-                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = list(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
             ans = max(ans) - min(ans)
     else:
         def _equation():
