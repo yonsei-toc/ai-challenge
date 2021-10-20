@@ -36,15 +36,17 @@ class TemplateSolver(nn.Module):
             target_features = features[batch_mask, :]
             if target_features.size(0) == 0:
                 continue
+
             target_num = [n for n, m in zip(num_features, batch_mask) if m]
             target_nums = [n for n, m in zip(nums_features, batch_mask) if m]
-            solve_output, solve_loss, solve_accuracy = solver(batch, target_features,
-                                                              target_num, target_nums, batch_mask)
+            equation_targets = [e for e, m in zip(batch['equation_targets'], batch_mask) if m]
+
+            solve_output, solve_loss, solve_accuracy = solver(batch, target_features, target_num, target_nums,
+                                                              equation_targets, batch_mask)
             solve_outputs.append(solve_output)
             if solve_loss is not None:
                 loss.append(solve_loss)
                 accuracy.append(solve_accuracy)
-            break
 
         loss = torch.stack(loss)
         accuracy = torch.stack(accuracy)
@@ -92,51 +94,39 @@ class _DiffPerm(_Equation):
         self.match_nums = base.SingleTokenMatcher(hidden_size, p_drop)
         self.match_type = base.SequenceClassifier(hidden_size, 4, p_drop)
 
-    def forward(self, batch, features, num_features, nums_features, batch_mask):
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         loss, accuracy = [], []
 
         # Match Number Token Output
         equation_outputs = []
-        equation_targets = batch['equation_targets']
-        for i, (num_feature, nums_feature) in enumerate(zip(num_features, nums_features)):
-            num_0, nums_1 = None, None
-            if num_feature is not None and num_feature.size(0) > 1:
-                if equation_targets is None:
-                    num_0, _, _ = self.match_num(num_feature, None)
-                else:
-                    num_0, loss_0, accuracy_0 = self.match_num(num_feature, equation_targets[i][0])
-                    loss.append(loss_0)
-                    accuracy.append(accuracy_0)
+        for i, fs in enumerate(zip(num_features, nums_features)):
+            equation_output = [None, None]
+            for ep, feature, match in zip((0, 1), fs, (self.match_num, self.match_nums)):
+                if feature is not None and feature.size(0) > 1:
+                    if targets is None:
+                        _output, _, _ = self.match_num(feature, None)
+                    else:
+                        _output, _loss, _accuracy = self.match_num(feature, targets[i][ep])
+                        loss.append(_loss)
+                        accuracy.append(_accuracy)
+                    equation_output[ep] = _output
 
-            if nums_feature is not None and nums_feature.size(0) > 1:
-                if equation_targets is None:
-                    nums_1, _, _ = self.match_nums(nums_feature, None)
-                else:
-                    nums_1, loss_1, accuracy_1 = self.match_nums(nums_feature, equation_targets[i][1])
-                    loss.append(loss_1)
-                    accuracy.append(accuracy_1)
-
-            if num_0 is None and nums_1 is None:
-                equation_output = torch.tensor([0, 0]).type_as(features).int()
-            elif num_0 is None:
-                equation_output = nums_1.repeat(2)
-                equation_output[0] = 0
-            elif nums_1 is None:
-                equation_output = num_0.repeat(2)
-                equation_output[1] = 0
-            else:
-                equation_output = torch.stack((num_0, nums_1))
-            equation_outputs.append(equation_output)
+            equation_output = [eo if eo is not None else torch.zeros(1).type_as(features).int().squeeze() for eo in equation_output]
+            equation_outputs.append(torch.stack(equation_output))
         equation_outputs = torch.stack(equation_outputs)
 
         # Match Equation Subtype
-        if equation_targets is None:
+        if targets is None:
             x, _, _ = self.match_type(features, None)
+
+            loss = None
+            accuracy = None
         else:
-            label_2 = torch.stack([e[2].squeeze() for e in equation_targets])[batch_mask]
+            label_2 = torch.stack([t[2].squeeze() for t in targets])
             x, loss_2, accuracy_2 = self.match_type(features, label_2)
-            loss = torch.mean(torch.stack(loss))
-            accuracy = torch.stack(accuracy)
+
+            loss = (torch.mean(torch.stack(loss)) * 2 + loss_2) / 3
+            accuracy = (torch.mean(torch.stack(accuracy)) * 2 + accuracy_2) / 3
 
         x = x.argmax(-1)
         equation_outputs = torch.cat((equation_outputs, x.unsqueeze(-1)), -1)
