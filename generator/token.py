@@ -145,6 +145,25 @@ class NumberToken(Token):
         return korutil.num2korord(self.value)
 
 
+class ListToken(Token):
+    def __init__(self, token_id, value):
+        super(ListToken, self).__init__(token_id)
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def text(self):
+        return str(self._value)[1:-1].strip()
+
+    def __repr__(self):
+        return repr(self._value)
+
+    def __str__(self):
+        return self.text
+
 
 class TokenPool():
     def __init__(self):
@@ -167,7 +186,8 @@ class TokenPool():
             raise RuntimeError("Unknown type: {}".format(repr(obj)))
 
     def sample(self, lst, k=1):
-        return list(map(self.new, random.sample(lst, k=k)))
+        # return ListToken(self._get_token_id(), list(map(self.new, random.sample(lst, k=k))))
+        return ListToken(self._get_token_id(), random.sample(lst, k=k))
 
     def randint(self, start, end=None):
         return self.new(random.randint(start, end))

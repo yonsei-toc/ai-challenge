@@ -4,7 +4,7 @@ from data.preprocessor import TrainingPreprocessor
 
 
 class AGCDataModule(LightningDataModule):
-    def __init__(self, tokenizer, max_seq_len, n_aug_per_question=3, split=None, batch_size=32):
+    def __init__(self, tokenizer, max_seq_len, n_aug_per_question=3, split=None, batch_size=32, wrap_numeric=2):
         super(AGCDataModule, self).__init__()
         self.n_aug_per_question = n_aug_per_question
         self.batch_size = batch_size
@@ -13,7 +13,7 @@ class AGCDataModule(LightningDataModule):
         self.test_dataset = None
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
-        self.train_preprocessor = TrainingPreprocessor(self.tokenizer, self.max_seq_len)
+        self.train_preprocessor = TrainingPreprocessor(self.tokenizer, self.max_seq_len, wrap_numeric)
 
     def setup(self, stage=None):
         if stage == "fit":
