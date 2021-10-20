@@ -238,7 +238,7 @@ def eq_c5p3(n1, n2, n3, n4, n5):
     # range -> 한 자리 수 범위
     # cand이 여러 후보군이 될 수 있음에 따라 indexing
     # 자릿수에 해당 -> 100,10 등을 곱함
-    return f'''cand = [(var1,var2,var3,var4) for var1 in range(10) for var2 in range(10) for var3 in range(10) for var4 in range(10) if {n1}*100 + var1*10 + {n2} + var2*100 + {n3}*10 + var3 == var4*100 + {n4}*10 + {n5} and var1!=var2!=var3!=var4]
+    return f'''cand = [(var1,var2,var3,var4) for var1 in range(10) for var2 in range(1,10) for var3 in range(10) for var4 in range(1,10) if {n1}*100 + var1*10 + {n2} + var2*100 + {n3}*10 + var3 == var4*100 + {n4}*10 + {n5} and len({{var1,var2,var3,var4}})==4]
 (var1,var2,var3,var4)=cand[0]
 ans = var4'''
 
@@ -271,8 +271,8 @@ def eq_c7p5(t1, t2, t3, t4, t5, index):
 
 
 @equations.register
-def eq_c8p5(e1, e2, n1, n2):
-    return f'''{e2}={n1} // (2 * ({n2}+1)); {e1} = {e2}*{n2}; ans = {e1}'''
+def eq_c8p5(n1, n2):
+    return f'''e2={n1} // (2 * ({n2}+1)); e1 = e2*{n2}; ans = e1'''
 
 
 @equations.register
@@ -434,6 +434,42 @@ def prob08_04(*args):
     dict_edge = {"한": 1, "두": 2, "세": 3}
 
     return 'ans = "%.2f" % float((({}/{})*{}) / {})'.format(args[2], dict_edge[args[3]], dict[args[0]], dict[args[1]])
+
+
+@equations.register
+def eqn02_1(lists, idx):
+    return 'ans = {}[{}-1]'.format(lists, idx)
+
+
+@equations.register
+def eqn02_2(rank2, rank1):
+    return 'ans = range(min({},{}), max({},{}))[0]+1'.format(rank2, rank1, rank2, rank1)
+
+
+@equations.register
+def eqn02_3(order1, n_people_btw):
+    return 'ans = {}+{}+1'.format(order1, n_people_btw)
+
+
+@equations.register
+def eqn02_4(idx_left, idx_right, idx_front, idx_down):
+    return 'ans = ({}+{}-1)*({}+{}-1)'.format(idx_left, idx_right, idx_front, idx_down)
+
+
+@equations.register
+def eqn02_5(idx_left_k, idx_right_k, n_floors, n_shelves_k):
+    return 'ans = ({}+{}-1)*{}*{}'.format(idx_left_k, idx_right_k, n_floors, n_shelves_k)
+
+
+@equations.register
+def eqn07_2(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, *variables):
+    return f'ans = {variables}' + '[[{},{},{},int({}*{})].index(max({},{},{},int({}*{})))]'.format(n1, n1, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12,
+                                                                                                   n13, n14, n15, n16)
+
+
+@equations.register
+def eqn08_2(length_k, n_k):
+    return 'ans = {}*({}+3)'.format(length_k, n_k)
 
 
 if __name__ == "__main__":

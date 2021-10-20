@@ -2,6 +2,7 @@ import generator.exports as gen
 
 import string
 
+
 def build_dictionary(dictionary, clskey):
     # add mappings; use distinct keys!
     clskey.container = 'entity.container'
@@ -29,16 +30,15 @@ def build_dictionary(dictionary, clskey):
     clskey.alpha = 'entity.alpha'
     clskey.edge = 'entity.edge'
 
-    clskey.liquid   = 'entity.liquid'
-    clskey.drink    = 'entity.drink'
-    #clskey.jshape  = 'entity.jshape'
-    #clskey.num     = 'entity.num'
+    clskey.liquid = 'entity.liquid'
+    clskey.drink = 'entity.drink'
+    # clskey.jshape  = 'entity.jshape'
+    # clskey.num     = 'entity.num'
 
     # groups
     clskey.fruit_group = 'group.fruit'
     clskey.animal_group = 'group.animal'
     clskey.flower_group = 'group.flower'
-
     clskey.school_group = 'group.school'
     clskey.gender_group = 'group.gender'
     clskey.age_group = 'group.age'
@@ -288,7 +288,7 @@ def build_dictionary(dictionary, clskey):
     dictionary.add_token(clskey.length_unit, gen.DictItem('mm', factor=0.001, kor="밀리미터", symbol="㎜"))
 
     dictionary.add_token(clskey.volume_unit, gen.DictItem('kl', factor=1000, kor="킬로리터", symbol="㎘"))
-    dictionary.add_token(clskey.volume_unit, gen.DictItem('l', factor=1, kor="리터", symbol="ℓ")	)
+    dictionary.add_token(clskey.volume_unit, gen.DictItem('l', factor=1, kor="리터", symbol="ℓ"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('ml', factor=0.001, kor="밀리리터", symbol="㎖"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('m3', factor=1000, kor="세제곱미터", symbol="㎥"))
     dictionary.add_token(clskey.volume_unit, gen.DictItem('cm3', factor=0.001, kor="세제곱센티미터", symbol="㎤"))
@@ -305,13 +305,12 @@ def build_dictionary(dictionary, clskey):
     # dictionary.add_token(clskey.big_or_small, gen.DictItem('큰'))
     # dictionary.add_token(clskey.big_or_small, gen.DictItem('작은'))
 
-
     dictionary.add_token(clskey.ord_rel, gen.DictItem('크', reverse='작', var='큽니', reverse_var='작습니', adv='큰', reverse_adv='작은'))
     dictionary.add_token(clskey.ord_rel, gen.DictItem('무겁', reverse='가볍', var='무겁습니', reverse_var='가볍습니', adv='무거운', reverse_adv='가벼운'))
     dictionary.add_token(clskey.ord_rel, gen.DictItem('빠르', reverse='느리', var='빠릅니', reverse_var='느립니', adv='빠른', reverse_adv='느린'))
-    # dictionary.add_token(clskey.ord_rel, gen.DictItem('높', reverse='낮', var='높습니', reverse_var='낮습니', adv='높은', reverse_adv='낮은'))
-    # dictionary.add_token(clskey.ord_rel, gen.DictItem('많', reverse='적', var='많습니', reverse_var='적습니', adv='많은', reverse_adv='적은'))
-    # dictionary.add_token(clskey.ord_rel, gen.DictItem('길', reverse='짧', var='깁니', reverse_var='짧습니', adv='긴', reverse_adv='짧은'))
+    dictionary.add_token(clskey.ord_rel, gen.DictItem('높', reverse='낮', var='높습니', reverse_var='낮습니', adv='높은', reverse_adv='낮은'))
+    dictionary.add_token(clskey.ord_rel, gen.DictItem('많', reverse='적', var='많습니', reverse_var='적습니', adv='많은', reverse_adv='적은'))
+    dictionary.add_token(clskey.ord_rel, gen.DictItem('길', reverse='짧', var='깁니', reverse_var='짧습니', adv='긴', reverse_adv='짧은'))
 
     # dictionary.add_token(clskey.ord_rel, gen.DictItem('오른', reverse=['왼']))
     # dictionary.add_token(clskey.ord_rel, gen.DictItem('앞', reverse=['뒤']))
@@ -320,9 +319,26 @@ def build_dictionary(dictionary, clskey):
 
     clskey.writable = 'entity.writable'
 
+    clskey.subject = 'entity.subject'
+    clskey.rank = 'entity.rank'
+    clskey.race = 'entity.race'
+    clskey.person = 'entity.person'
+    clskey.shelf = 'entity.shelf'
+    clskey.book = 'entity.book'
+    clskey.bookstore = 'entity.bookstore'
+    clskey.floor = 'entity.floor'
+    clskey.diagram = 'entity.diagram'
+    clskey.location = 'entity.location'
+
+    clskey.jshape = 'entity.jshape'
+    clskey.side = 'entity.side'
+    clskey.field = 'entity.field'
+
     ######## ADJUST HIERARCHY ########
 
     dictionary.set_child_relation(clskey.item, clskey.writable)
+    dictionary.set_child_relation(clskey.tool, clskey.side)
+    dictionary.set_child_relation(clskey.place, clskey.field)
 
     ######## ADD TOKENS ########
 
@@ -330,9 +346,79 @@ def build_dictionary(dictionary, clskey):
     dictionary.add_token(clskey.writable, gen.DictItem('종이', unit='장'))
     dictionary.add_token(clskey.writable, gen.DictItem('공', unit='개'))
 
+    # 교과목
+    dictionary.add_token(clskey.subject, gen.DictItem('국어'))
+    dictionary.add_token(clskey.subject, gen.DictItem('수학'))
+    dictionary.add_token(clskey.subject, gen.DictItem('영어'))
+    dictionary.add_token(clskey.subject, gen.DictItem('과학'))
+    dictionary.add_token(clskey.subject, gen.DictItem('사회'))
 
-class _Namespace():
+    # 순위에 쓸 수 있는 단위... 필요하지 않을까여?
+    dictionary.add_token(clskey.rank, gen.DictItem('등'))
+    dictionary.add_token(clskey.rank, gen.DictItem('위'))
+
+    # 체육 종목
+    dictionary.add_token(clskey.race, gen.DictItem('달리기 시합'))
+    dictionary.add_token(clskey.race, gen.DictItem('멀리뛰기 시합'))
+    dictionary.add_token(clskey.race, gen.DictItem('대회'))
+
+    # 사람
+    dictionary.add_token(clskey.person, gen.DictItem('사람'))
+    dictionary.add_token(clskey.person, gen.DictItem('학생'))
+
+    # 책장
+    dictionary.add_token(clskey.shelf, gen.DictItem('책장'))
+    dictionary.add_token(clskey.shelf, gen.DictItem('책꽂이'))
+    dictionary.add_token(clskey.shelf, gen.DictItem('선반'))
+
+    # 책
+    dictionary.add_token(clskey.book, gen.DictItem('영어책', unit='권'))
+    dictionary.add_token(clskey.book, gen.DictItem('책', unit='권'))
+    dictionary.add_token(clskey.book, gen.DictItem('공책', unit='권'))
+    dictionary.add_token(clskey.book, gen.DictItem('서적', unit='권'))
+    dictionary.add_token(clskey.book, gen.DictItem('도서', unit='권'))
+
+    # 도서관
+    dictionary.add_token(clskey.bookstore, gen.DictItem('도서관'))
+    dictionary.add_token(clskey.bookstore, gen.DictItem('서점'))
+    dictionary.add_token(clskey.bookstore, gen.DictItem('문구점'))
+    dictionary.add_token(clskey.bookstore, gen.DictItem('교실'))
+
+    # 층
+    dictionary.add_token(clskey.floor, gen.DictItem('칸'))
+    dictionary.add_token(clskey.floor, gen.DictItem('층'))
+
+    # 도형
+    dictionary.add_token(clskey.diagram, gen.DictItem('정삼각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정사각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정오각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정육각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정칠각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정팔각형'))
+    dictionary.add_token(clskey.diagram, gen.DictItem('정구각형'))
+
+    # 장소2
+    dictionary.add_token(clskey.location, gen.DictItem('계단'))
+    dictionary.add_token(clskey.location, gen.DictItem('운동장'))
+    dictionary.add_token(clskey.location, gen.DictItem('복도'))
+    dictionary.add_token(clskey.location, gen.DictItem('카페'))
+
+    dictionary.add_token(clskey.jshape, gen.DictItem('정사각형'))
+    dictionary.add_token(clskey.jshape, gen.DictItem('정삼각형'))
+    dictionary.add_token(clskey.jshape, gen.DictItem('정팔각형'))
+    dictionary.add_token(clskey.jshape, gen.DictItem('정오각형'))
+
+    dictionary.add_token(clskey.side, gen.DictItem('종이'))
+    dictionary.add_token(clskey.side, gen.DictItem('포장지'))
+
+    dictionary.add_token(clskey.field, gen.DictItem('경기장'))
+    dictionary.add_token(clskey.field, gen.DictItem('운동장'))
+    dictionary.add_token(clskey.field, gen.DictItem('극장'))
+
+
+class _Namespace:
     def __init__(self): pass
+
 
 clskey = _Namespace()
 dictionary = gen.Dictionary()

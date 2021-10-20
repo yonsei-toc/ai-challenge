@@ -16,26 +16,15 @@ def randreal(st, ed, *, ndigits = 2):
     else:
         return round(random.uniform(st, ed), ndigits=ndigits)
 
-
-# it accepts an id. if it is not provided, use the function name.
-# the name must be unique.
-@gen.equations.register('sum')
-def eqn00(*args):
-    # return variable is ALWAYS [ans].
-    return 'ans = sum({})'.format(repr(args))
-
-
 ######################################################################################
 ################################## problem 01 ########################################
-@gen.equations.register('eqn02_1')
-def eqn02_1(lists, idx):
-    return 'ans = {}[{}-1]'.format(lists, idx)
+
 
 @gen.problems.register
 def prob02_1_1(selector, tokenpool, clskey):
-    ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다. 
+    ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다.
     3번째로 시험을 본 과목은 무엇입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -83,7 +72,7 @@ def prob02_1_1(selector, tokenpool, clskey):
 def prob02_1_2(selector, tokenpool, clskey):
     ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다. 
     어떤 과목을 3번째로 보았습니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -131,7 +120,7 @@ def prob02_1_2(selector, tokenpool, clskey):
 def prob02_1_3(selector, tokenpool, clskey):
     ''' 정국이는 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다. 
     정국이가 3번째로 시험을 본 과목은 무엇입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -428,7 +417,7 @@ def prob02_1_8(selector, tokenpool, clskey):
         sent3 = '것'
         sent4 = '어느 것'
         order_lists=[selector.get(clskey.wire) for _ in range(n)] # 선
-    
+
     rand_num = random.randrange(2)
     if rand_num == 0:
             exp1 = exp1.of("adv")
@@ -462,7 +451,7 @@ def prob02_1_8(selector, tokenpool, clskey):
                 sent2=sent2,
                 sent3=sent3,
                 sent4=sent4,
-                sent5=sent5, 
+                sent5=sent5,
                 exp1=exp1,
 
                 sent_trailing=sent_trailing,
@@ -541,7 +530,7 @@ def prob02_1_9(selector, tokenpool, clskey):
         sent3 = '것'
         sent4 = '어느 것'
         order_lists=[selector.get(clskey.wire) for _ in range(n)] # 선
-    
+
     rand_num = random.randrange(2)
     if rand_num == 0:
             exp1 = exp1.of("adv")
@@ -577,7 +566,7 @@ def prob02_1_9(selector, tokenpool, clskey):
                 sent2=sent2,
                 sent3=sent3,
                 sent4=sent4,
-                sent5=sent5, 
+                sent5=sent5,
                 exp1=exp1,
 
                 sent_trailing=sent_trailing,
@@ -596,16 +585,13 @@ def prob02_1_9(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 02 ########################################
-@gen.equations.register('eqn02_2')
-def eqn02_2(rank2, rank1):
-    return 'ans = range(min({},{}), max({},{}))[0]+1'.format(rank2, rank1, rank2, rank1)
 
 @gen.problems.register
 def prob02_2_1(selector, tokenpool, clskey):
     ''' 달리기 시합에서 정국이는 7등을 했고, 민영이는 5등을 했습니다. 태형이는 민영이보다
     못했지만 정국이보다는 잘했습니다.  
     태형이는 몇 등입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -638,7 +624,7 @@ def prob02_2_1(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -690,7 +676,7 @@ def prob02_2_2(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -742,7 +728,7 @@ def prob02_2_3(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -783,9 +769,9 @@ def prob02_2_4(selector, tokenpool, clskey):
 
     rank1 = random.choice([rank1_, rank2_])
     rand_num = random.randrange(5)
-    speed_exp = [ 
+    speed_exp = [
         ['빨랐', '느렸'],  ['잘했', '못했'], ['빨리 들어왔', '뒤에 들어왔'],
-        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔'] 
+        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔']
     ]
     if rank1 == rank1_:
         rank2 = rank2_
@@ -815,7 +801,7 @@ def prob02_2_4(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -848,7 +834,7 @@ def prob02_2_5(selector, tokenpool, clskey):
     sent2 = random.choice(['했습니다. ', '했고, '])
     sent3 = random.choice(['습니다. ', '을 때, '])
     sent4 = random.choice([' ', '는 '])
-    
+
     # new variables
     race = selector.get(clskey.race)
     rank_name = selector.get(clskey.rank)
@@ -863,9 +849,9 @@ def prob02_2_5(selector, tokenpool, clskey):
 
     rank1 = random.choice([rank1_, rank2_])
     rand_num = random.randrange(5)
-    speed_exp = [ 
+    speed_exp = [
         ['빨랐', '느렸'],  ['잘했', '못했'], ['빨리 들어왔', '뒤에 들어왔'],
-        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔'] 
+        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔']
     ]
     if rank1 == rank1_:
         rank2 = rank2_
@@ -879,7 +865,7 @@ def prob02_2_5(selector, tokenpool, clskey):
         name2 = name1_
         speed_1 = speed_exp[rand_num][1]
         speed_2 = speed_exp[rand_num][0]
-        
+
     rank1_k = tokenpool.new(rank1)
     rank2_k = tokenpool.new(rank2)
     name1_k = tokenpool.new(name1)
@@ -895,7 +881,7 @@ def prob02_2_5(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -930,7 +916,7 @@ def prob02_2_6(selector, tokenpool, clskey):
     sent2 = random.choice(['했습니다. ', '했고, '])
     sent3 = random.choice(['습니다. ', '을 때, '])
     sent4 = random.choice([' ', '는 '])
-    
+
     # new variables
     race = selector.get(clskey.race)
     rank_name = selector.get(clskey.rank)
@@ -945,9 +931,9 @@ def prob02_2_6(selector, tokenpool, clskey):
 
     rank1 = random.choice([rank1_, rank2_])
     rand_num = random.randrange(5)
-    speed_exp = [ 
+    speed_exp = [
         ['빨랐', '느렸'],  ['잘했', '못했'], ['빨리 들어왔', '뒤에 들어왔'],
-        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔'] 
+        ['먼저 들어왔', '늦게 들어왔'], ['일찍 들어왔', '늦게 들어왔']
     ]
     if rank1 == rank1_:
         rank2 = rank2_
@@ -979,7 +965,7 @@ def prob02_2_6(selector, tokenpool, clskey):
 
             question='{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -1014,7 +1000,7 @@ def prob02_2_7(selector, tokenpool, clskey):
     sent2 = random.choice(['했습니다. ', '했고, '])
     sent3 = random.choice(['습니다. ', '을 때, '])
     sent4 = random.choice([' ', '는 '])
-    
+
     # new variables
     race = selector.get(clskey.race)
     rank_name = selector.get(clskey.rank)
@@ -1051,7 +1037,7 @@ def prob02_2_7(selector, tokenpool, clskey):
             ]),
             question='{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -1080,7 +1066,7 @@ def prob02_2_8(selector, tokenpool, clskey):
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
     ques_trailing = random.choice(['습니까?', '는지 구하시오.', '는지 구하세요.', '는지 구해 보세요.', '는가?'])
-    
+
     # new variables
     max_rank = 100
     rank1 = random.randint(3, max_rank) # 7등
@@ -1108,14 +1094,14 @@ def prob02_2_8(selector, tokenpool, clskey):
             f'{[rank2, gen.korutil.num2korord(rank2)][rand_num]}번째에 있다면 '\
             '{name3}{#이?}는 몇 번째에 있{ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 rank1=rank1_k,
                 rank2=rank2_k,
                 name1=name1_k,
                 name2=name2_k,
                 name3=name3_k,
-                
+
                 ques_trailing=ques_trailing
             ))
 
@@ -1132,7 +1118,7 @@ def prob02_2_9(selector, tokenpool, clskey):
     sent2 = random.choice(['했습니다. ', '했고, '])
     sent3 = random.choice(['습니다. ', '을 때, '])
     sent4 = random.choice([' ', '는 '])
-    
+
     # new variables
     race = selector.get(clskey.race)
     rank_name = selector.get(clskey.rank)
@@ -1173,7 +1159,7 @@ def prob02_2_9(selector, tokenpool, clskey):
             '{name2}{#이?}보다{sent4}{speed_1}을 때, '\
             '{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -1207,7 +1193,7 @@ def prob02_2_10(selector, tokenpool, clskey):
     sent2 = random.choice(['했습니다. ', '했고, '])
     sent3 = random.choice(['습니다. ', '을 때, '])
     sent4 = random.choice([' ', '는 '])
-    
+
     # new variables
     race = selector.get(clskey.race)
     rank_name = selector.get(clskey.rank)
@@ -1235,7 +1221,7 @@ def prob02_2_10(selector, tokenpool, clskey):
         name2 = name1_
         speed_1 = speed_exp[1]
         speed_2 = speed_exp[0]
-        
+
     rank1_k = tokenpool.new(rank1)
     rank2_k = tokenpool.new(rank2)
     name1_k = tokenpool.new(name1)
@@ -1249,7 +1235,7 @@ def prob02_2_10(selector, tokenpool, clskey):
             '{name2}{#이?}보다{sent4}{speed_2} 점수를 받았습니다.',
             question='{name3}{#이?}는 몇 {rank_name}{#을} {ques_trailing}',
             equation=gen.EqnRef('eqn02_2', rank2_k, rank1_k),
-            
+
             env=gen.fnmap(
                 race=race,
                 rank_name=rank_name,
@@ -1272,16 +1258,13 @@ def prob02_2_10(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 03 ########################################
-@gen.equations.register('eqn02_3')
-def eqn02_3(order1, n_people_btw):
-    return 'ans = {}+{}+1'.format(order1, n_people_btw)
 
 @gen.problems.register
 def prob02_3_1(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. 유정이는 맨 뒤에 서 있습니다. 은정이는 앞에서
     5번째에 서 있습니다. 
     은정이와 유정이 사이에 8명이 서 있을 때, 줄을 서 있는 학생은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1298,7 +1281,7 @@ def prob02_3_1(selector, tokenpool, clskey):
     rank_name = selector.get(clskey.rank)
     name1 = selector.get(clskey.name)
     name2 = selector.get(clskey.name)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2)
     order2 = random.randint(order1+2, max_idx)
@@ -1320,11 +1303,11 @@ def prob02_3_1(selector, tokenpool, clskey):
             question='{sent4}{name2}{#이?}와 {name1}{#이?} 사이에 {n_people_btw}명{sent5} 서 있을 때, '\
             '줄을 서 있는 {person}{sent3}{#은} {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1332,7 +1315,7 @@ def prob02_3_1(selector, tokenpool, clskey):
                 sent4=sent4,
                 sent5=sent5,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1345,7 +1328,7 @@ def prob02_3_2(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. 유정이는 맨 뒤에 서 있습니다. 은정이는 앞에서
     5번째에 서 있습니다. 
     은정이와 유정이 사이에 8명이 서 있을 때, *모두 몇 명의 학생들이 줄을 서 있는지 구하시오.* '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1362,7 +1345,7 @@ def prob02_3_2(selector, tokenpool, clskey):
     rank_name = selector.get(clskey.rank)
     name1 = selector.get(clskey.name)
     name2 = selector.get(clskey.name)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2)
     order2 = random.randint(order1+2, max_idx)
@@ -1384,11 +1367,11 @@ def prob02_3_2(selector, tokenpool, clskey):
             question='{sent4}{name2}{#이?}와 {name1}{#이?} 사이에 {n_people_btw}명{sent5} 서 있을 때, '\
             '{total}몇 명의 {person}{sent3}이 줄을 서 있{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1396,7 +1379,7 @@ def prob02_3_2(selector, tokenpool, clskey):
                 sent4=sent4,
                 sent5=sent5,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1409,7 +1392,7 @@ def prob02_3_3(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. *은정이가 앞에서 5번째에 서 있고, 
     유정이는 맨 뒤에 서 있습니다.* 
     은정이와 유정이 사이에 8명이 서 있을 때, 모두 몇 명의 학생들이 줄을 서 있는지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1419,14 +1402,14 @@ def prob02_3_3(selector, tokenpool, clskey):
     sent2_choice = ['는', '가']
     sent3 = random.choice(['', '들'])
     sent4 = random.choice(['', '만약 '])
-    sent5 = random.choice(['이 ', '의 사람들이 '])    
+    sent5 = random.choice(['이 ', '의 사람들이 '])
 
     # new variables
     person = selector.get(clskey.person)
     rank_name = selector.get(clskey.rank)
     name1 = selector.get(clskey.name)
     name2 = selector.get(clskey.name)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2)
     order2 = random.randint(order1+2, max_idx)
@@ -1446,11 +1429,11 @@ def prob02_3_3(selector, tokenpool, clskey):
             question='{sent4}{name2}{#이?}와 {name1}{#이?} 사이에 {n_people_btw}명{sent5} 서 있을 때, '\
             '{total}몇 명의 {person}{sent3}이 줄을 서 있{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1458,7 +1441,7 @@ def prob02_3_3(selector, tokenpool, clskey):
                 sent4=sent4,
                 sent5=sent5,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1470,7 +1453,7 @@ def prob02_3_3(selector, tokenpool, clskey):
 def prob02_3_4(selector, tokenpool, clskey):
     ''' 유정이가 맨 뒤, 은정이가 5번째에 줄을 서 있습니다.
     둘 사이에 8명이 서 있을 때, 줄을 서 있는 학생은 모두 몇 명입니까?* '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1480,14 +1463,14 @@ def prob02_3_4(selector, tokenpool, clskey):
     sent2_choice = ['는', '가']
     sent3 = random.choice(['', '들'])
     sent5 = random.choice(['이 ', '의 사람들이 '])
-    
+
 
     # new variables
     person = selector.get(clskey.person)
     rank_name = selector.get(clskey.rank)
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1506,18 +1489,18 @@ def prob02_3_4(selector, tokenpool, clskey):
             question='둘 사이에 {n_people_btw}명{sent5} 서 있{sent1}줄을 서 있는 {person}{sent3}{#은} '\
                 '{total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
                 sent3=sent3,
                 sent5=sent5,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1529,7 +1512,7 @@ def prob02_3_4(selector, tokenpool, clskey):
 def prob02_3_5(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 줄을 섰는데, 유정이는 맨 뒤에 서 있고, 은정이는 앞에서 5번째에 서 있습니다. 
     은정이와 유정이 사이에 8명이 서 있다면, 줄을 서 있는 학생은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1540,14 +1523,14 @@ def prob02_3_5(selector, tokenpool, clskey):
     sent3 = random.choice(['', '들'])
     sent5 = random.choice(['이 ', '의 사람들이 '])
     sent6 = random.choice(['맨 ', '가장 '])
-    
+
 
     # new variables
     person = selector.get(clskey.person)
     rank_name = selector.get(clskey.rank)
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1568,11 +1551,11 @@ def prob02_3_5(selector, tokenpool, clskey):
                 '{name1}{#이?}와 {name2}{#이?} 사이에 {n_people_btw}명{sent5} 서 있{sent1}줄을 서 있는 {person}{sent3}{#은} '\
                 '{total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1580,7 +1563,7 @@ def prob02_3_5(selector, tokenpool, clskey):
                 sent5=sent5,
                 sent6=sent6,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1592,7 +1575,7 @@ def prob02_3_5(selector, tokenpool, clskey):
 def prob02_3_6(selector, tokenpool, clskey):
     ''' 유정이는 가장 마지막에 매장에 들어왔고, 은정이는 5번째로 들어왔다. 
     유정이와 은정이 사이에 8명이 들어왔을 때, 매장에 들어온 사람은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1610,7 +1593,7 @@ def prob02_3_6(selector, tokenpool, clskey):
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
     place = selector.get(clskey.place)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1630,12 +1613,12 @@ def prob02_3_6(selector, tokenpool, clskey):
             question='{name1}{#이?}와 {name2}{#이?} 사이에 {n_people_btw}명{sent5}들어왔을 때, '\
             '{place}에 들어온 사람들은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 place=place,
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1643,7 +1626,7 @@ def prob02_3_6(selector, tokenpool, clskey):
                 sent5=sent5,
                 sent6=sent6,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1656,7 +1639,7 @@ def prob02_3_7(selector, tokenpool, clskey):
     ''' 학생들이 달리기 시합을 하였다. 
     유정이가 가장 마지막에 들어왔고, 은정이는 5번째로 들어왔다. 
     은정이와 유정이 사이에 8명이 들어왔을 때, 달리기를 한 사람은 모두 몇 명인가? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1674,7 +1657,7 @@ def prob02_3_7(selector, tokenpool, clskey):
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
     place = selector.get(clskey.place)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1695,12 +1678,12 @@ def prob02_3_7(selector, tokenpool, clskey):
             question='{name1}{#이?}와 {name2}{#이?} 사이에 {n_people_btw}명{sent5}들어왔을 때, '\
             '달리기를 한 사람은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 place=place,
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1708,7 +1691,7 @@ def prob02_3_7(selector, tokenpool, clskey):
                 sent5=sent5,
                 sent6=sent6,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1721,7 +1704,7 @@ def prob02_3_8(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 계단에 서 있습니다. 
     유정이가 가장 높은 계단에 서 있고, 은정이는 아래서 5번째에 서 있습니다. 
     은정이와 유정이 사이에 8명이 서 있을 때, 계단에 있는 사람은 모두 몇 명인가? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1739,7 +1722,7 @@ def prob02_3_8(selector, tokenpool, clskey):
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
     place = selector.get(clskey.place)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1760,12 +1743,12 @@ def prob02_3_8(selector, tokenpool, clskey):
             question='{name1}{#이?}와 {name2}{#이?} 사이에 {n_people_btw}명{sent5}서 있을 때, '\
             '계단에 있는 사람은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 place=place,
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1773,7 +1756,7 @@ def prob02_3_8(selector, tokenpool, clskey):
                 sent5=sent5,
                 sent6=sent6,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1786,7 +1769,7 @@ def prob02_3_9(selector, tokenpool, clskey):
     ''' 유정이와 은정이는 같은 아파트(건물)에 살고 있습니다. 
     유정이는 가장 윗층에 살고 있고, 은정이는 5층에 살고 있습니다. 
     은정이와 유정이 사이에 8개층이 있다면, 이 아파트(건물)은 모두 몇 층입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1805,7 +1788,7 @@ def prob02_3_9(selector, tokenpool, clskey):
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
     place = selector.get(clskey.place)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1825,12 +1808,12 @@ def prob02_3_9(selector, tokenpool, clskey):
             question='{name1}{#이?}와 {name2}{#이?} 사이에 {n_people_btw}개층이 있다면, '\
             '이 {sent7}{#은} {total}몇 층{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 place=place,
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1839,7 +1822,7 @@ def prob02_3_9(selector, tokenpool, clskey):
                 sent6=sent6,
                 sent7=sent7,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1852,7 +1835,7 @@ def prob02_3_10(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 달리기를 하고 있습니다. 
     유정이가 가장 느리고, 은정이는 앞에서부터 5번째로 달리고 있습니다. 
     둘 사이에 다른 8명의 학생들이 있을 때, 달리기를 하고 있는 학생은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1870,7 +1853,7 @@ def prob02_3_10(selector, tokenpool, clskey):
     name1 = selector.get(clskey.name) # 유정
     name2 = selector.get(clskey.name) # 은정
     place = selector.get(clskey.place)
-    
+
     max_idx = 100
     order1 = random.randint(1, max_idx-2) # 5번째
     order2 = random.randint(order1+2, max_idx)
@@ -1891,12 +1874,12 @@ def prob02_3_10(selector, tokenpool, clskey):
             question='둘 사이에 다른 {n_people_btw}명의 학생들이 있다면, '\
             '달리기를 하고 있는 학생은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_3', order1_k, n_people_btw_k),
-            
+
             env=gen.fnmap(
                 place=place,
                 person=person,
                 rank_name=rank_name,
-                line=line, 
+                line=line,
                 sent1=sent1,
                 sent2_1=sent2_1,
                 sent2_2=sent2_2,
@@ -1904,7 +1887,7 @@ def prob02_3_10(selector, tokenpool, clskey):
                 sent5=sent5,
                 sent6=sent6,
                 order1=order1_k,
-                n_people_btw=n_people_btw_k, 
+                n_people_btw=n_people_btw_k,
                 name1=name1_k,
                 name2=name2_k,
                 total=total,
@@ -1915,16 +1898,13 @@ def prob02_3_10(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 04 ########################################
-@gen.equations.register('eqn02_4')
-def eqn02_4(idx_left, idx_right, idx_front, idx_down):
-    return 'ans = ({}+{}-1)*({}+{}-1)'.format(idx_left, idx_right, idx_front, idx_down)
 
 @gen.problems.register
 def prob02_4_1(selector, tokenpool, clskey):
     ''' 윤기는 왼쪽에서 7번째 열, 오른쪽에서 13번째 열, 앞에서 8번째 줄, 뒤에서
     14번째 줄에 서서 체조를 하고 있습니다. 각 줄마다 서 있는 학생의 수가
     같다고 할 때, 체조를 하고 있는 학생은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -1949,7 +1929,7 @@ def prob02_4_1(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -1965,16 +1945,16 @@ def prob02_4_1(selector, tokenpool, clskey):
             question='각 줄마다 서 있는 {person}의 수가 같다고 할 때, '\
             '{exercise}{#를} 하고 있는 {person}은 {total}몇 명 {ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
-                exercise=exercise,                
+                exercise=exercise,
                 person=person,
                 name1=name1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -1989,7 +1969,7 @@ def prob02_4_2(selector, tokenpool, clskey):
     ''' 사람들이 모여있을 때, 윤기는 왼쪽에서 7번째 열, 오른쪽에서 13번째 열, 앞에서 8번째 줄, 뒤에서
     14번째 줄에 서 있습니다. 각 줄마다 서 있는 학생의 수가
     같다고 할 때, 모여있는 사람들의 수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2014,7 +1994,7 @@ def prob02_4_2(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2029,16 +2009,16 @@ def prob02_4_2(selector, tokenpool, clskey):
             question='각 줄마다 서 있는 {person}의 수가 같다고 할 때, '\
             '모여있는 {person}의 수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
-                exercise=exercise,                
+                exercise=exercise,
                 person=person,
                 name1=name1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2052,7 +2032,7 @@ def prob02_4_3(selector, tokenpool, clskey):
     ''' 윤기를 포함하여 왼쪽에는 7명, 오른쪽에는 13명, 앞에는 8명, 
     뒤에는 14명의 사람이 있습니다. 
     모든 줄에 서있는 사람들의 수가 같다고 할 때, 서있는 사람들의 수는 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2078,7 +2058,7 @@ def prob02_4_3(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2093,17 +2073,17 @@ def prob02_4_3(selector, tokenpool, clskey):
             question='모든 줄에 서 있는 {person}{sent1}의 수가 같다고 할 때, '\
             '서 있는 {person}{sent1}의 수{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
-                exercise=exercise,                
+                exercise=exercise,
                 person=person,
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2117,7 +2097,7 @@ def prob02_4_3(selector, tokenpool, clskey):
 def prob02_4_4(selector, tokenpool, clskey):
     ''' 윤기의 좌석이 왼쪽에서 ~~ 있습니다. 
     각 줄의 좌석 수가 같다면, 좌석의 수는 총 몇 개인가? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2125,7 +2105,7 @@ def prob02_4_4(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     person = selector.get(clskey.person)
@@ -2145,7 +2125,7 @@ def prob02_4_4(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2159,18 +2139,18 @@ def prob02_4_4(selector, tokenpool, clskey):
             ]),
             question='각 줄의 {seat} 수가 같다면, {seat}의 수는 {total}몇 개{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
-                exercise=exercise,                
+                exercise=exercise,
                 person=person,
                 name1=name1,
                 seat=seat,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2184,7 +2164,7 @@ def prob02_4_4(selector, tokenpool, clskey):
 def prob02_4_5(selector, tokenpool, clskey):
     ''' 책꽂이에 책이 왼쪽에서 ~~ 에 꽂혀져 있다. 
     각 줄에 같은 수의 책이 꽂혀 있다고 할 때, 책꽂이에 꽂혀있는 책은 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2192,7 +2172,7 @@ def prob02_4_5(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     shelf = selector.get(clskey.shelf)
@@ -2212,7 +2192,7 @@ def prob02_4_5(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2227,17 +2207,17 @@ def prob02_4_5(selector, tokenpool, clskey):
             question='각 줄에 같은 수의 {book}{#이} 꽂혀 있다고 할 때, '\
             '모든 {book}의 수는 몇 개{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 shelf=shelf,
                 book=book,
                 seat=seat,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2251,7 +2231,7 @@ def prob02_4_5(selector, tokenpool, clskey):
 def prob02_4_6(selector, tokenpool, clskey):
     ''' 모든 줄의 인원 수를 똑같이 맞추어 행진을 하고 있습니다. 
     윤기가 속한 위치가 왼쪽에서 ~~ 일 때, 행진을 하고 있는 사람은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2259,7 +2239,7 @@ def prob02_4_6(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     name1 = selector.get(clskey.name)
@@ -2278,7 +2258,7 @@ def prob02_4_6(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2290,15 +2270,15 @@ def prob02_4_6(selector, tokenpool, clskey):
                 '{left_right_1}에서 {idx_right}번째, {front_back_0}에서 {idx_front}번째, '\
                 '{front_back_1}에서 {idx_down}번째일 때, 행진을 하고 있는 사람은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2312,7 +2292,7 @@ def prob02_4_6(selector, tokenpool, clskey):
 def prob02_4_7(selector, tokenpool, clskey):
     ''' 윤기가 직사각형 모양의 바둑판에 바둑알을 놓았다. 
     바둑알의 위치가 왼쪽에서 ~~일 때, 바둑판의 모든 칸의 개수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2320,7 +2300,7 @@ def prob02_4_7(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     name1 = selector.get(clskey.name)
@@ -2339,7 +2319,7 @@ def prob02_4_7(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2352,15 +2332,15 @@ def prob02_4_7(selector, tokenpool, clskey):
                 '{front_back_1}에서 {idx_down}번째일 때, '\
                 '바둑판의 모든 칸의 개수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2375,7 +2355,7 @@ def prob02_4_8(selector, tokenpool, clskey):
     ''' 매장에 인형이 전시되어 있다. 
     어느 인형이 왼쪽에서 ~~에 전시되어 있을 때, 
     매장에 전시되어 있는 인형의 개수는 모두 몇 개인가? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2383,7 +2363,7 @@ def prob02_4_8(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     name1 = selector.get(clskey.name)
@@ -2402,7 +2382,7 @@ def prob02_4_8(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2415,15 +2395,15 @@ def prob02_4_8(selector, tokenpool, clskey):
             '{front_back_1}에서 {idx_down}번째일 때, '\
             '매장에 전시되어 있는 인형의 개수는 {total}몇 개 {ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2438,7 +2418,7 @@ def prob02_4_9(selector, tokenpool, clskey):
     ''' 모든 줄의 인원을 똑같이 맞추어 체조를 하고 있다. 
     윤기는 왼쪽에서 ~~ 에 서서 체조를 하고 있다면, 
     체조를 하고 있는 학생은 모두 몇 명입니까?? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2446,7 +2426,7 @@ def prob02_4_9(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     name1 = selector.get(clskey.name)
@@ -2465,7 +2445,7 @@ def prob02_4_9(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2478,16 +2458,16 @@ def prob02_4_9(selector, tokenpool, clskey):
             '{front_back_1}에서 {idx_down}번째에 서서 체조를 하고 있다면, '\
             '체조를 하고 있는 학생은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 exercise=exercise,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2502,7 +2482,7 @@ def prob02_4_10(selector, tokenpool, clskey):
     ''' 각 줄마다 서 있는 학생의 수를 맞추어 체조를 하고 있다. 
     윤기는 왼쪽에서 ~~에 서서 체조를 하고 있다면, 
     체조를 하고 있는 학생은 모두 몇 명입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2510,7 +2490,7 @@ def prob02_4_10(selector, tokenpool, clskey):
     exercise = random.choice(['운동', '체육', '체조'])
     seat = random.choice(['자리', '좌석', '자동차'])
     sent1 = random.choice(['', '들'])
-    
+
 
     # new variables
     name1 = selector.get(clskey.name)
@@ -2529,7 +2509,7 @@ def prob02_4_10(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_front = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     idx_left_k = tokenpool.new(idx_left)
     idx_right_k = tokenpool.new(idx_front)
     idx_front_k = tokenpool.new(idx_front)
@@ -2542,16 +2522,16 @@ def prob02_4_10(selector, tokenpool, clskey):
             '{front_back_1}에서 {idx_down}번째에 서서 체조를 하고 있다면, '\
             '체조를 하고 있는 학생은 {total}몇 명{ques_trailing}',
             equation=gen.EqnRef('eqn02_4', idx_left_k, idx_right_k, idx_front_k, idx_down_k),
-            
+
             env=gen.fnmap(
                 name1=name1,
-                sent1=sent1, 
+                sent1=sent1,
                 exercise=exercise,
                 left_right_0=left_right_0,
                 left_right_1=left_right_1,
                 front_back_0=front_back_0,
                 front_back_1=front_back_1,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_front=idx_front_k,
                 idx_down=idx_down_k,
@@ -2564,9 +2544,6 @@ def prob02_4_10(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 05 ########################################
-@gen.equations.register('eqn02_5')
-def eqn02_5(idx_left_k, idx_right_k, n_floors, n_shelves_k):
-    return 'ans = ({}+{}-1)*{}*{}'.format(idx_left_k, idx_right_k, n_floors, n_shelves_k)
 
 @gen.problems.register
 def prob02_5_1(selector, tokenpool, clskey):
@@ -2574,7 +2551,7 @@ def prob02_5_1(selector, tokenpool, clskey):
     책의 수는 같습니다. 영어책은 어느 책장의 한 층의 왼쪽에서 9번째, 오른쪽에서 11번째에 
     꽂혀 있습니다.
     도서관의 책장에 꽂혀 있는 책은 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2598,7 +2575,7 @@ def prob02_5_1(selector, tokenpool, clskey):
     idx_right = random.randint(1, 100)
     idx_up = random.randint(1, 100)
     idx_down = random.randint(1, 100)
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2616,8 +2593,8 @@ def prob02_5_1(selector, tokenpool, clskey):
             ]),
             question='{bookstore}의 {shelf}에 꽂혀 있는 {book}{#은} {total}몇 권{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(             
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2627,7 +2604,7 @@ def prob02_5_1(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
                 idx_up=idx_up_k,
                 idx_down=idx_down_k,
@@ -2641,7 +2618,7 @@ def prob02_5_1(selector, tokenpool, clskey):
 def prob02_5_2(selector, tokenpool, clskey):
     ''' 높이가 6층인 책장 28개 중 어느 책장의 한 층에 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
     모든 층에 꽂혀있는 책의 수가 같을 때, 이 책장에 꽂혀있는 책의 개수는 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2663,7 +2640,7 @@ def prob02_5_2(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2676,8 +2653,8 @@ def prob02_5_2(selector, tokenpool, clskey):
             ]),
             question='{floor}마다 꽂혀 있는 {book}의 수는 같을 때, 이 {shelf}에 꽂혀있는 {book}의 개수는 {total}몇 권{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(                
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2687,7 +2664,7 @@ def prob02_5_2(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2699,7 +2676,7 @@ def prob02_5_2(selector, tokenpool, clskey):
 def prob02_5_3(selector, tokenpool, clskey):
     ''' 6층짜리 책장 28개가 있고, 각 층마다 꽂혀있는 책의 수가 같습니다. 왼쪽에서 ~~에 영어책이 꽂혀있다면, 
     이 책장에 꽂혀있는 모든 책의 개수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2721,7 +2698,7 @@ def prob02_5_3(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2734,8 +2711,8 @@ def prob02_5_3(selector, tokenpool, clskey):
             question='{left_right_0}에서 {idx_left}번째, {left_right_1}에서 {idx_right}번째에 {book}{#이} 꽂혀 있다면, '\
             '이 {shelf}에 꽂혀있는 {total}책의 개수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(          
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2745,7 +2722,7 @@ def prob02_5_3(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2757,7 +2734,7 @@ def prob02_5_3(selector, tokenpool, clskey):
 def prob02_5_4(selector, tokenpool, clskey):
     ''' 도서관에 똑같은 책장이 28개 있고, 각 책장은 6층입니다. 각 층마다 꽂혀있는 책의 수가 같을 때, 
     영어책이 어느 책장의 한 층에 왼쪽에서 ~~에 있다면 모든 책장에 꽂혀있는 책의 개수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2779,7 +2756,7 @@ def prob02_5_4(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2791,8 +2768,8 @@ def prob02_5_4(selector, tokenpool, clskey):
             '{left_right_0}에서 {idx_left}번째, {left_right_1}에서 {idx_right}번째에 {book}{#이} 있다면, '\
             '모든 {shelf}에 꽂혀있는 책의 개수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2802,7 +2779,7 @@ def prob02_5_4(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2814,7 +2791,7 @@ def prob02_5_4(selector, tokenpool, clskey):
 def prob02_5_5(selector, tokenpool, clskey):
     ''' 한 층에 영어책이 왼쪽에서 ~~에 꽂혀있는 책장이 있습니다. 
     모든 층에 같은 수의 책이 있다면, 6층짜리 28개의 책장에는 모두 몇 권의 책이 꽂혀있습니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2836,7 +2813,7 @@ def prob02_5_5(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2848,8 +2825,8 @@ def prob02_5_5(selector, tokenpool, clskey):
             question='각 {floor}마다 꽂혀있는 책의 수가 같다면, {n_floors}{floor}짜리 {n_shelves}개의 '\
             '{shelf}에는 모두 몇 권의 책이 꽂혀있{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(            
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2859,7 +2836,7 @@ def prob02_5_5(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2871,7 +2848,7 @@ def prob02_5_5(selector, tokenpool, clskey):
 def prob02_5_6(selector, tokenpool, clskey):
     ''' 6층으로 된 책장의 한 층에 영어책이 왼쪽에서 ~~에 꽂혀있습니다. 
     모양이 똑같은 책장이 28개 있고 모든 층에 꽂혀있는 책의 수가 같을 때, 모든 책장에 꽂혀있는 책의 개수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2893,7 +2870,7 @@ def prob02_5_6(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2905,8 +2882,8 @@ def prob02_5_6(selector, tokenpool, clskey):
             question='모양이 똑같은 {shelf}{#이} {n_shelves}개 있고, 모든 {floor}에 꽂혀있는 '\
             '{book}의 수가 같을 때, 모든 {shelf}에 있는 책의 개수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2916,7 +2893,7 @@ def prob02_5_6(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2930,7 +2907,7 @@ def prob02_5_7(selector, tokenpool, clskey):
     ''' 어느 한 책장에 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
     이 책장은 6층이고 총 28개의 똑같은 책장이 있습니다. 
     책장의 각 층에 꽂혀있는 책의 수가 같다면, 모든 책장에 꽂혀있는 책은 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -2952,7 +2929,7 @@ def prob02_5_7(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -2965,8 +2942,8 @@ def prob02_5_7(selector, tokenpool, clskey):
             question='{shelf}의 각 {floor}에 꽂혀있는 {book}의 수가 같다면, 모든 {shelf}에 꽂혀있는 '\
             '{book}{#은} 모두 몇 권{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -2976,7 +2953,7 @@ def prob02_5_7(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -2990,7 +2967,7 @@ def prob02_5_8(selector, tokenpool, clskey):
     ''' 각 층마다 꽂혀있는 책의 수가 같은 책장이 있습니다. 
     이 책장에 영어책이 왼쪽에서 ~~에 꽂혀있고, 책장의 높이는 6층입니다. 
     똑같은 책장이 28개가 있다고 한다면, 모든 책장에 있는 책의 개수는 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3012,7 +2989,7 @@ def prob02_5_8(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -3025,8 +3002,8 @@ def prob02_5_8(selector, tokenpool, clskey):
             question='똑같은 {shelf}{#이} {n_shelves}개가 있다고 한다면, '\
             '모든 {shelf}에 있는 {book}의 개수는 모두 몇 권{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -3036,7 +3013,7 @@ def prob02_5_8(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -3049,7 +3026,7 @@ def prob02_5_9(selector, tokenpool, clskey):
     ''' 도서관에 6층 책장이 28개 있습니다. 
     책장에는 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
     각 층마다 꽂혀있는 책의 수가 같다고 한다면, 도서관에 꽂혀있는 책의 수는 모두 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3071,7 +3048,7 @@ def prob02_5_9(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -3084,8 +3061,8 @@ def prob02_5_9(selector, tokenpool, clskey):
             question='각 {floor}마다 꽂혀있는 {book}의 수가 같다고 한다면, '\
             '{bookstore}에 꽂혀있는 {book}의 수는 모두 몇 권{ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -3095,7 +3072,7 @@ def prob02_5_9(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -3108,7 +3085,7 @@ def prob02_5_10(selector, tokenpool, clskey):
     ''' 영어책이 왼쪽에서 ~~에 꽂혀있는 책장이 있습니다. 
     이 책장은 6층이고, 모두 28개입니다. 
     각 층마다 꽂혀있는 책의 수가 같다면, 모든 책장에 꽂혀있는 책의 개수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3130,7 +3107,7 @@ def prob02_5_10(selector, tokenpool, clskey):
     n_floors = random.randint(1, 100) # 6층
     idx_left = random.randint(1, 100) # 9번째
     idx_right = random.randint(1, 100) # 11번째
-    
+
     n_floors_k = tokenpool.new(n_floors)
     n_shelves_k = tokenpool.new(n_shelves)
     idx_left_k = tokenpool.new(idx_left)
@@ -3143,8 +3120,8 @@ def prob02_5_10(selector, tokenpool, clskey):
             question='각 {floor}마다 꽂혀있는 {book}의 수가 같다고 한다면, '\
             '모든 {shelf}에 꽂혀있는 {book}의 개수를 {ques_trailing}',
             equation=gen.EqnRef('eqn02_5', idx_left_k, idx_right_k, n_floors_k, n_shelves_k),
-            
-            env=gen.fnmap(              
+
+            env=gen.fnmap(
                 same=same,
                 bookstore=bookstore,
                 shelf=shelf,
@@ -3154,7 +3131,7 @@ def prob02_5_10(selector, tokenpool, clskey):
                 left_right_1=left_right_1,
                 n_shelves=n_shelves_k,
                 n_floors=n_floors_k,
-                idx_left=idx_left_k, 
+                idx_left=idx_left_k,
                 idx_right=idx_right_k,
 
                 total=total,
@@ -3164,15 +3141,12 @@ def prob02_5_10(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 06_2 ######################################
-# @gen.equations.register('eqn06_2') # 기존 sum euqation을 활용!
-# def eqn06_2(*args):
-#     return 'ans = sum([{}])'.format(repr(args))
 
 @gen.problems.register
 def prob06_2_1(selector, tokenpool, clskey):
     ''' 어떤 수에서 46을 빼야하는데 잘못하여 59를 뺐더니 43이 되었습니다.
     바르게 계산한 결과를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3211,11 +3185,11 @@ def prob06_2_1(selector, tokenpool, clskey):
             ]),
             question='바르게 계산한 결과를 {ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
                 exp_wrong=exp_wrong,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3230,7 +3204,7 @@ def prob06_2_1(selector, tokenpool, clskey):
 def prob06_2_2(selector, tokenpool, clskey):
     ''' 어떤 수보다 59만큼 작은 수는 43입니다.
     어떤 수보다 46만큼 작은 수를 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3273,11 +3247,11 @@ def prob06_2_2(selector, tokenpool, clskey):
             body='어떤 수보다 {wrong_num}만큼 {big_or_small_0} 수는 {wrong_result}입니다.',
             question='어떤 수보다 {orig_num}만큼 {big_or_small_1} 수를 {ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
                 exp_wrong=exp_wrong,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3294,7 +3268,7 @@ def prob06_2_2(selector, tokenpool, clskey):
 def prob06_2_3(selector, tokenpool, clskey):
     ''' 어떤 수에서(와) 59를 빼면 43입니다.
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3336,10 +3310,10 @@ def prob06_2_3(selector, tokenpool, clskey):
             body='어떤 수에서 {wrong_num}{#를} {case2} {wrong_result}입니다.',
             question='어떤 수에서 {orig_num}{#를} {case1} 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3355,7 +3329,7 @@ def prob06_2_3(selector, tokenpool, clskey):
 @gen.problems.register
 def prob06_2_4(selector, tokenpool, clskey):
     ''' 59를 어떤 수에서 빼면 43이 나올 때, 46을 어떤 수에서 빼면 얼마인지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3397,10 +3371,10 @@ def prob06_2_4(selector, tokenpool, clskey):
             body='{wrong_num}{#를} 어떤 수에서 {case2} {wrong_result}이 나온다면, ',
             question='{orig_num}{#를} 어떤 수에서 {case1} 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3418,7 +3392,7 @@ def prob06_2_4(selector, tokenpool, clskey):
 def prob06_2_5(selector, tokenpool, clskey):
     ''' 어떤 수는 43에서 59를 더한 수입니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3438,7 +3412,7 @@ def prob06_2_5(selector, tokenpool, clskey):
     wrong_result_k = tokenpool.new(wrong_result) # 43
     case1_k = tokenpool.new(case1)
     case2_k = tokenpool.new(case2)
-    
+
     if '빼' in case1:
         if case2 == '뺐더니':
             case2_reverse = '더한'
@@ -3460,10 +3434,10 @@ def prob06_2_5(selector, tokenpool, clskey):
             body='어떤 수는 {wrong_result}에서 {wrong_num}{#을} {case2_reverse} 수입니다.',
             question='어떤 수에서 {orig_num}{#를} {case1} 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3480,7 +3454,7 @@ def prob06_2_5(selector, tokenpool, clskey):
 def prob06_2_6(selector, tokenpool, clskey):
     ''' 어떤 수 빼기 59는 43과 같습니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3500,7 +3474,7 @@ def prob06_2_6(selector, tokenpool, clskey):
     wrong_result_k = tokenpool.new(wrong_result) # 43
     case1_k = tokenpool.new(case1)
     case2_k = tokenpool.new(case2)
-    
+
     if '빼' in case1:
         if case2 == '뺐더니':
             sent1 = '빼기'
@@ -3522,10 +3496,10 @@ def prob06_2_6(selector, tokenpool, clskey):
             body='어떤 수 {sent1} {wrong_num}{#는} {wrong_result}{#과} 같습니다.',
             question='어떤 수에서 {orig_num}{#를} {case1} 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3541,7 +3515,7 @@ def prob06_2_6(selector, tokenpool, clskey):
 def prob06_2_7(selector, tokenpool, clskey):
     ''' 어떤 수에 59를 빼서 43을 만들었습니다. 
     어떤 수에서 46을 빼면 얼마인지 구해 보세요. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3561,7 +3535,7 @@ def prob06_2_7(selector, tokenpool, clskey):
     wrong_result_k = tokenpool.new(wrong_result) # 43
     case1_k = tokenpool.new(case1)
     case2_k = tokenpool.new(case2)
-    
+
     if '빼' in case1:
         if case2 == '뺐더니':
             sent1 = '빼서'
@@ -3583,10 +3557,10 @@ def prob06_2_7(selector, tokenpool, clskey):
             body='어떤 수에 {wrong_num}{#를} {sent1} {wrong_result}{#를} 만들었습니다.',
             question='어떤 수에서 {orig_num}{#를} {case1} 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
@@ -3602,7 +3576,7 @@ def prob06_2_7(selector, tokenpool, clskey):
 def prob06_2_8(selector, tokenpool, clskey):
     ''' 상자에서 사과를 59개 꺼내면 43개가 남습니다. 
     만약 46개를 빼면 상자에 몇 개의 사과가 남는지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3650,10 +3624,10 @@ def prob06_2_8(selector, tokenpool, clskey):
             body='{container}에서 {item} {wrong_num}개를 {case2} {wrong_result}개가 {sent2}',
             question='만약 {orig_num}개를 {case1} {container}에 몇 개의 {item}{#이} {sent3} {ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 container=container,
@@ -3672,7 +3646,7 @@ def prob06_2_8(selector, tokenpool, clskey):
 def prob06_2_9(selector, tokenpool, clskey):
     ''' 정국이가 친구들에게 59권의 책을 나눠주면 43개가 남습니다. 
     만약 46개의 책을 나눠주면 몇 권의 책이 남는지 구하시오. '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3702,7 +3676,7 @@ def prob06_2_9(selector, tokenpool, clskey):
     case2_k = tokenpool.new(case2)
     item_k = tokenpool.new(case2)
     item_k.unit = unit
-    
+
     if '나눠주면' in case1:
         sent3 = '남는지'
         if case2 == '나눠주면':
@@ -3727,10 +3701,10 @@ def prob06_2_9(selector, tokenpool, clskey):
             body='{name1}{#이?}가 친구들에게 {item} {wrong_num}{unit}{#을} {case2} {wrong_result}{unit}가 {sent2}',
             question='만약 {orig_num}{unit}의 {item}{#을} {case1} 몇 {unit}의 {item}{#이} {sent3} {ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 exp_sub_add=exp_sub_add,
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 item=item,
@@ -3750,7 +3724,7 @@ def prob06_2_9(selector, tokenpool, clskey):
 def prob06_2_10(selector, tokenpool, clskey):
     ''' 정국이는 민영이에게 책을 59권 받고, 태형이에게 43권 받았습니다. 
     만약, 정국이가 지민이에게 46권의 책을 준다면 남는 책은 몇 권입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3784,7 +3758,7 @@ def prob06_2_10(selector, tokenpool, clskey):
     case2_k = tokenpool.new(case2)
     item_k = tokenpool.new(case2)
     item_k.unit = unit
-    
+
     if '준다면' in case2:
         if '받고' in case1:
             equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
@@ -3802,9 +3776,9 @@ def prob06_2_10(selector, tokenpool, clskey):
             question='만약 {name1}{#이?}가 {name4}{#이?}에게 {orig_num}{unit}의 {item}{#을} '\
             '{case2}{name1}{#이?}가 가지고 있는 {item}{#은} {total}몇 {unit}{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 item=item,
@@ -3824,7 +3798,7 @@ def prob06_2_10(selector, tokenpool, clskey):
 @gen.problems.register
 def prob06_2_11(selector, tokenpool, clskey):
     ''' 59와 43을 더한 값에서 46을 뺀(빼면) 결과값은 얼마인가? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3845,7 +3819,7 @@ def prob06_2_11(selector, tokenpool, clskey):
     wrong_result_k = tokenpool.new(wrong_result) # 43
     case1_k = tokenpool.new(case1)
     case2_k = tokenpool.new(case2)
-    
+
     if '뺀' in case2:
         if '더한' in case1:
             equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
@@ -3862,15 +3836,15 @@ def prob06_2_11(selector, tokenpool, clskey):
             question='{wrong_result}에서 {wrong_num}{#을} {case1}값에서 '\
             '{orig_num}{#을} {case2}{sent1}은 얼마{ques_trailing}',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
-                orig_num=orig_num_k,                
+                orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
                 case1=case1_k,
                 case2=case2_k,
                 sent1=sent1,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -3881,16 +3855,13 @@ def prob06_2_11(selector, tokenpool, clskey):
 
 ######################################################################################
 ################################## problem 07_2 ######################################
-@gen.equations.register('eqn07_2')
-def eqn07_2(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, *variables):
-    return f'ans = {variables}'+'[[{},{},{},int({}*{})].index(max({},{},{},int({}*{})))]'.format(n1, n1, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16)
 
 @gen.problems.register
 def prob07_2_1(selector, tokenpool, clskey):
     ''' 네 수 A, B, C, D가 있습니다. A는 27입니다. B는 A보다 7 큰 수입니다. C는 B보다
     9 작은 수입니다. D는 C의 2배인 수입니다.
     가장 큰 수는 어느 것입니까? '''
-    
+
     # syntactic randomize
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
     sent_trailing = random.choice(['습니다.', '다.'])
@@ -3929,14 +3900,14 @@ def prob07_2_1(selector, tokenpool, clskey):
                 D = C//num4
                 equation_temp = gen.EqnRef('eqn07_2', num1_k, num1_k, num2_k, num2_k, num3_k, num2_k, num3_k, num4_k, num1_k, num1_k, num2_k, num2_k, num3_k, num2_k, num3_k, num4_k, *variables)
         else:
-            C = num2-num3    
+            C = num2-num3
             if divide == '인':
                 D = int(C*num4)
                 equation_temp = gen.EqnRef('eqn07_2', num1_k, num1_k, num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, num1_k, num1_k, num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, *variables)
             else:
                 D = C//num4
                 equation_temp = gen.EqnRef('eqn07_2', num1_k, num1_k, num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, num1_k, num1_k, num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, *variables)
-    else:        
+    else:
         B = num1-num2
         if big_or_small_1_k == '큰':
             C = num2num3
@@ -3947,7 +3918,7 @@ def prob07_2_1(selector, tokenpool, clskey):
                 D = C//num4
                 equation_temp = gen.EqnRef('eqn07_2', num1_k, num1_k, -num2_k, num2_k, num3_k, num2_k, num3_k, num4_k, num1_k, num1_k, -num2_k, num2_k, num3_k, num2_k, num3_k, num4_k, *variables)
         else:
-            C = num2-num3    
+            C = num2-num3
             if divide == '인':
                 D = int(C*num4)
                 equation_temp = gen.EqnRef('eqn07_2', num1_k, num1_k, -num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, num1_k, num1_k, -num2_k, num2_k, -num3_k, num2_k, -num3_k, num4_k, *variables)
@@ -3965,7 +3936,7 @@ def prob07_2_1(selector, tokenpool, clskey):
             ]),
             question='가장 큰 수는 어느 것입니까?',
             equation=equation_temp,
-            
+
             env=gen.fnmap(
                 final_sent=final_sent,
                 size=size,
@@ -3984,14 +3955,8 @@ def prob07_2_1(selector, tokenpool, clskey):
             ))
 
 
-
-
-
 ######################################################################################
 ################################## problem 08_2 ######################################
-@gen.equations.register('eqn08_2')
-def eqn08_2(length_k, n_k):
-    return 'ans = {}*({}+3)'.format(length_k, n_k)
 
 @gen.problems.register
 def prob08_2_1(selector, tokenpool, clskey):
@@ -4002,7 +3967,7 @@ def prob08_2_1(selector, tokenpool, clskey):
     sent_trailing = random.choice(['습니다.', '다.'])
     ques_trailing = random.choice(['입니까?', '일까요?', '인지 구하시오.', '인지 구하세요.', '인지 구해 보세요.', '인가?', '인가요?'])
     sent_exp1 = random.choice(['의 길이가', '이,'])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4016,12 +3981,12 @@ def prob08_2_1(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형의 '\
             '둘레는 몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp1=sent_exp1,
                 length=length_k,
                 n=n_k,
-                
+
                 ques_trailing=ques_trailing
             ))
 
@@ -4037,7 +4002,7 @@ def prob08_2_2(selector, tokenpool, clskey):
     sent_exp1 = random.choice(['의 길이가 ', '이,', '의 길이는 '])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['이다.', '입니다.'])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4050,13 +4015,13 @@ def prob08_2_2(selector, tokenpool, clskey):
             '한 변{sent_exp1} {length}cm{sent_exp3}',
             question='둘레는 몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp1=sent_exp1,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 ques_trailing=ques_trailing
             ))
 
@@ -4071,7 +4036,7 @@ def prob08_2_3(selector, tokenpool, clskey):
     sent_exp1 = random.choice(['의 ', ' '])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4085,14 +4050,14 @@ def prob08_2_3(selector, tokenpool, clskey):
             '{sent_exp1}{sent_exp3}변의 길이가 {length}cm일 때, '\
             '둘레{sent_exp2}몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp1=sent_exp1,
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 ques_trailing=ques_trailing
             ))
 
@@ -4107,7 +4072,7 @@ def prob08_2_4(selector, tokenpool, clskey):
     ques_trailing = random.choice(['입니까?', '일까요?', '인지 구하시오.', '인지 구하세요.', '인지 구해 보세요.', '인가?', '인가요?'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4121,13 +4086,13 @@ def prob08_2_4(selector, tokenpool, clskey):
             '있{sent_trailing}',
             question='둘레{sent_exp2}몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4143,7 +4108,7 @@ def prob08_2_5(selector, tokenpool, clskey):
     sent_exp1 = random.choice(['구하시오.', '구하세요.', '구해 보세요.'])
     sent_exp2 = random.choice(['를 ', '의 길이를 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4157,14 +4122,14 @@ def prob08_2_5(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형의 '\
             '둘레{sent_exp2} {sent_exp1}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp1=sent_exp1,
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4179,7 +4144,7 @@ def prob08_2_6(selector, tokenpool, clskey):
     ques_trailing = random.choice(['입니까?', '일까요?', '인지 구하시오.', '인지 구하세요.', '인지 구해 보세요.', '인가?', '인가요?'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4193,13 +4158,13 @@ def prob08_2_6(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형의 '\
             '둘레{sent_exp2}얼마{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4215,7 +4180,7 @@ def prob08_2_7(selector, tokenpool, clskey):
     ques_trailing = random.choice(['구하시오.', '구하세요.', '구해 보세요.'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4229,13 +4194,13 @@ def prob08_2_7(selector, tokenpool, clskey):
             '{sent_exp3}변의 길이가 {length}cm일 때, '\
             '둘레의 길이를 {ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4251,7 +4216,7 @@ def prob08_2_8(selector, tokenpool, clskey):
     ques_trailing = random.choice(['구하시오.', '구하세요.', '구해 보세요.'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4265,13 +4230,13 @@ def prob08_2_8(selector, tokenpool, clskey):
             '모양의 종이를 잘랐습니다.',
             question='이 종이의 둘레를 {ques_trailing}.',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4286,7 +4251,7 @@ def prob08_2_9(selector, tokenpool, clskey):
     ques_trailing = random.choice(['구하시오.', '구하세요.', '구해 보세요.'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4303,14 +4268,14 @@ def prob08_2_9(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형'\
             '의 둘레의 길이를 구하시오.',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
                 name1=name1,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4325,7 +4290,7 @@ def prob08_2_10(selector, tokenpool, clskey):
     ques_trailing = random.choice(['입니까?', '일까요?', '인지 구하시오.', '인지 구하세요.', '인지 구해 보세요.', '인가?', '인가요?'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4340,14 +4305,14 @@ def prob08_2_10(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형 '\
             '하나를 만들 때 필요한 철사의 길이는 몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
                 name1=name1,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
@@ -4362,7 +4327,7 @@ def prob08_2_11(selector, tokenpool, clskey):
     ques_trailing = random.choice(['입니까?', '일까요?', '인지 구하시오.', '인지 구하세요.', '인지 구해 보세요.', '인가?', '인가요?'])
     sent_exp2 = random.choice(['는 ', '의 길이는 '])
     sent_exp3 = random.choice(['한 ', ''])
-    
+
     # new variables
     length = random.randint(1, 100)
     n = random.randint(1, 6)
@@ -4379,23 +4344,17 @@ def prob08_2_11(selector, tokenpool, clskey):
             f'정{gen.korutil.num2kor(n+3)}각형 '\
             '하나를 만들 때 필요한 철사의 길이는 몇 cm{ques_trailing}',
             equation=gen.EqnRef('eqn08_2', length_k, n_k),
-            
+
             env=gen.fnmap(
                 sent_exp2=sent_exp2,
                 sent_exp3=sent_exp3,
                 length=length_k,
                 n=n_k,
                 name1=name1,
-                
+
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
-
-
-
-
-
-
 
 
 
