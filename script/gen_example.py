@@ -25,7 +25,7 @@ def eqn00(*args):
     return 'ans = sum({})'.format(repr(args))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob01(selector, tokenpool, clskey):
     # Claim items at first. They will not overlap (even for different keys).
     container = selector.get(clskey.container)
@@ -88,7 +88,7 @@ def eqn2(factor, result):
     return 'ans = {} // {}'.format(repr(result), repr(factor))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02(selector, tokenpool, clskey):
     a = random.randint(2, 19)
     b = random.randint(2, 19) * a
@@ -106,7 +106,7 @@ def prob02(selector, tokenpool, clskey):
                 n2=n2
             ))
 
-# @gen.problems.register
+# # @gen.problems.register
 # def prob02(selector, tokenpool, clskey):
 #     item = tokens.get(clskey.tool_group)
 #     cvtunit = random.choice(item.of("group_unit"))
@@ -125,7 +125,7 @@ def prob02(selector, tokenpool, clskey):
 
 
 # You must prepend @register for each function!
-@gen.problems.register
+# @gen.problems.register
 def showcase(sel, pl, clskey):
     # get a real number from [0, 2]
     # this will round the numbers to the 1/100's digit.

@@ -20,7 +20,7 @@ def randreal(st, ed, *, ndigits = 2):
 ################################## problem 01 ########################################
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_1(selector, tokenpool, clskey):
     ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다.
     3번째로 시험을 본 과목은 무엇입니까? '''
@@ -68,7 +68,7 @@ def prob02_1_1(selector, tokenpool, clskey):
             )
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_2(selector, tokenpool, clskey):
     ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다. 
     어떤 과목을 3번째로 보았습니까? '''
@@ -116,7 +116,7 @@ def prob02_1_2(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_3(selector, tokenpool, clskey):
     ''' 정국이는 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤습니다. 
     정국이가 3번째로 시험을 본 과목은 무엇입니까? '''
@@ -168,7 +168,7 @@ def prob02_1_3(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_4(selector, tokenpool, clskey):
     ''' 학교에서 국어, 수학, 영어, 과학, 사회의 순서로 시험을 봤을 때,
     3번째로 본 과목은 무슨 과목인지 구하시오 '''
@@ -221,7 +221,7 @@ def prob02_1_4(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_5(selector, tokenpool, clskey):
     ''' 계단에 정국, 태형, 지민이 순서대로 서 있습니다. 3번째에 서있는 사람은 누구입니까? '''
 
@@ -265,7 +265,7 @@ def prob02_1_5(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_6(selector, tokenpool, clskey):
     ''' 서점, 마트, 문구점 순으로 넓을 때, 3번째로 넓은 장소(곳)은 어디입니까? '''
 
@@ -309,7 +309,7 @@ def prob02_1_6(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_7(selector, tokenpool, clskey):
     ''' 달리기 시합에서 정국, 태형, 지민, ~~ 순서로 들어왔습니다. 
     3등(위)를 한 사람은 누구입니까? '''
@@ -354,7 +354,7 @@ def prob02_1_7(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_8(selector, tokenpool, clskey):
     ''' ord_rel = 크,무겁,빠르,높,많,길
     정국, 태형, 지민, ~~가 *키*가 작은 순서대로 줄을 섰습니다. 
@@ -467,7 +467,7 @@ def prob02_1_8(selector, tokenpool, clskey):
             env=envdict
             )
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_1_9(selector, tokenpool, clskey):
     ''' ord_rel=크,무겁,빠르,높,많,길 --> 키 
     정국, 태형, 지민, ~~가 키가 작은 순서대로 줄을 *섰을 때, *
@@ -586,7 +586,7 @@ def prob02_1_9(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 02 ########################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_1(selector, tokenpool, clskey):
     ''' 달리기 시합에서 정국이는 7등을 했고, 민영이는 5등을 했습니다. 태형이는 민영이보다
     못했지만 정국이보다는 잘했습니다.  
@@ -638,7 +638,7 @@ def prob02_2_1(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_2(selector, tokenpool, clskey):
     ''' 달리기 시합에서 민영이는 5등을 했고, 정국이는 7등을 했습니다. 태형이는 민영이보다
     못했지만 정국이보다는 잘했습니다.  
@@ -690,7 +690,7 @@ def prob02_2_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_3(selector, tokenpool, clskey):
     ''' 달리기 시합에서 민영이는 5등을 했고, 정국이는 7등을 했습니다. 
     태형이는 정국이보다는 잘했지만 민영이보다 못했습니다.  
@@ -742,7 +742,7 @@ def prob02_2_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_4(selector, tokenpool, clskey):
     ''' 민영이와 정국이가 달리기 시합에서 각각 5등, 7등을 했습니다.(했고, )
     태형이는 정국이보다는 잘했지만 민영이보다 못했습니다.
@@ -820,7 +820,7 @@ def prob02_2_4(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_5(selector, tokenpool, clskey):
     ''' 달리기 시합에서 민영이는 5등을 했고, 정국이는 7등을 했습니다. 
     태형이는 정국이보다는 *잘했*지만 민영이보다 *못했*습니다.  
@@ -902,7 +902,7 @@ def prob02_2_5(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_6(selector, tokenpool, clskey):
     ''' 달리기 시합에서 민영이는 5등을 했고, 정국이는 7등을 했습니다. 
     태형이는 지만 민영이보다 *못했*정국이보다*는* *잘했*습니다.  
@@ -986,7 +986,7 @@ def prob02_2_6(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_7(selector, tokenpool, clskey):
     ''' 달리기 시합에서 민영이는 5등을 했고, 정국이는 7등을 했습니다. 
     태형이는 지만 민영이보다 *점수가 낮았*지만 정국이보다*는* *높았*습니다.  
@@ -1057,7 +1057,7 @@ def prob02_2_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_8(selector, tokenpool, clskey):
     ''' 민영이와 정국이 사이에 태형이가 있습니다. 
     민영이는 5번째에 있고, 정국이는 7번째에 있다면 태형이는 몇 번째에 있습니까? '''
@@ -1105,7 +1105,7 @@ def prob02_2_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_9(selector, tokenpool, clskey):
     ''' 달리기 시합에서 정국이는 7번째로 들어왔고, 민영이는 5번째로 들어왔습니다. 
     태형이가 민영이보다 늦게 들어왔지만, 정국이보다 빨리 들어왔을 때, 태형이는 몇 등입니까? '''
@@ -1179,7 +1179,7 @@ def prob02_2_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_2_10(selector, tokenpool, clskey):
     ''' 정국이와 민영이와 태형이가 달리기 시합에 참가하였습니다. 
     정국이와 민영이는 각각 7등, 5등을 하였습니다. 태형이는 민영이보다는 낮은 점수를 받았지만, 정국이보다는 높은 점수를 받았습니다. 
@@ -1259,7 +1259,7 @@ def prob02_2_10(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 03 ########################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_1(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. 유정이는 맨 뒤에 서 있습니다. 은정이는 앞에서
     5번째에 서 있습니다. 
@@ -1323,7 +1323,7 @@ def prob02_3_1(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_2(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. 유정이는 맨 뒤에 서 있습니다. 은정이는 앞에서
     5번째에 서 있습니다. 
@@ -1387,7 +1387,7 @@ def prob02_3_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_3(selector, tokenpool, clskey):
     ''' 학생들이 한 줄로 서 있습니다. *은정이가 앞에서 5번째에 서 있고, 
     유정이는 맨 뒤에 서 있습니다.* 
@@ -1449,7 +1449,7 @@ def prob02_3_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_4(selector, tokenpool, clskey):
     ''' 유정이가 맨 뒤, 은정이가 5번째에 줄을 서 있습니다.
     둘 사이에 8명이 서 있을 때, 줄을 서 있는 학생은 모두 몇 명입니까?* '''
@@ -1508,7 +1508,7 @@ def prob02_3_4(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_5(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 줄을 섰는데, 유정이는 맨 뒤에 서 있고, 은정이는 앞에서 5번째에 서 있습니다. 
     은정이와 유정이 사이에 8명이 서 있다면, 줄을 서 있는 학생은 모두 몇 명입니까? '''
@@ -1571,7 +1571,7 @@ def prob02_3_5(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_6(selector, tokenpool, clskey):
     ''' 유정이는 가장 마지막에 매장에 들어왔고, 은정이는 5번째로 들어왔다. 
     유정이와 은정이 사이에 8명이 들어왔을 때, 매장에 들어온 사람은 모두 몇 명입니까? '''
@@ -1634,7 +1634,7 @@ def prob02_3_6(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_7(selector, tokenpool, clskey):
     ''' 학생들이 달리기 시합을 하였다. 
     유정이가 가장 마지막에 들어왔고, 은정이는 5번째로 들어왔다. 
@@ -1699,7 +1699,7 @@ def prob02_3_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_8(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 계단에 서 있습니다. 
     유정이가 가장 높은 계단에 서 있고, 은정이는 아래서 5번째에 서 있습니다. 
@@ -1764,7 +1764,7 @@ def prob02_3_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_9(selector, tokenpool, clskey):
     ''' 유정이와 은정이는 같은 아파트(건물)에 살고 있습니다. 
     유정이는 가장 윗층에 살고 있고, 은정이는 5층에 살고 있습니다. 
@@ -1830,7 +1830,7 @@ def prob02_3_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_3_10(selector, tokenpool, clskey):
     ''' 유정이와 은정이가 달리기를 하고 있습니다. 
     유정이가 가장 느리고, 은정이는 앞에서부터 5번째로 달리고 있습니다. 
@@ -1899,7 +1899,7 @@ def prob02_3_10(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 04 ########################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_1(selector, tokenpool, clskey):
     ''' 윤기는 왼쪽에서 7번째 열, 오른쪽에서 13번째 열, 앞에서 8번째 줄, 뒤에서
     14번째 줄에 서서 체조를 하고 있습니다. 각 줄마다 서 있는 학생의 수가
@@ -1964,7 +1964,7 @@ def prob02_4_1(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_2(selector, tokenpool, clskey):
     ''' 사람들이 모여있을 때, 윤기는 왼쪽에서 7번째 열, 오른쪽에서 13번째 열, 앞에서 8번째 줄, 뒤에서
     14번째 줄에 서 있습니다. 각 줄마다 서 있는 학생의 수가
@@ -2093,7 +2093,7 @@ def prob02_4_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_4(selector, tokenpool, clskey):
     ''' 윤기의 좌석이 왼쪽에서 ~~ 있습니다. 
     각 줄의 좌석 수가 같다면, 좌석의 수는 총 몇 개인가? '''
@@ -2160,7 +2160,7 @@ def prob02_4_4(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_5(selector, tokenpool, clskey):
     ''' 책꽂이에 책이 왼쪽에서 ~~ 에 꽂혀져 있다. 
     각 줄에 같은 수의 책이 꽂혀 있다고 할 때, 책꽂이에 꽂혀있는 책은 모두 몇 권입니까? '''
@@ -2227,7 +2227,7 @@ def prob02_4_5(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_6(selector, tokenpool, clskey):
     ''' 모든 줄의 인원 수를 똑같이 맞추어 행진을 하고 있습니다. 
     윤기가 속한 위치가 왼쪽에서 ~~ 일 때, 행진을 하고 있는 사람은 모두 몇 명입니까? '''
@@ -2288,7 +2288,7 @@ def prob02_4_6(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_7(selector, tokenpool, clskey):
     ''' 윤기가 직사각형 모양의 바둑판에 바둑알을 놓았다. 
     바둑알의 위치가 왼쪽에서 ~~일 때, 바둑판의 모든 칸의 개수를 구하시오. '''
@@ -2350,7 +2350,7 @@ def prob02_4_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_8(selector, tokenpool, clskey):
     ''' 매장에 인형이 전시되어 있다. 
     어느 인형이 왼쪽에서 ~~에 전시되어 있을 때, 
@@ -2413,7 +2413,7 @@ def prob02_4_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_9(selector, tokenpool, clskey):
     ''' 모든 줄의 인원을 똑같이 맞추어 체조를 하고 있다. 
     윤기는 왼쪽에서 ~~ 에 서서 체조를 하고 있다면, 
@@ -2477,7 +2477,7 @@ def prob02_4_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_4_10(selector, tokenpool, clskey):
     ''' 각 줄마다 서 있는 학생의 수를 맞추어 체조를 하고 있다. 
     윤기는 왼쪽에서 ~~에 서서 체조를 하고 있다면, 
@@ -2545,7 +2545,7 @@ def prob02_4_10(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 05 ########################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_1(selector, tokenpool, clskey):
     ''' 도서관에 똑같은 책장이 28개 있습니다. 각 책장은 6층이고, 각 층마다 꽂혀있는
     책의 수는 같습니다. 영어책은 어느 책장의 한 층의 왼쪽에서 9번째, 오른쪽에서 11번째에 
@@ -2614,7 +2614,7 @@ def prob02_5_1(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_2(selector, tokenpool, clskey):
     ''' 높이가 6층인 책장 28개 중 어느 책장의 한 층에 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
     모든 층에 꽂혀있는 책의 수가 같을 때, 이 책장에 꽂혀있는 책의 개수는 모두 몇 권입니까? '''
@@ -2672,7 +2672,7 @@ def prob02_5_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_3(selector, tokenpool, clskey):
     ''' 6층짜리 책장 28개가 있고, 각 층마다 꽂혀있는 책의 수가 같습니다. 왼쪽에서 ~~에 영어책이 꽂혀있다면, 
     이 책장에 꽂혀있는 모든 책의 개수를 구하시오. '''
@@ -2730,7 +2730,7 @@ def prob02_5_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_4(selector, tokenpool, clskey):
     ''' 도서관에 똑같은 책장이 28개 있고, 각 책장은 6층입니다. 각 층마다 꽂혀있는 책의 수가 같을 때, 
     영어책이 어느 책장의 한 층에 왼쪽에서 ~~에 있다면 모든 책장에 꽂혀있는 책의 개수를 구하시오. '''
@@ -2787,7 +2787,7 @@ def prob02_5_4(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_5(selector, tokenpool, clskey):
     ''' 한 층에 영어책이 왼쪽에서 ~~에 꽂혀있는 책장이 있습니다. 
     모든 층에 같은 수의 책이 있다면, 6층짜리 28개의 책장에는 모두 몇 권의 책이 꽂혀있습니까? '''
@@ -2844,7 +2844,7 @@ def prob02_5_5(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_6(selector, tokenpool, clskey):
     ''' 6층으로 된 책장의 한 층에 영어책이 왼쪽에서 ~~에 꽂혀있습니다. 
     모양이 똑같은 책장이 28개 있고 모든 층에 꽂혀있는 책의 수가 같을 때, 모든 책장에 꽂혀있는 책의 개수를 구하시오. '''
@@ -2902,7 +2902,7 @@ def prob02_5_6(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_7(selector, tokenpool, clskey):
     ''' 어느 한 책장에 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
     이 책장은 6층이고 총 28개의 똑같은 책장이 있습니다. 
@@ -2962,7 +2962,7 @@ def prob02_5_7(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_8(selector, tokenpool, clskey):
     ''' 각 층마다 꽂혀있는 책의 수가 같은 책장이 있습니다. 
     이 책장에 영어책이 왼쪽에서 ~~에 꽂혀있고, 책장의 높이는 6층입니다. 
@@ -3021,7 +3021,7 @@ def prob02_5_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_9(selector, tokenpool, clskey):
     ''' 도서관에 6층 책장이 28개 있습니다. 
     책장에는 영어책이 왼쪽에서 ~~에 꽂혀 있습니다. 
@@ -3080,7 +3080,7 @@ def prob02_5_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob02_5_10(selector, tokenpool, clskey):
     ''' 영어책이 왼쪽에서 ~~에 꽂혀있는 책장이 있습니다. 
     이 책장은 6층이고, 모두 28개입니다. 
@@ -3142,7 +3142,7 @@ def prob02_5_10(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 06_2 ######################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_1(selector, tokenpool, clskey):
     ''' 어떤 수에서 46을 빼야하는데 잘못하여 59를 뺐더니 43이 되었습니다.
     바르게 계산한 결과를 구하시오. '''
@@ -3200,7 +3200,7 @@ def prob06_2_1(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_2(selector, tokenpool, clskey):
     ''' 어떤 수보다 59만큼 작은 수는 43입니다.
     어떤 수보다 46만큼 작은 수를 구하시오. '''
@@ -3264,7 +3264,7 @@ def prob06_2_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_3(selector, tokenpool, clskey):
     ''' 어떤 수에서(와) 59를 빼면 43입니다.
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3326,7 +3326,7 @@ def prob06_2_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_4(selector, tokenpool, clskey):
     ''' 59를 어떤 수에서 빼면 43이 나올 때, 46을 어떤 수에서 빼면 얼마인지 구하시오. '''
 
@@ -3388,7 +3388,7 @@ def prob06_2_4(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_5(selector, tokenpool, clskey):
     ''' 어떤 수는 43에서 59를 더한 수입니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3450,7 +3450,7 @@ def prob06_2_5(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_6(selector, tokenpool, clskey):
     ''' 어떤 수 빼기 59는 43과 같습니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3511,7 +3511,7 @@ def prob06_2_6(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_7(selector, tokenpool, clskey):
     ''' 어떤 수에 59를 빼서 43을 만들었습니다. 
     어떤 수에서 46을 빼면 얼마인지 구해 보세요. '''
@@ -3572,7 +3572,7 @@ def prob06_2_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_8(selector, tokenpool, clskey):
     ''' 상자에서 사과를 59개 꺼내면 43개가 남습니다. 
     만약 46개를 빼면 상자에 몇 개의 사과가 남는지 구하시오. '''
@@ -3642,7 +3642,7 @@ def prob06_2_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_9(selector, tokenpool, clskey):
     ''' 정국이가 친구들에게 59권의 책을 나눠주면 43개가 남습니다. 
     만약 46개의 책을 나눠주면 몇 권의 책이 남는지 구하시오. '''
@@ -3720,7 +3720,7 @@ def prob06_2_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_10(selector, tokenpool, clskey):
     ''' 정국이는 민영이에게 책을 59권 받고, 태형이에게 43권 받았습니다. 
     만약, 정국이가 지민이에게 46권의 책을 준다면 남는 책은 몇 권입니까? '''
@@ -3795,7 +3795,7 @@ def prob06_2_10(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_2_11(selector, tokenpool, clskey):
     ''' 59와 43을 더한 값에서 46을 뺀(빼면) 결과값은 얼마인가? '''
 
@@ -3856,7 +3856,7 @@ def prob06_2_11(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 07_2 ######################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob07_2_1(selector, tokenpool, clskey):
     ''' 네 수 A, B, C, D가 있습니다. A는 27입니다. B는 A보다 7 큰 수입니다. C는 B보다
     9 작은 수입니다. D는 C의 2배인 수입니다.
@@ -3958,7 +3958,7 @@ def prob07_2_1(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 08_2 ######################################
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_1(selector, tokenpool, clskey):
     ''' 한 변의 길이가 5cm인 정삼각형의 둘레는 몇 cm입니까? '''
 
@@ -3991,7 +3991,7 @@ def prob08_2_1(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_2(selector, tokenpool, clskey):
     '''정삼각형의 한 변의 길이가 5cm이다. 둘레의 길이는 몇 cm입니까?'''
 
@@ -4025,7 +4025,7 @@ def prob08_2_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_3(selector, tokenpool, clskey):
     ''' 정삼각형의 한 변의 길이가 5cm일 때, 둘레의 길이는 몇 cm입니까? '''
 
@@ -4062,7 +4062,7 @@ def prob08_2_3(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_4(selector, tokenpool, clskey):
     '''한 변의 길이가 5cm인 정삼각형이 있다. 둘레의 길이는 몇 cm입니까?'''
 
@@ -4097,7 +4097,7 @@ def prob08_2_4(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_5(selector, tokenpool, clskey):
     '''한 변의 길이가 5cm인 정삼각형의 둘레를 구하시오.'''
 
@@ -4134,7 +4134,7 @@ def prob08_2_5(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_6(selector, tokenpool, clskey):
     '''한 변의 길이가 5cm인 정삼각형의 둘레의 길이는 얼마입니까?'''
 
@@ -4170,7 +4170,7 @@ def prob08_2_6(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_7(selector, tokenpool, clskey):
     ''' 정삼각형의 한 변의 길이가 5cm일 때 둘레의 길이를 구하시오. '''
 
@@ -4205,7 +4205,7 @@ def prob08_2_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_8(selector, tokenpool, clskey):
     ''' 한 변의 길이가 5cm인 정삼각형 모양의 종이를 잘랐습니다. 
     이 종이의 둘레의 길이를 구하시오. '''
@@ -4280,7 +4280,7 @@ def prob08_2_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_10(selector, tokenpool, clskey):
     ''' 한 변의 길이가 5cm인 정삼각형 하나를 만들 때 필요한 철사의 길이는 몇 cm입니까? '''
 
@@ -4317,7 +4317,7 @@ def prob08_2_10(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_2_11(selector, tokenpool, clskey):
     ''' 세 변의 길이가 모두 5cm인 정삼각형의 둘레의 길이를 구하시오. '''
 

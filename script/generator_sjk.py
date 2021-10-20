@@ -7,7 +7,7 @@ import random
 import string
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob4_01_01(selector, tokenpool, clskey):
     '''
     - 43, 92, 71, 64가 있습니다. 그중에서 가장 큰 수에서 가장 작은 수를 뺀 값은 얼마입니까?
@@ -33,7 +33,7 @@ def prob4_01_01(selector, tokenpool, clskey):
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob4_01_02(selector, tokenpool, clskey):
     '''
     - 은지, 태형, 유나, ..은 각각 사과 43, 92, 71, 64를 가지고 있습니다. 가장 많은 사과를 가진사람의 개수에서 가장 작은 사과를 가진 사름의 개수를 뺀 수는?
@@ -78,7 +78,7 @@ def prob4_01_02(selector, tokenpool, clskey):
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob4_01_03(selector, tokenpool, clskey):
     '''
     - 은지, 태형, 유나, ..은 각각 주스를 43l, 92l, 71l, 64l 마셨습니다. 가장 많은 주수를 마신사람의 개수에서 가장 적게 주스를 마신 사람의 l를 뺀 수는?
@@ -119,7 +119,7 @@ def prob4_01_03(selector, tokenpool, clskey):
             question='많은 {item}{#를} 마신 사람의 l에서 가장 적은 {item}{#를} 마신 사람의 l를 뺀 수는 몇 l입니까?',
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
-@gen.problems.register
+# @gen.problems.register
 def prob4_01_04(selector, tokenpool, clskey):
     '''
     - 상자에 사탕이 각각 43, 92, 71, 64 개 들어있습니다. 사탕이 가장 많이 담긴 상자의 사탕수에서 ?
@@ -158,7 +158,7 @@ def prob4_01_04(selector, tokenpool, clskey):
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_02(selector, tokenpool, clskey):
     '''
     - 0, 3, 5, 6 중에서 서로 다른 숫자 3개를 뽑아 만들 수 있는 세 자리 수 중 에서 가장 작은 수를 쓰시오.
@@ -194,7 +194,7 @@ def prob04_02(selector, tokenpool, clskey):
             env=envdict)
 
 # equation 과 같은 문제로 augment 힘들어서 eq를 추가함
-@gen.problems.register
+# @gen.problems.register
 def prob04_02_02(selector, tokenpool, clskey):
     '''
     - 0, 3, 5, 6 중에서 서로 다른 숫자 3개를 뽑아 만들 수 있는 세 자리 수 중 에서 가장 큰 수를 쓰시오.
@@ -229,7 +229,7 @@ def prob04_02_02(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob04_02', catL_k,*nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_03_01(selector, tokenpool, clskey):
     '''
     5개의 수 1.4, 9/10, 1, 0.5, 13/10이 있습니다.이 중에서 1보다 큰 수는 모두 몇 개입니까?
@@ -258,7 +258,7 @@ def prob04_03_01(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob04_03', over_k,*nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_03_02(selector, tokenpool, clskey):
     '''
     유나의 키는 156cm, ..의키는.. 입니다. 이중 160cm 보다 의 키보다 큰 사람은 모두 몇 명 입니까?
@@ -296,7 +296,7 @@ def prob04_03_02(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob04_03', over_k,*nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_03_03(selector, tokenpool, clskey):
     '''
     상자 4개의 무게는 .. , .. , .. , .. 입니다. 이 중 .. 단위 보다 무거운 상자의 개수는?
@@ -331,7 +331,7 @@ def prob04_03_03(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob04_03', over_k,*nums_k),
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_03_04(selector, tokenpool, clskey):
     '''
     상자 4개의 무게는 .. , .. , .. , .. 입니다. 이 중 .. 단위 보다 무거운 상자의 개수는?
@@ -369,7 +369,7 @@ def prob04_03_04(selector, tokenpool, clskey):
             env=envdict)
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_04(selector, tokenpool, clskey):
     '''
     유나가 책을 펼쳤는데 두 쪽수의 합이 125이었습니다. 유나가 펼친 두 쪽수 중 큰 수를 쓰시오.
@@ -400,7 +400,7 @@ def prob04_04(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_04_02(selector, tokenpool, clskey):
     '''
     연속되는 자연수 두 수의 합이 n이다.  연속된 자연수 중 더 큰 수를 쓰시오.
@@ -429,7 +429,7 @@ def prob04_04_02(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_04_03(selector, tokenpool, clskey):
     '''
     철수와 영희의 나이차는 한살 차이이며 두 사람의 나이의 합은 n이다. 두명 중 나이가 더 많은 사람의 나이를 쓰시오.
@@ -458,7 +458,7 @@ def prob04_04_03(selector, tokenpool, clskey):
                 name0=names[0],
                 name1=names[1]
             ))
-@gen.problems.register
+# @gen.problems.register
 def prob04_04_04(selector, tokenpool, clskey):
     '''
     외숙모와 아빠의 키차이는
@@ -490,7 +490,7 @@ def prob04_04_04(selector, tokenpool, clskey):
                 unit=unit
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob04_1_05(selector, tokenpool, clskey):
     '''
     어떤 소수의 소수점을 왼쪽으로 두 자리 옮기면 원래의 소수보다 1.782만큼 작아집니다. 원래의 소수를 구하시오.
@@ -519,7 +519,7 @@ def prob04_1_05(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_04_01(selector, tokenpool, clskey):
     '''어떤 수에 14를 더한 후 14를 곱하고, 24를 뺀 값을 24로 나누면 13이 됩니다. 어떤 수를 소수자리에서 올림한 수를 구하시오.'''
     # Claim items at first. They will not overlap (even for different keys).
@@ -546,7 +546,7 @@ def prob06_04_01(selector, tokenpool, clskey):
                 ques_trailing= ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_04_02(selector, tokenpool, clskey):
     '''처음 수박을 갯수에 14를 더한 후 14를 곱하고, 24를 뺀 값을 24명이 똑같이 나눠가지면 한 사람당 13개 이상 가집니다.. 처음 수박의 개수는 최소 몇개인지 '''
     # Claim items at first. They will not overlap (even for different keys).
@@ -575,7 +575,7 @@ def prob06_04_02(selector, tokenpool, clskey):
                 ques_trailing= ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_04_03(selector, tokenpool, clskey):
     '''처음 container의 drink를 14l를 더한 후 14배로 불렸다, 24l를 뺀 값을 24{container}에 똑같이 나누면 한 container 당 13l 이상 가집니다. 처음 container의 l를 소수자리에서 올림할 때 몇 l인가?'''
     # Claim items at first. They will not overlap (even for different keys).
@@ -609,7 +609,7 @@ def prob06_04_03(selector, tokenpool, clskey):
                 ques_trailing= ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob06_04_04(selector, tokenpool, clskey):
     '''처음 영희가 가지고 있는 {flow}에 14개를 더한 수의 14배의 {flow}{#가}있다. 그리고 24{unit}를 뺀 값을 24{container}명 똑같이 나누면 한 container 당 13l 이상 가집니다. 처음 container의 l를 소수자리에서 올림할 때 몇 l인가?'''
     # Claim items at first. They will not overlap (even for different keys).
@@ -643,7 +643,7 @@ def prob06_04_04(selector, tokenpool, clskey):
                 ques_trailing= ques_trailing
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob07_04(selector, tokenpool, clskey):
     '''
     !! name overlap !!
@@ -680,7 +680,7 @@ def prob07_04(selector, tokenpool, clskey):
     )
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob07_04_02(selector, tokenpool, clskey):
     '''
     !! name overlap !!
@@ -717,7 +717,7 @@ def prob07_04_02(selector, tokenpool, clskey):
     )
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob07_04_03(selector, tokenpool, clskey):
     '''
     !! name overlap !!
@@ -755,7 +755,7 @@ def prob07_04_03(selector, tokenpool, clskey):
     )
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob07_04_04(selector, tokenpool, clskey):
     '''
     !! name overlap !!
@@ -788,7 +788,7 @@ def prob07_04_04(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob07_04', name_k[0], name_k[1], name_k[2], name_k[3], *nums_k),
             env=envdict
     )
-@gen.problems.register
+# @gen.problems.register
 def prob08_04(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형과 둘레가 같은 정팔각형이 있습니다. 이 정팔각형의 한 변의 길이는 몇 cm인지 소수점 둘째자리까지 구하시오.'''
     # 한 / 두 /.. num2kororder는 한..두.. 아홉까지 있어 choice를 사용함
@@ -819,7 +819,7 @@ def prob08_04(selector, tokenpool, clskey):
             ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_04_02(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형과 둘레가 같은 정팔각형이 있습니다.
     이 정팔각형을 철사로 두릅니다.
@@ -854,7 +854,7 @@ def prob08_04_02(selector, tokenpool, clskey):
                 wire = wire
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_04_03(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형 종이과 둘레가 같은 정팔각형 종이가 있습니다.
      이때 종이의 한 변은 몇 {length unit}인지 소수점 둘째자리까지 구하시오.'''
@@ -887,7 +887,7 @@ def prob08_04_03(selector, tokenpool, clskey):
                 side = side
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def prob08_04_04(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형 운동장과 둘레가 같은 정팔각형 종이가 있습니다.
      이때 종이의 한 변은 몇 {length}인지 소수점 둘째자리까지 구하시오.'''

@@ -8,7 +8,7 @@ import string
 
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p1v0(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
@@ -47,7 +47,7 @@ def c5p1v0(sel, tokenpool, clskey):
             num4=num4_token
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p1v1(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
@@ -83,7 +83,7 @@ def c5p1v1(sel, tokenpool, clskey):
             name_aug=name_aug
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p1v2(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
@@ -116,7 +116,7 @@ def c5p1v2(sel, tokenpool, clskey):
             num1=num1_token
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p2v0(sel,tokenpool,clskey):
     #서로 다른 두 수 A, B가 있습니다. 두 자리 수끼리의 뺄셈식 8A-B2=45에서 A와 B의 합을 구하시오.
 
@@ -161,7 +161,7 @@ def c5p2v0(sel,tokenpool,clskey):
             num4=num4_token
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p2v1(sel,tokenpool,clskey):
     #서로 다른 두 수 A, B가 있습니다. 두 자리 수끼리의 뺄셈식 8A-B2=45에서 A와 B의 합을 구하시오.
 
@@ -213,7 +213,7 @@ def c5p2v1(sel,tokenpool,clskey):
             name_aug=name_aug
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p2v2(sel,tokenpool,clskey):
     #서로 다른 두 수 A, B가 있습니다. 두 자리 수끼리의 뺄셈식 8A-B2=45에서 A와 B의 합을 구하시오.
 
@@ -270,7 +270,7 @@ def c5p2v2(sel,tokenpool,clskey):
             school=school
             ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p3v0(sel,tokenpool,clskey):
     #서로 다른 네 수 A, B, C, D가 있습니다. 세 자리 수끼리의 덧셈식 7A4+B6C=D29에서 D를 구하시오.
     # 문제 특성상 29 이런걸 나누는게 맞을까? -> 현재는 29 -> #3#4
@@ -326,7 +326,7 @@ def c5p3v0(sel,tokenpool,clskey):
             num5 = num5_token
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p3v1(sel,tokenpool,clskey):
     #서로 다른 네 수 A, B, C, D가 있습니다. 세 자리 수끼리의 덧셈식 7A4+B6C=D29에서 D를 구하시오.
     # 문제 특성상 29 이런걸 나누는게 맞을까? -> 현재는 29 -> #3#4
@@ -390,7 +390,7 @@ def c5p3v1(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p3v2(sel,tokenpool,clskey):
     #서로 다른 네 수 A, B, C, D가 있습니다. 세 자리 수끼리의 덧셈식 7A4+B6C=D29에서 D를 구하시오.
     # 문제 특성상 29 이런걸 나누는게 맞을까? -> 현재는 29 -> #3#4
@@ -460,7 +460,7 @@ def c5p3v2(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p4v0(sel,tokenpool,clskey):
     #서로 다른 두 자연수 A, B가 있습니다. A를 17로 나누면 몫은 25이고 나머지는 B가 됩니다. 나머지 B가 가장 큰 수일 때 A를 구하시오.
 
@@ -497,7 +497,7 @@ def c5p4v0(sel,tokenpool,clskey):
         ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p4v1(sel,tokenpool,clskey):
     #서로 다른 두 자연수 A, B가 있습니다. A를 17로 나누면 몫은 25이고 나머지는 B가 됩니다. 나머지 B가 가장 큰 수일 때 A를 구하시오.
 
@@ -534,7 +534,7 @@ def c5p4v1(sel,tokenpool,clskey):
         ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p4v2(sel,tokenpool,clskey):
     #서로 다른 두 자연수 A, B가 있습니다. A를 17로 나누면 몫은 25이고 나머지는 B가 됩니다. 나머지 B가 가장 큰 수일 때 A를 구하시오.
 
@@ -576,7 +576,7 @@ def c5p4v2(sel,tokenpool,clskey):
             name_aug = name_aug
         ))
 
-@gen.problems.register
+# @gen.problems.register
 def c5p5v0(sel,tokenpool,clskey):
     #네 자리 수 6A42를 백의 자리에서 반올림하면 6000이 됩니다. 0부터 9까지의 숫자 중 A에 쓸 수 있는 숫자는 모두 몇 개입니까?
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
@@ -628,7 +628,7 @@ def c5p5v0(sel,tokenpool,clskey):
         ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p5v1(sel,tokenpool,clskey):
     #네 자리 수 6A42를 백의 자리에서 반올림하면 6000이 됩니다. 0부터 9까지의 숫자 중 A에 쓸 수 있는 숫자는 모두 몇 개입니까?
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
@@ -686,7 +686,7 @@ def c5p5v1(sel,tokenpool,clskey):
         ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c5p5v2(sel,tokenpool,clskey):
     #네 자리 수 6A42를 백의 자리에서 반올림하면 6000이 됩니다. 0부터 9까지의 숫자 중 A에 쓸 수 있는 숫자는 모두 몇 개입니까?
     total = random.choice(['', '모두 ', '총 ', '다해서 '])
@@ -747,7 +747,7 @@ def c5p5v2(sel,tokenpool,clskey):
         ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c6p5v0(sel,tokenpool,clskey):
     #12에 어떤 수를 곱해야 하는데 잘못하여 어떤 수를 12로 나누었더니 8이 되었습니다. 바르게 계산한 결과를 구하시오.
     name1 = sel.get(clskey.alpha)
@@ -778,7 +778,7 @@ def c6p5v0(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c6p5v1(sel,tokenpool,clskey):
     #12에 어떤 수를 곱해야 하는데 잘못하여 어떤 수를 12로 나누었더니 8이 되었습니다. 바르게 계산한 결과를 구하시오.
     name1 = sel.get(clskey.alpha)
@@ -814,7 +814,7 @@ def c6p5v1(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c6p5v2(sel,tokenpool,clskey):
     #12에 어떤 수를 곱해야 하는데 잘못하여 어떤 수를 12로 나누었더니 8이 되었습니다. 바르게 계산한 결과를 구하시오.
     name1 = sel.get(clskey.alpha)
@@ -858,7 +858,7 @@ def c6p5v2(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c7p5v0(sel,tokenpool,clskey):
     #철수, 영수, 영철, 경수, 경환 5명이 있습니다. 철수는 나이가 가장 적습니다. 영수는 경수에게는 동생이고 경환에게는 형입니다.
     #경수는 2년 후에 40살이 되고, 영철이는 올해 40살입니다. 5명 중에서 나이가 2번째로 적은 사람은 누구입니까?
@@ -917,7 +917,7 @@ def c7p5v0(sel,tokenpool,clskey):
             ques_trailing=ques_trailing
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c7p5v1(sel,tokenpool,clskey):
     #철수, 영수, 영철, 경수, 경환 5명이 있습니다. 철수는 나이가 가장 적습니다. 영수는 경수에게는 동생이고 경환에게는 형입니다.
     #경수는 2년 후에 40살이 되고, 영철이는 올해 40살입니다. 5명 중에서 나이가 2번째로 적은 사람은 누구입니까?
@@ -978,7 +978,7 @@ def c7p5v1(sel,tokenpool,clskey):
             timeline=timeline
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c7p5v2(sel,tokenpool,clskey):
     #철수, 영수, 영철, 경수, 경환 5명이 있습니다. 철수는 나이가 가장 적습니다. 영수는 경수에게는 동생이고 경환에게는 형입니다.
     #경수는 2년 후에 40살이 되고, 영철이는 올해 40살입니다. 5명 중에서 나이가 2번째로 적은 사람은 누구입니까?
@@ -1042,7 +1042,7 @@ def c7p5v2(sel,tokenpool,clskey):
 
 
 
-@gen.problems.register
+# @gen.problems.register
 def c8p5v0(sel,tokenpool,clskey):
     #둘레가 24cm인 직사각형이 있습니다. 이 직사각형의 가로 길이가 세로 길이의 2배일 때 가로는 몇 cm입니까?
     while(True):
@@ -1082,7 +1082,7 @@ def c8p5v0(sel,tokenpool,clskey):
             unit = unit,
     ))
 
-@gen.problems.register
+# @gen.problems.register
 def c8p5v1(sel,tokenpool,clskey):
     #둘레가 24cm인 직사각형이 있습니다. 이 직사각형의 가로 길이가 세로 길이의 2배일 때 가로는 몇 cm입니까?
     while(True):
@@ -1123,7 +1123,7 @@ def c8p5v1(sel,tokenpool,clskey):
     ))
 
 
-@gen.problems.register
+# @gen.problems.register
 def c8p5v2(sel,tokenpool,clskey):
     #둘레가 24cm인 직사각형이 있습니다. 이 직사각형의 가로 길이가 세로 길이의 2배일 때 가로는 몇 cm입니까?
     while(True):

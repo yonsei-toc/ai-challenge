@@ -29,7 +29,7 @@ def randreal(st, ed, *, ndigits = 2):
 ##   problems    ##
 ###################
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_1(selector, tokenpool, clskey):
     # entities
     container1 = selector.get(clskey.container)
@@ -82,7 +82,7 @@ def prob1_1(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_2(selector, tokenpool, clskey):
     # entities
     name1 = selector.get(clskey.name)
@@ -143,7 +143,7 @@ def prob1_2(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_3(selector, tokenpool, clskey):
     # entities
     item1 = selector.get(clskey.item)
@@ -191,7 +191,7 @@ def prob1_3(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_4(selector, tokenpool, clskey):
     # entities
     item1 = selector.get(clskey.item)
@@ -244,7 +244,7 @@ def prob1_4(selector, tokenpool, clskey):
     )
     
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_5(selector, tokenpool, clskey):
     
     # entities
@@ -302,7 +302,7 @@ def prob1_5(selector, tokenpool, clskey):
     )
     
 
-@gen.problems.register
+# @gen.problems.register
 def prob6_1(selector, tokenpool, clskey):
     # entities
     # entity numbers
@@ -331,7 +331,7 @@ def prob6_1(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob7_1(selector, tokenpool, clskey):
     
     # entities
@@ -394,7 +394,7 @@ def prob7_1(selector, tokenpool, clskey):
     )
     
 
-@gen.problems.register
+# @gen.problems.register
 def prob8_1(selector, tokenpool, clskey):
     # entities
     # entity numbers

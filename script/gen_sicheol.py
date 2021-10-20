@@ -611,7 +611,7 @@ def prob030401(sel, pl, clskey):
     """
     return
 
-@gen.problems.register
+# @gen.problems.register
 def prob030501(sel, pl, clskey):
     """
     10보다 작은 자연수 중에서 서로 다른 세 수를 동시에 뽑으려고 합니다.
@@ -696,7 +696,7 @@ def prob030502(sel, pl, clskey):
     return
 
 # TODO : X, Y 문제
-@gen.problems.register
+# @gen.problems.register
 def prob060301(sel, pl, clskey):
     """
     두 자리 수끼리의 곱셈에서 곱하는 수의 십의 자리 숫자
@@ -793,7 +793,7 @@ def prob060301(sel, pl, clskey):
 
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob060302(sel, pl, clskey):
     """
     두 자리 수끼리의 곱셈에서 곱하는 수의 십의 자리 숫자
@@ -892,7 +892,7 @@ def prob060302(sel, pl, clskey):
 
 # NOTE: This can generate a problem with a non-unique answer
 # NOTE: #1, #2가 body에서 언급되는 순서와 무관하게 무작위로 매겨짐.
-@gen.problems.register
+# @gen.problems.register
 def prob070301(sel, pl, clskey):
     """
     석진이는 호석이보다 무겁고 지민이보다 가볍습니다. 
@@ -968,7 +968,7 @@ def prob070301(sel, pl, clskey):
 
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob070302(sel, pl, clskey):
     """
     석진이는 호석이보다 무겁고 지민이보다 가볍습니다. 
@@ -1043,7 +1043,7 @@ def prob070302(sel, pl, clskey):
 
             env=envdict)
 
-@gen.problems.register
+# @gen.problems.register
 def prob080301(sel, pl, clskey):
     """
     길이가 20cm인 철사로 직사각형을 만들었더니 철사가 남지도 모자라지도 않았습니다.
