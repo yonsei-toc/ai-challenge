@@ -8,7 +8,7 @@ class TemplateSolver(nn.Module):
         super(TemplateSolver, self).__init__()
         self.solvers = nn.ModuleList([
             _DiffPerm(hidden_size, p_drop),
-            _CountFromRange(),
+            _CountFromRange(hidden_size, p_drop),
             _FindSumFromRange(),
             _WrongMultiply(),
             _OrderByCompare(),
@@ -80,7 +80,7 @@ class _Equation(nn.Module):
     n_num: int
     n_nums: int
 
-    def forward(self, batch, features, num_features, nums_features, batch_mask):
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         raise NotImplementedError()
 
 
@@ -135,11 +135,44 @@ class _DiffPerm(_Equation):
 
 
 class _CountFromRange(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(_CountFromRange, self).__init__()
 
-    def forward(self, batch, features, mask):
-        pass
+        self.num_matchers = nn.ModuleList([
+            base.SingleTokenMatcher(hidden_size, p_drop),
+            base.SingleTokenMatcher(hidden_size, p_drop),
+            base.SingleTokenMatcher(hidden_size, p_drop)
+        ])
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        loss, accuracy = [], []
+
+        # Match Number Token Output
+        equation_outputs = []
+        for i, num_feature in enumerate(num_features):
+            if num_feature is None or num_feature.numel() == 0:
+                continue
+
+            equation_output = []
+            for ep, match in enumerate(self.num_matchers):
+                if targets is None:
+                    _output, _, _ = match(num_feature, None)
+                else:
+                    _output, _loss, _accuracy = match(num_feature, targets[i][ep])
+                    loss.append(_loss)
+                    accuracy.append(_accuracy)
+                equation_output.append(_output)
+
+            equation_outputs.append(torch.stack(equation_output))
+
+        equation_outputs = torch.stack(equation_outputs)
+
+        if targets is None:
+            return equation_outputs, None, None
+
+        loss = torch.mean(torch.stack(loss))
+        accuracy = torch.mean(torch.stack(accuracy))
+        return equation_outputs, loss, accuracy
 
 
 class _FindSumFromRange(_Equation):
