@@ -83,13 +83,16 @@ def diff_perm(*_args_):
 
     if _args_[2] == 0:
         def _equation():
-            ans = max(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = max(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
     elif _args_[2] == 1:
         def _equation():
-            ans = min(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = min(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
     elif _args_[2] == 2:
         def _equation():
-            ans = list(filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
+            ans = list(
+                filter(lambda e: e >= 10 ** (_args_[0] - 1), map(lambda e: int(''.join(map(str, e))), itertools.permutations(_args_[1], _args_[0]))))
             ans = max(ans) - min(ans)
     else:
         def _equation():
@@ -306,60 +309,6 @@ def get_deci(*args):
         return 'ans = round(float((1*{}))/1,2)'.format(args[0])
 
 
-@equations.register
-def prob06_04(*args):
-    # return variable is ALWAYS [ans].
-    # args0 args1 args2
-    return 'ans = round(((({}*{})+{}) / {}) - {})'.format(args[2], args[1], args[2], args[0], args[0])
-
-
-@equations.register
-def prob07_04(name0, name1, name2, name3, *args):
-    # return variable is ALWAYS [ans].
-
-    dict = {args[0]: name0, args[0] - args[1]: name1,
-            args[2]: name2, args[0] + args[3]: name3}
-
-    return 'ans = {}[max({}.keys())]'.format(str(dict), str(dict))
-
-
-@equations.register
-def prob08_04(*args):
-    # return variable is ALWAYS [ans].
-    # item1_k, l_k)
-
-    if args[0] == "'정삼각형'":
-        return 'ans = "%.2f" % float(({}*3) / {})'.format(args[1], 8)
-    elif args[0] == "'정사각형'":
-        return 'ans = "%.2f" % float(({}*4) / {})'.format(args[1], 8)
-    elif args[0] == "'정오각형'":
-        return 'ans = "%.2f" % float(({}*5) / {})'.format(args[1], 8)
-    elif args[0] == "'정팔각형'":
-        return 'ans = "%.2f" % float(({}*8) / {})'.format(args[1], 8)
-    else:
-        return 'ans = "%.2f" % float(({}*7) / {})'.format(args[1], 8)
-
-
-@equations.register
-def prob04_03(over, *args):
-    # return variable is ALWAYS [ans]..
-    return 'ans = list(map(lambda x: x> {}, [{}])).count(True)'.format(int(over), ','.join(list(map(str, args))))
-
-
-@equations.register
-def prob04_02(n, *number_list):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, number_list))),
-        f"ans = min(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))"])
-
-
 # factor
 @equations.register
 def factor(factor, result):
@@ -410,6 +359,81 @@ def select_small_from_three(*args):
 @equations.register
 def num_sequence_with_diff(start, diff, length):
     return 'ans = [{}]'.format(','.join(map(str, [start + diff * i for i in range(length)])))
+
+
+@equations.register
+def maxSubmin(*args):
+    input = ','.join(list(map(str, args)))
+    return 'ans = max([{}]) - min([{}])'.format(input, input)
+
+
+@equations.register
+def halfOdd(*args):
+    # return variable is ALWAYS [ans].
+
+    return 'ans = ({}//2) + 1'.format(args[0])
+
+
+@equations.register
+def getDeci(*args):
+    # return variable is ALWAYS [ans].
+
+    if args[1] == 2:
+        return 'ans = round(float((100*{})/99),2)'.format(args[0])
+    elif args[1] == 3:
+        return 'ans = round(float((1000*{})/999),2)'.format(args[0])
+    elif args[1] == 1:
+        return 'ans = round(float((10*{})/9),2)'.format(args[0])
+    else:
+        return 'ans = round(float((1*{}))/1,2)'.format(args[0])
+
+
+@equations.register
+def prob06_04(*args):
+    # return variable is ALWAYS [ans].
+    # args0 args1 args2
+    return 'ans = math.ceil(((({}*{})+{}) / {}) - {})'.format(args[2], args[1], args[2], args[0], args[0])
+
+
+@equations.register
+def prob07_04(name0, name1, name2, name3, *args):
+    # return variable is ALWAYS [ans].
+
+    dict = {args[0]: name0.replace("'", ""), args[0] - args[1]: name1.replace("'", ""),
+            args[2]: name2.replace("'", ""), args[0] + args[3]: name3.replace("'", "")}
+
+    return 'ans = {}[max({}.keys())]'.format(str(dict), str(dict))
+
+
+@equations.register
+def prob04_03(over, *args):
+    # return variable is ALWAYS [ans]..
+    return 'ans = list(map(lambda x: x> {}, [{}])).count(True)'.format(int(over), ','.join(list(map(str, args))))
+
+
+@equations.register
+def prob04_02(n, *number_list):
+    """
+     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
+    """
+    return "".join([
+        "L = [{}]\n".format(', '.join(map(str, number_list))),
+        f"ans = min(filter(",
+        f"lambda e: e >= 10 ** ({n} - 1),",
+        f"map(",
+        f"lambda e: int(''.join(map(str, e))),",
+        f"itertools.permutations(L, {n}))))"])
+
+
+@equations.register
+def prob08_04(*args):
+    # return variable is ALWAYS [ans].
+    # 'prob08_04', item1_k, item2_k, l_k, 한/두/세),
+
+    dict = {"정삼각형": 3, "정사각형": 4, "정오각형": 5, "정팔각형": 8}
+    dict_edge = {"한": 1, "두": 2, "세": 3}
+
+    return 'ans = "%.2f" % float((({}/{})*{}) / {})'.format(args[2], dict_edge[args[3]], dict[args[0]], dict[args[1]])
 
 
 if __name__ == "__main__":
