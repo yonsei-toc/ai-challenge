@@ -156,9 +156,9 @@ def build_problems():
         dictionary, clskey = gd.Dictionary.load(f.read())
 
     problem_fns = gp.problems
-    selector = gds.DictionarySelector(dictionary)
 
     def _generate_problem(problem_id):
+        selector = gds.DictionarySelector(dictionary)
         problem_fn = problem_fns[problem_id]
         token_pool = gt.TokenPool()
         return problem_fn(selector, token_pool, clskey)
