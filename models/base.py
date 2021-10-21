@@ -1,10 +1,19 @@
 import torch
 import torch.nn as nn
+import pytorch_lightning as pl
 import torchmetrics
 from transformers.models.electra.modeling_electra import ElectraLayer
 
 
-class SequenceClassifier(nn.Module):
+class Module(pl.LightningModule):
+    def training_step(self, *args, **kwargs):
+        pass
+
+    def configure_optimizers(self):
+        pass
+
+
+class SequenceClassifier(Module):
     def __init__(self, hidden_size, n_labels, p_drop):
         super(SequenceClassifier, self).__init__()
         self.dropout = nn.Dropout(p_drop)
@@ -30,7 +39,7 @@ class SequenceClassifier(nn.Module):
         return x, None, None
 
 
-class SequenceTagging(nn.Module):
+class SequenceTagging(Module):
     def __init__(self, hidden_size, n_tags, p_drop):
         super(SequenceTagging, self).__init__()
         self.dropout = nn.Dropout(p_drop)
@@ -49,7 +58,7 @@ class SequenceTagging(nn.Module):
         return x, None, None
 
 
-class BinaryTagging(nn.Module):
+class BinaryTagging(Module):
     def __init__(self, hidden_size, p_drop):
         super(BinaryTagging, self).__init__()
         self.dropout = nn.Dropout(p_drop)
@@ -69,7 +78,7 @@ class BinaryTagging(nn.Module):
         return x, None, None
 
 
-class AttentionLayer(nn.Module):
+class AttentionLayer(Module):
     def __init__(self, config):
         super(AttentionLayer, self).__init__()
 
@@ -79,7 +88,7 @@ class AttentionLayer(nn.Module):
         return self.layer(features, attention_mask=mask[:, None, None, :])[0]
 
 
-class MaskedCrossEntropyLoss(nn.Module):
+class MaskedCrossEntropyLoss(Module):
     def __init__(self, n_labels, *args, **kwargs):
         super(MaskedCrossEntropyLoss, self).__init__()
 
@@ -97,7 +106,7 @@ class MaskedCrossEntropyLoss(nn.Module):
         return loss
 
 
-class SingleTokenMatcher(nn.Module):
+class SingleTokenMatcher(Module):
     def __init__(self, hidden_size, p_drop):
         super(SingleTokenMatcher, self).__init__()
 

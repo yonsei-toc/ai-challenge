@@ -3,7 +3,7 @@ import torch.nn as nn
 import models.base as base
 
 
-class QuestionEncoder(nn.Module):
+class QuestionEncoder(base.Module):
     def __init__(self):
         super(QuestionEncoder, self).__init__()
 
@@ -12,7 +12,7 @@ class QuestionEncoder(nn.Module):
         return None
 
 
-class NamedEntityRecognition(nn.Module):
+class NamedEntityRecognition(base.Module):
     def __init__(self, hidden_size, p_drop):
         super(NamedEntityRecognition, self).__init__()
         self.tag_names = base.SequenceTagging(hidden_size, 3, p_drop)
@@ -23,7 +23,7 @@ class NamedEntityRecognition(nn.Module):
         return outputs, loss
 
 
-class QuestionTargetRecognition(nn.Module):
+class QuestionTargetRecognition(base.Module):
     def __init__(self, hidden_size, p_drop):
         super(QuestionTargetRecognition, self).__init__()
         self.tag_target = base.BinaryTagging(hidden_size, p_drop)
@@ -34,7 +34,7 @@ class QuestionTargetRecognition(nn.Module):
         return outputs, loss, accuracy
 
 
-class AnswerTypeClassification(nn.Module):
+class AnswerTypeClassification(base.Module):
     def __init__(self, hidden_size, p_drop, n_types):
         super(AnswerTypeClassification, self).__init__()
         self.classifier = base.SequenceClassifier(hidden_size, n_types, p_drop)

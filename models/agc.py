@@ -41,7 +41,8 @@ class AGCModel(LightningModule):
         qtr_outputs, qtr_loss, qtr_accuracy = self.qtr(batch, features)
 
         answer_types, answer_type_loss, answer_type_accuracy = self.classify_answer_type(batch, features)
-        solve_outputs, solve_loss, solve_accuracy = self.template_solver(batch, features, answer_types)
+        solve_outputs, solve_loss, solve_accuracy, solve_results = self.template_solver(batch, features, answer_types)
+        self.log_dict(solve_results)
 
         if qtr_loss and answer_type_loss and solve_loss:
             loss = qtr_loss + answer_type_loss + solve_loss
