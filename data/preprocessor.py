@@ -77,21 +77,40 @@ class Preprocessor:
 
 
 class TrainingPreprocessor(Preprocessor):
-    def __init__(self, tokenizer, max_seq_len, wrap_numeric):
+    def __init__(self, tokenizer, max_seq_len, wrap_numeric, injection_prob=0.5):
         super(TrainingPreprocessor, self).__init__(tokenizer, max_seq_len, wrap_numeric)
 
+        self.injection_prob = injection_prob
         self._question_suffixes = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("입니까 얼마입니까 구하시오 인가 됩니까 쓰시오 될까요 할까요"))
 
     def __call__(self, data):
-        # Shuffle question and body with [SEP] token
-        sep = ' '
+        # Split body and question into each sentences
         question_pos = []
         for d in data:
             body, question = d.pop('origin_body'), d.pop('origin_question')
             t_body, t_question = d.pop('token_body'), d.pop('token_question')
 
-            sentences = [sb for b in _split_seq(body) if (sb := b.strip())] + [question]
-            t_sentences = [sb for b in _split_seq(t_body) if (sb := b.strip())] + [t_question]
+            d['origin_sentences'] = [sb for b in _split_seq(body) if (sb := b.strip())] + [question]
+            d['token_sentences'] = [sb for b in _split_seq(t_body) if (sb := b.strip())] + [t_question]
+
+        # Inject random sentences of body from other body of batch
+        for i, d in enumerate(data):
+            if random.random() > self.injection_prob:
+                continue
+            if i == (j := random.randrange(0, len(data))):
+                continue
+            if len(data[j]['origin_sentences']) == 1:
+                continue
+
+            inject_sentence = random.choice(data[j]['origin_sentences'][:-1])
+            d['origin_sentences'].insert(0, inject_sentence)
+            d['token_sentences'].insert(0, inject_sentence)
+
+        # Shuffle question and body with [SEP] token
+        sep = ' '
+        for d in data:
+            sentences, t_sentences = d.pop('origin_sentences'), d.pop('token_sentences')
+            question = sentences[-1]
 
             random.shuffle(z := list(zip(sentences, t_sentences)))
             sentences, t_sentences = zip(*z)
@@ -111,26 +130,23 @@ class TrainingPreprocessor(Preprocessor):
             ltrs = [(_split_seq(qs[i][0])[-1].strip(), qs[i + 1][1], _split_seq(qs[i + 1][0])[0].strip()) for i in range(len(qs) - 1)]
 
             t_pos = 0
-            # matched_tokens = []
             num_tokens = {}
             nums_tokens = {}
             for left, token, right in ltrs:
-                lp = t_question.find(left, t_pos) if left else t_pos
-                rp = t_question.find(right, t_pos) if right else t_pos
-                if not (rp > (lp := lp + len(left)) >= 0):
-                    raise ValueError(f"err on parsing : {lp=} {rp=} {left=}, {right=}, {t_question[t_pos]=}, {t_pos=}, {t_question=}")
+                lp = (t_question.find(left, t_pos) + len(left)) if left else t_pos
+                rp = t_question.find(right, lp) if right else t_pos
 
                 target = t_question[lp:rp]
                 matched_token = next((k for k in reversed(tokens.keys()) if k in target), None)
-                if not matched_token:
-                    raise ValueError(f"err on matching : {lp=} {rp=} {left=}, {right=}, {target=} {t_question[t_pos]=}, {t_pos=}, {t_question=}")
-
-                if token == '[NUM]':
-                    num_tokens[matched_token] = tokens[matched_token]
-                elif token == '[NUMS]':
-                    nums_tokens[matched_token] = tokens[matched_token]
-                # matched_tokens.append((token, matched_token, tokens[matched_token]))
+                if matched_token:
+                    if token == '[NUM]':
+                        num_tokens[matched_token] = tokens[matched_token]
+                    elif token == '[NUMS]':
+                        nums_tokens[matched_token] = tokens[matched_token]
                 t_pos = rp
+            all_keys = set(num_tokens.keys()).union(set(nums_tokens.keys()))
+            if all_keys != set(tokens.keys()):
+                raise ValueError(f"Error on matching : {num_tokens=} {nums_tokens=} {tokens=} {t_question=} {question=}")
 
             batch['matched_num'].append(num_tokens)
             batch['matched_nums'].append(nums_tokens)

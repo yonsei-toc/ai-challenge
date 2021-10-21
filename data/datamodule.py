@@ -14,6 +14,7 @@ class AGCDataModule(LightningDataModule):
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
         self.train_preprocessor = TrainingPreprocessor(self.tokenizer, self.max_seq_len, wrap_numeric)
+        self.val_preprocessor = TrainingPreprocessor(self.tokenizer, self.max_seq_len, wrap_numeric, injection_prob=0.7)
 
     def setup(self, stage=None):
         if stage == "fit":
@@ -21,13 +22,13 @@ class AGCDataModule(LightningDataModule):
             generate_problem, problem_ids = build_problems()
             targets = problem_ids * self.n_aug_per_question
             self.train_dataset = AGCTrainDataset(targets, generate_problem)
-            self.val_dataset = AGCTrainDataset(problem_ids * 2, generate_problem)
+            self.val_dataset = AGCTrainDataset(problem_ids * 10, generate_problem)
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(self.val_dataset, collate_fn=self.val_preprocessor, batch_size=self.batch_size, shuffle=True)
 
 
 class AGCTrainDataset(Dataset):
