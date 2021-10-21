@@ -72,10 +72,11 @@ class BinaryTagging(Module):
         if labels is not None:
             loss_fct = nn.BCEWithLogitsLoss(pos_weight=mask)
             loss = loss_fct(x, labels)
-            accuracy = self.accuracy(x.sigmoid(), labels == 1)
+            x = x.sigmoid()
+            accuracy = self.accuracy(x, labels == 1)
 
             return x, loss, accuracy
-        return x, None, None
+        return x.sigmoid(), None, None
 
 
 class AttentionLayer(Module):

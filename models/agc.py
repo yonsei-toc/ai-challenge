@@ -32,11 +32,20 @@ class AGCModel(LightningModule):
 
     def get_action_results(self, batch, tag):
         features = self(batch)
+
+        # Prepare for solving
         # ner_outputs, ner_loss = self.ner(batch, features)
         qtr_outputs, qtr_loss, qtr_accuracy = self.qtr(batch, features)
-
         answer_types, answer_type_loss, answer_type_accuracy = self.classify_answer_type(batch, features)
-        solve_outputs, solve_loss, solve_accuracy, solve_results = self.template_solver(batch, features, answer_types)
+
+        # Solve Questions
+        if 'question_targets' in batch:
+            question_mask = batch['question_targets'].int()
+        else:
+            question_mask = (qtr_outputs >= 0.5).int()
+        question_mask = (question_mask * batch['unnum_mask']).int()
+
+        solve_outputs, solve_loss, solve_accuracy, solve_results = self.template_solver(batch, features, answer_types, question_mask)
 
         if qtr_loss and answer_type_loss and solve_loss:
             loss = qtr_loss + answer_type_loss + solve_loss

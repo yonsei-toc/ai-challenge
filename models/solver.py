@@ -20,9 +20,9 @@ class TemplateSolver(base.Module):
         self.extract_nums = TokenFeatureExtractor('nums', config)
         self.n_solvers = len(self.solvers)
 
-    def forward(self, batch, features, answer_types):
-        num_features = self.extract_num(batch, features)
-        nums_features = self.extract_nums(batch, features)
+    def forward(self, batch, features, answer_types, question_mask):
+        num_features = self.extract_num(batch, features, question_mask)
+        nums_features = self.extract_nums(batch, features, question_mask)
 
         loss, accuracy = [], []
         label_answer_type = batch['equation_type']
@@ -62,7 +62,7 @@ class TokenFeatureExtractor(base.Module):
         self.token_prefix = token_prefix
         self.attention = base.AttentionLayer(config)
 
-    def forward(self, batch, features):
+    def forward(self, batch, features, question_masks):
         wrap_inds = batch[f'{self.token_prefix}_wrap_ind']
         attn_masks = batch[f'{self.token_prefix}_attn_mask']
         pos_masks = batch[f'{self.token_prefix}_pos_mask']
@@ -71,6 +71,14 @@ class TokenFeatureExtractor(base.Module):
         for i, (wrap_ind, pos_mask, attn_mask) in enumerate(zip(wrap_inds, pos_masks, attn_masks)):
             if wrap_ind.numel():
                 x = features[i, wrap_ind, :]
+
+                question_features = features[i, :].expand(x.size(0), -1, -1)
+                question_mask = question_masks[i].expand(x.size(0), -1)
+
+                x = torch.cat((x, question_features), 1)
+                attn_mask = torch.cat((attn_mask, question_mask), 1)
+                pos_mask = torch.cat((pos_mask, torch.zeros_like(question_mask)), 1)
+
                 x = self.attention(x, attn_mask)
                 x = x[pos_mask == 1, :]
                 token_features.append(x)

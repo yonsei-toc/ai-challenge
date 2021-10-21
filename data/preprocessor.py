@@ -11,7 +11,7 @@ class Batch(dict):
 
 
 class Preprocessor:
-    __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask', 'equation_type', 'numeric_feature_masks'
+    __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask', 'equation_type', 'unnum_mask'
 
     def __init__(self, tokenizer, max_seq_len, wrap_numeric):
         self.tokenizer = tokenizer
@@ -39,19 +39,13 @@ class Preprocessor:
         max_seq_len = len(batch['input_ids'][0])
         seq_lens = [next((i for i, s in enumerate(seq_ids) if s == 0), max_seq_len) for seq_ids in batch['input_ids']]
 
-        # Separator mask
-        # batch['sequence_mask'] = batch['attention_mask']
-        batch['question_ids'] = batch['input_ids']
-        # batch['separator_mask'] = [[int(token_id in self._endings) for token_id in seq_ids] for seq_ids in batch['input_ids']]
-        separator_mask = [[int(token_id in self._endings) for token_id in seq_ids] for seq_ids in batch['input_ids']]
-        batch['separator_pos'] = [[i for i, m in enumerate(seq) if m] + [0] for seq in separator_mask]
-
         # Wrap Numeric Mask
-        # num_indices = self._wrap_masks([[int(token_id == self.num_token_id) for token_id in seq_ids] for seq_ids in batch['input_ids']])
         num_wrap_ind, num_pos_mask, num_attn_mask = self._wrap(
             [[i for i, token_id in enumerate(seq_ids) if token_id == self.num_token_id] for seq_ids in batch['input_ids']], seq_lens)
         nums_wrap_ind, nums_pos_mask, nums_attn_mask = self._wrap(
             [[i for i, token_id in enumerate(seq_ids) if token_id == self.nums_token_id] for seq_ids in batch['input_ids']], seq_lens)
+        batch['unnum_mask'] = [[(m if t != self.num_token_id and t != self.nums_token_id else 0) for t, m in zip(seq_ids, masks)]
+                               for seq_ids, masks in zip(batch['input_ids'], batch['attention_mask'])]
 
         batch['num_wrap_ind'] = [torch.as_tensor(n) for n in num_wrap_ind]
         batch['num_pos_mask'] = [torch.as_tensor(m) for m in num_pos_mask]
@@ -60,7 +54,11 @@ class Preprocessor:
         batch['nums_pos_mask'] = [torch.as_tensor(m) for m in nums_pos_mask]
         batch['nums_attn_mask'] = [torch.as_tensor(m) for m in nums_attn_mask]
 
-        return {k: _collate(v) if k in self.__collate_slots else v for k, v in batch.items()}
+        raws = {k: batch[k] for k in self.__collate_slots}
+        batch = {k: _collate(v) if k in self.__collate_slots else v for k, v in batch.items()}
+        batch['raw_collated'] = raws
+
+        return batch
 
     def _wrap(self, batch_indices, seq_lens):
         w = self.wrap_numeric
@@ -120,6 +118,7 @@ class TrainingPreprocessor(Preprocessor):
             d['t_question'] = sep.join(t_sentences)
 
         batch = super(TrainingPreprocessor, self).__call__(data)
+        raw_batch = batch.pop('raw_collated')
 
         # Map Numerics with Token
         batch['matched_num'] = []
@@ -168,15 +167,19 @@ class TrainingPreprocessor(Preprocessor):
             batch['equation_targets'].append(equation_target)
 
         # Make Question Targets
-        length = len(batch['question_ids'][0])
+        separator_mask = [[int(token_id in self._endings) for token_id in seq_ids] for seq_ids in raw_batch['input_ids']]
+        separator_pos = [[i for i, m in enumerate(seq) if m] + [0] for seq in separator_mask]
+
+        length = len(raw_batch['input_ids'][0])
         question_targets = []
-        for qp, sp, qids in zip(question_pos, batch['separator_pos'], batch['question_ids']):
+        for qp, sp, qids in zip(question_pos, separator_pos, raw_batch['input_ids']):
             qt = [0.0] * length
             for i in range(sp[qp - 1] + 1, sp[qp]):
                 qt[i] = 1.0
                 if qids[i] in self._question_suffixes:
                     break
             question_targets.append(qt)
+
         batch['question_targets'] = _collate(question_targets)
 
         return batch
