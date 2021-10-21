@@ -30,25 +30,32 @@ class AGCModel(LightningModule):
                                        attention_mask=batch['attention_mask'])[0]
         return features
 
-    def get_action_results(self, batch):
+    def get_action_results(self, batch, tag):
         features = self(batch)
         # ner_outputs, ner_loss = self.ner(batch, features)
         qtr_outputs, qtr_loss, qtr_accuracy = self.qtr(batch, features)
 
         answer_types, answer_type_loss, answer_type_accuracy = self.classify_answer_type(batch, features)
         solve_outputs, solve_loss, solve_accuracy, solve_results = self.template_solver(batch, features, answer_types)
-        self.log_dict(solve_results)
 
         if qtr_loss and answer_type_loss and solve_loss:
             loss = qtr_loss + answer_type_loss + solve_loss
             accuracy = (qtr_accuracy + answer_type_accuracy + solve_accuracy) / 3
+
+            self.log_dict({
+                f"pre_solver({tag})/qtr_loss": qtr_loss,
+                f"pre_solver({tag})/qtr_accuracy": qtr_accuracy,
+                f"pre_solver({tag})/answer_type_loss": answer_type_loss,
+                f"pre_solver({tag})/answer_type_accuracy": answer_type_accuracy
+            })
+            self.log_dict(solve_results)
 
             return qtr_outputs, loss, accuracy
         else:
             return qtr_outputs, None, None
 
     def training_step(self, batch, batch_idx):
-        output, loss, accuracy = self.get_action_results(batch)
+        output, loss, accuracy = self.get_action_results(batch, 'train')
 
         self.log("train/accuracy", accuracy, prog_bar=True)
         self.log("train/loss", loss, prog_bar=True)
@@ -56,7 +63,7 @@ class AGCModel(LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        output, loss, accuracy = self.get_action_results(batch)
+        output, loss, accuracy = self.get_action_results(batch, 'val')
 
         self.log_dict({"valid/loss": loss, "valid/accuracy": accuracy}, prog_bar=True)
 
