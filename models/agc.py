@@ -55,15 +55,15 @@ class AGCModel(LightningModule):
     def training_step(self, batch, batch_idx):
         output, loss, accuracy = self.get_action_results(batch)
 
-        self.log("train_acc", accuracy, prog_bar=True)
-        self.log("train_loss", loss, prog_bar=True)
+        self.log("train/accuracy", accuracy, prog_bar=True)
+        self.log("train/loss", loss, prog_bar=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
         output, loss, accuracy = self.get_action_results(batch)
 
-        self.log_dict({"valid_loss": loss, "valid_acc": accuracy}, prog_bar=True)
+        self.log_dict({"valid/loss": loss, "valid/accuracy": accuracy}, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         pass

@@ -94,7 +94,10 @@ class _Equation(base.Module):
         return equation_outputs, loss, accuracy, {self._key('loss'): loss, self._key('accuracy'): accuracy}
 
     def _key(self, key):
-        return f"{type(self).__name__[1:]}_{key}"
+        if self.training:
+            return f"solver(train)/{type(self).__name__[1:]}_{key}"
+        else:
+            return f"solver(valid)/{type(self).__name__[1:]}_{key}"
 
 
 class _DiffPerm(_Equation):
