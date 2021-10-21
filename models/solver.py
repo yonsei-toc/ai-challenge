@@ -1,3 +1,4 @@
+import itertools
 import torch
 import torch.nn as nn
 import models.base as base
@@ -100,49 +101,62 @@ class _Equation(base.Module):
             return f"solver(valid)/{type(self).__name__[1:]}_{key}"
 
 
+class _NumberMatcher(_Equation):
+    def __init__(self, hidden_size, p_drop, n_num):
+        super(_NumberMatcher, self).__init__()
+        self.num_matchers = nn.ModuleList([base.SingleTokenMatcher(hidden_size, p_drop) for _ in range(n_num)])
+        self.n_num = n_num
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask, default=0):
+        loss, accuracy = [], []
+
+        # Match Number Token Output
+        equation_outputs = []
+        for i, iter_nf in enumerate(num_features):
+            if torch.is_tensor(iter_nf):
+                iter_nf = itertools.repeat(iter_nf, self.n_num)
+
+            equation_output = []
+            for ep, (num_feature, matcher) in enumerate(zip(iter_nf, self.num_matchers)):
+                if num_feature is None or num_feature.numel() == 0 or num_feature.size(0) == 1:
+                    _output = torch.tensor(default, device=self.device)
+                else:
+                    target = None if targets is None else targets[i][ep]
+                    _output, _loss, _accuracy = matcher(num_feature, target)
+
+                    loss.append(_loss)
+                    accuracy.append(_accuracy)
+                equation_output.append(_output)
+
+            equation_outputs.append(torch.stack(equation_output))
+
+        equation_outputs = torch.stack(equation_outputs)
+        return equation_outputs, loss, accuracy
+
+
 class _DiffPerm(_Equation):
     n_num = 1
     n_nums = 1
 
     def __init__(self, hidden_size, p_drop):
         super(_DiffPerm, self).__init__()
-        self.match_num = base.SingleTokenMatcher(hidden_size, p_drop)
-        self.match_nums = base.SingleTokenMatcher(hidden_size, p_drop)
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 2)
         self.match_type = base.SequenceClassifier(hidden_size, 4, p_drop)
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        loss, accuracy = [], []
-
         # Match Number Token Output
-        equation_outputs = []
-        for i, fs in enumerate(zip(num_features, nums_features)):
-            equation_output = []
-            for ep, feature, match in zip((0, 1), fs, (self.match_num, self.match_nums)):
-                if feature is not None and feature.size(0) > 1:  # 2개 이상일 경우만 classification 에 의미가 있음
-                    target = None if targets is None else targets[i][ep]
-                    _output, _loss, _accuracy = match(feature, target)
-
-                    loss.append(_loss)
-                    accuracy.append(_accuracy)
-                else:
-                    _output = torch.tensor(0, device=self.device)
-                equation_output.append(_output)
-
-            equation_outputs.append(torch.stack(equation_output))
-        equation_outputs = torch.stack(equation_outputs)
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, zip(num_features, nums_features), None, targets, batch_mask)
 
         # Match Equation Subtype
-        if targets is None:
-            x, loss, accuracy = self.match_type(features, None)
-        else:
-            label_2 = torch.stack([t[2].squeeze() for t in targets])
-            x, loss_2, accuracy_2 = self.match_type(features, label_2)
+        label_2 = None if targets is None else torch.stack([t[2].squeeze() for t in targets])
 
-            loss = (torch.mean(torch.stack(loss)) * 2 + loss_2) / 3 if loss else loss_2
-            accuracy = (torch.mean(torch.stack(accuracy)) * 2 + accuracy_2) / 3 if accuracy else accuracy_2
-
+        x, loss_2, accuracy_2 = self.match_type(features, label_2)
         x = x.argmax(-1)
+
         equation_outputs = torch.cat((equation_outputs, x.unsqueeze(-1)), -1)
+
+        loss = (torch.mean(torch.stack(loss)) * 2 + loss_2) / 3 if loss else loss_2
+        accuracy = (torch.mean(torch.stack(accuracy)) * 2 + accuracy_2) / 3 if accuracy else accuracy_2
 
         return self.output(equation_outputs, loss, accuracy)
 
@@ -151,35 +165,10 @@ class _CountFromRange(_Equation):
     def __init__(self, hidden_size, p_drop):
         super(_CountFromRange, self).__init__()
 
-        self.num_matchers = nn.ModuleList([
-            base.SingleTokenMatcher(hidden_size, p_drop),
-            base.SingleTokenMatcher(hidden_size, p_drop),
-            base.SingleTokenMatcher(hidden_size, p_drop)
-        ])
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 3)
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        loss, accuracy = [], []
-
-        # Match Number Token Output
-        equation_outputs = []
-        for i, num_feature in enumerate(num_features):
-            if num_feature is None or num_feature.numel() == 0:
-                continue
-
-            equation_output = []
-            for ep, matcher in enumerate(self.num_matchers):
-                target = None if targets is None else targets[i][ep]
-
-                _output, _loss, _accuracy = matcher(num_feature, target)
-
-                loss.append(_loss)
-                accuracy.append(_accuracy)
-                equation_output.append(_output)
-
-            equation_outputs.append(torch.stack(equation_output))
-
-        equation_outputs = torch.stack(equation_outputs)
-
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, num_features, nums_features, targets, batch_mask)
         if targets is None:
             return self.output(equation_outputs)
 
@@ -190,37 +179,11 @@ class _FindSumFromRange(_Equation):
     def __init__(self, hidden_size, p_drop):
         super(_FindSumFromRange, self).__init__()
 
-        self.num_matchers = nn.ModuleList([
-            base.SingleTokenMatcher(hidden_size, p_drop),
-            base.SingleTokenMatcher(hidden_size, p_drop),
-            base.SingleTokenMatcher(hidden_size, p_drop),
-            base.SingleTokenMatcher(hidden_size, p_drop)
-        ])
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 4)
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        loss, accuracy = [], []
-
-        equation_outputs = []
-        for i, num_feature in enumerate(num_features):
-            if num_feature is None or num_feature.numel() == 0:
-                continue
-
-            if num_feature.size(0) == 3:  # {0} 토큰은 1로 고정하고 나머지 분배
-                equation_output = [torch.tensor(-1, device=self.device)]
-            else:
-                equation_output = []
-
-            for ep, matcher in enumerate(self.num_matchers, start=len(equation_output)):
-                target = None if targets is None else targets[i][ep]
-
-                _output, _loss, _accuracy = matcher(num_feature, target)
-
-                loss.append(_loss)
-                accuracy.append(_accuracy)
-                equation_output.append(_output)
-            equation_outputs.append(torch.stack(equation_output))
-
-        equation_outputs = torch.stack(equation_outputs)
+        num_features = [([None, nf, nf, nf] if nf is None or nf.numel() == 0 or nf.size(0) == 3 else nf) for nf in num_features]
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, num_features, nums_features, targets, batch_mask, default=-1)
 
         if targets is None:
             return self.output(equation_outputs)
