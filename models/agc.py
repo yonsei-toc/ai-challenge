@@ -1,12 +1,11 @@
 import torch
 from pytorch_lightning import LightningModule
-from models.extractor import QuestionEncoder, NamedEntityRecognition, QuestionTargetRecognition, AnswerTypeClassification
+from models.extractor import NamedEntityRecognition, QuestionTargetRecognition, AnswerTypeClassification
 from models.solver import TemplateSolver
 
 
 class AGCModel(LightningModule):
-    def __init__(self, language_model, tokenizer, n_types=8, n_templates=40, learning_rate=5e-5, p_drop=0.1,
-                 encoder='simple'):
+    def __init__(self, language_model, tokenizer, learning_rate=5e-5, p_drop=0.1):
         super(AGCModel, self).__init__()
         self.save_hyperparameters(ignore=['language_model', 'tokenizer'])
         self.save_hyperparameters({'language_model': language_model.name_or_path})
@@ -17,10 +16,6 @@ class AGCModel(LightningModule):
         self.learning_rate = learning_rate
 
         self.language_model = language_model
-        if encoder == 'simple':
-            self.encoder = None
-        else:
-            self.encoder = QuestionEncoder()
         self.ner = NamedEntityRecognition(hidden_size, p_drop)
         self.qtr = QuestionTargetRecognition(hidden_size, p_drop)
         self.template_solver = TemplateSolver(hidden_size, p_drop, language_model.config)
