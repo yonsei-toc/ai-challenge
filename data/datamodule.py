@@ -24,10 +24,10 @@ class AGCDataModule(LightningDataModule):
             self.val_dataset = AGCTrainDataset(problem_ids * 2, generate_problem)
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size)
+        return DataLoader(self.train_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size)
+        return DataLoader(self.val_dataset, collate_fn=self.train_preprocessor, batch_size=self.batch_size, shuffle=True)
 
 
 class AGCTrainDataset(Dataset):

@@ -611,7 +611,7 @@ def prob030401(sel, pl, clskey):
     """
     return
 
-# @gen.problems.register
+@gen.problems.register
 def prob030501(sel, pl, clskey):
     """
     10보다 작은 자연수 중에서 서로 다른 세 수를 동시에 뽑으려고 합니다.
@@ -677,7 +677,7 @@ def prob030501(sel, pl, clskey):
     question += question_trailing
 
     # equation
-    equation = gen.EqnRef("find_sum_from_range", 1, c_k, n_k, m_k)
+    equation = gen.EqnRef("find_sum_from_range", 0, c_k, n_k, m_k)
 
     return gen.build(
             body=body, 

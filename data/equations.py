@@ -123,9 +123,12 @@ def find_sum_from_range(*_args_):
     """ncm
     {0} ~ {1}까지의 수 중 {2}개의 수를 동시에 뽑아 그 합이 {3}이 되는 경우의 수
     """
-
-    def _equation():
-        ans = len(list(filter(lambda e: e == _args_[3], map(sum, itertools.combinations(range(_args_[0], _args_[1]), _args_[2])))))
+    if _args_[0] == 0:
+        def _equation():
+            ans = len(list(filter(lambda e: e == _args_[3], map(sum, itertools.combinations(range(_args_[1]), _args_[2])))))
+    else:
+        def _equation():
+            ans = len(list(filter(lambda e: e == _args_[3], map(sum, itertools.combinations(range(_args_[0], _args_[1]), _args_[2])))))
 
     return _equation
 
