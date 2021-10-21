@@ -13,7 +13,7 @@ class NumericProcessor:
     _chinese_10n = {
         '십': 10, '백': 100, '천': 1000, '만': 10000
     }
-    _units = ['개', '살', '송이', '알', '자루', '권', '장', '켤레', '병', '대', '척', '다스', '판', '알', '통', '자리', '숫자', '수',
+    _units = ['개', '살', '송이', '알', '자루', '권', '장', '켤레', '병', '대', '척', '다스', '판', '알', '통', '자리', '숫자', '수', '의 자리',
               '킬로미터', 'km', '㎞', '미터', 'm', '센티미터', 'cm', '㎝', '밀리미터', 'mm', '㎜',
               '킬로리터', 'kl', '㎘', '리터', 'l', 'ℓ', '밀리리터', 'ml', '㎖',
               '세제곱미터', 'm3', 'm^3', '㎥', '세제곱센티미터', 'cm3', 'cm^3', '㎤',
@@ -24,38 +24,45 @@ class NumericProcessor:
     _1_others = "(?:하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉)"
     _over_10_with_1 = "(?:(?:(?:[일이삼사오육칠팔구]?[백천만])+)?\\s?(?:열|스물|서른|마흔|쉰|예순|일흔|여든|아흔))"
     _over_10_only = "(?:(?:(?:[일이삼사오육칠팔구]?[백천만])+)?\\s?(?:열|스무|서른|마흔|쉰|예순|일흔|여든|아흔))"
-    _exp_chinse_10n = f"(?:{'|'.join(_chinese_10n.keys())})"
+    _exp_chinese_1 = f"(?:{'|'.join(_chinese_1.keys())})"
+    _exp_chinese_10n = f"(?:{'|'.join(_chinese_10n.keys())})"
     _exp_units = "(?:\\s?" + '|\\s?'.join(_units) + ")"
     _exp_arabic = "(?:-?\\d+(\\.\\d+)?)"
-    _exp_kor = f"(?:(?:{_over_10_with_1}\\s?{_1})|(?:{_over_10_only}|{_1}))"
-    _exp_kor_units = f"{_exp_kor}\\s?{_exp_units}"
-    _exp_kor_nonunits = f"{_over_10_with_1}\\s?{_1_others}"
-    _exp_num = f"\\b(?:(?:{_exp_kor_units})|(?:{_exp_kor_nonunits})|(?:{_exp_arabic}\\s*{_exp_units}?))"
-    _exp_nums = f"(?:{_exp_num})(?:,\\ *(?:{_exp_num}))+"
+    _exp_kor = f"(?:(?:{_over_10_with_1}\\s*{_1})|(?:{_over_10_only}|{_1}))"
+    _exp_kor_units = f"{_exp_kor}\\s*{_exp_units}"
+    _exp_kor_nonunits = f"{_over_10_with_1}\\s*{_1_others}"
+    _exp_chn_over_10 = f"(?:{_exp_chinese_1}?{_exp_chinese_10n}\\s*)+(?:{_exp_chinese_1})?"
+    _exp_chn = f"(?:{_exp_chn_over_10})"
+    _exp_chn_units = f"(?:{_exp_chn}\\s*{_exp_units})|(?:일의 자리)"
+    _exp_total_kor = f"(?:{_exp_kor_units})|(?:{_exp_kor_nonunits})|(?:{_exp_chn_units})|(?:{_exp_chn}\\b)"
+    _exp_num = f"\\b(?:(?:{_exp_total_kor})|(?:{_exp_arabic}\\s*(?:{_exp_units}|의\\s*자리)?))"
+    _exp_nums = f"(?:{_exp_num})(?:,\\s*(?:{_exp_num}))+"
     _exp_all = f"(?:{_exp_nums})|(?:{_exp_num})"
+    _exp_num_token = f"(?:\\[NUM\\])|(?:\\[NUMS\\])"
 
     def __init__(self, num_token, nums_token):
         self.unit_pattern = re.compile(self._exp_units)
-        self.c10n_pattern = re.compile(self._exp_chinse_10n)
+        self.c10n_pattern = re.compile(self._exp_chinese_10n)
         self.kor_pattern = re.compile(self._exp_kor)
+        self.chn_pattern = re.compile(self._exp_chn)
         self.arabic_pattern = re.compile(self._exp_arabic)
         self.num_pattern = re.compile(self._exp_num)
         self.nums_pattern = re.compile(self._exp_nums)
         self.all_pattern = re.compile(self._exp_all)
+
+        self.num_token_pattern = re.compile(self._exp_num_token)
 
         self.num_token = num_token
         self.nums_token = nums_token
 
     def replace_token(self, s):
         replaced = self.nums_pattern.sub(self.nums_token, s)
-        # print(replaced)
-        replaced = self.num_pattern.sub(self.num_token, replaced)
-        # print(replaced)
+
+        replaced = self.num_pattern.sub(
+            lambda m: self.num_token + ('' if isinstance((n := self._numeric_info(m.group())), list) or n[2] is None else n[2]),
+            replaced)
 
         nums = [self._numeric_info(m.group()) for m in self.all_pattern.finditer(s)]
-        # nums = [[self._numeric_info(n.strip()) for n in m.group().split(',')] if ',' in m.group() else self._numeric_info(m.group())
-        #         for m in self.nums_pattern.finditer(s)]
-
         return replaced, nums
 
     def replace_batch(self, batch):
@@ -68,6 +75,8 @@ class NumericProcessor:
     def _numeric_info(self, num_word):
         if ',' in num_word:
             return [self._numeric_info(n) for n in num_word.split(',')]
+        if "일의 자리" in num_word:
+            return num_word, 1, "의 자리"
         number = self._get_number(num_word := num_word.strip())
         unit = unit.group() if (unit := self.unit_pattern.search(num_word)) else None
         return num_word, number, unit
@@ -75,7 +84,7 @@ class NumericProcessor:
     def _get_number(self, s):
         if n := self.arabic_pattern.search(s):
             return float(n) if '.' in (n := n.group()) else int(n)
-        elif n := self.kor_pattern.search(s):
+        elif (n := self.kor_pattern.search(s)) or (n := self.chn_pattern.search(s)):
             n = n.group()
             result = 0
             # 맨 뒤에 하나, 둘, 스물셋 등 계산
@@ -108,3 +117,11 @@ if __name__ == "__main__":
     print('---')
     print(np.replace_token("가능한 수는 모두 몇 개인지 구하시오. 1, 3, 5, 22 중에서 3 개의 서로 다른 숫자를 뽑아 세 자리 수를 만들려고 한다."))
     print(np.replace_token("1, 3, 5, 22 중에서 3 개의 서로 다른 숫자를 뽑아 세 자리 수를 만들려고 한다. 가능한 수는 모두 몇 개인지 구하시오."))
+    print('---')
+    print("69부터 83까지 자연수를 쓰려고 합니다. 바르게 계산한 계산한 값은 87210이 될 때, 두 개의 세 자리 수 중 작은 수를 구하시오."
+          " 세 자리 수끼리의 곱셈에서 곱해지는 수의 십의 자리 숫자 3을 4로 잘못 보고 계산한 값이 93670이 되었습니다.")
+    print(np.replace_token("69부터 83까지 자연수를 쓰려고 합니다. 바르게 계산한 계산한 값은 87210이 될 때, 두 개의 세 자리 수 중 작은 수를 구하시오."
+                           " 세 자리 수끼리의 곱셈에서 곱해지는 수의 십의 자리 숫자 3을 4로 잘못 보고 계산한 값이 93670이 되었습니다."))
+
+    print(np.replace_token("10 이상 71 이하의 자연수를 모두 적으려고 합니다. 접시에 7, 3, 0이 적힌 카드가 들어있습니다."
+                           " 접시에서 카드를 꺼내서 만들 수 있는 가장 작은 두 자리 수는 얼마입니까?"))

@@ -1,4 +1,5 @@
 import random
+import re
 import torch
 from data.numerics import NumericProcessor
 
@@ -80,6 +81,8 @@ class TrainingPreprocessor(Preprocessor):
 
         self.injection_prob = injection_prob
         self._question_suffixes = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("입니까 얼마입니까 구하시오 인가 됩니까 쓰시오 될까요 할까요"))
+        self.search_token = re.compile("(\\#\\d)")
+        self.search_num = re.compile("(\\[NUM\\]|\\[NUMS\\])")
 
     def __call__(self, data):
         # Split body and question into each sentences
@@ -124,25 +127,31 @@ class TrainingPreprocessor(Preprocessor):
         batch['matched_num'] = []
         batch['matched_nums'] = []
         for question, t_question, tokens in zip(batch['question'], batch['t_question'], batch['tokens']):
-            # Calculate ltrs = list of (left, token, right) for each numeric token
-            qs = [(q[1:], '[NUM]') if q.startswith(']') else (q[2:], '[NUMS]') if q.startswith('S]') else (q, None) for q in question.split('[NUM')]
-            ltrs = [(_split_seq(qs[i][0])[-1].strip(), qs[i + 1][1], _split_seq(qs[i + 1][0])[0].strip()) for i in range(len(qs) - 1)]
+            q_splits = self.search_num.split(question)
+            t_splits = self.search_token.split(t_question)
 
-            t_pos = 0
+            num_ltrs = [(q_splits[i - 1].strip(), q_splits[i], q_splits[i + 1].strip()) for i in range(1, len(q_splits) - 1, 2)]
+            token_ltrs = [(t_splits[i - 1].strip(), t_splits[i], t_splits[i + 1].strip()) for i in range(1, len(t_splits) - 1, 2)]
+            if not token_ltrs:
+                continue
+
             num_tokens = {}
             nums_tokens = {}
-            for left, token, right in ltrs:
-                lp = (t_question.find(left, t_pos) + len(left)) if left else t_pos
-                rp = t_question.find(right, lp) if right else t_pos
+            iter_token = iter(token_ltrs)
 
-                target = t_question[lp:rp]
-                matched_token = next((k for k in reversed(tokens.keys()) if k in target), None)
-                if matched_token:
-                    if token == '[NUM]':
-                        num_tokens[matched_token] = tokens[matched_token]
-                    elif token == '[NUMS]':
-                        nums_tokens[matched_token] = tokens[matched_token]
-                t_pos = rp
+            t_left, t_token, t_right = next(iter_token)
+
+            for n_left, n_token, n_right in num_ltrs:
+                if t_left.endswith(n_left) and t_right.startswith(n_right):
+                    if n_token == '[NUM]':
+                        num_tokens[t_token] = tokens[t_token]
+                    elif n_token == '[NUMS]':
+                        nums_tokens[t_token] = tokens[t_token]
+
+                    if (next_ltr := next(iter_token, None)) is None:
+                        break
+                    t_left, t_token, t_right = next_ltr
+
             all_keys = set(num_tokens.keys()).union(set(nums_tokens.keys()))
             if all_keys != set(tokens.keys()):
                 raise ValueError(f"Error on matching : {num_tokens=} {nums_tokens=} {tokens=} {t_question=} {question=}")
