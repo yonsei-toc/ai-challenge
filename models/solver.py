@@ -117,7 +117,7 @@ class _DiffPerm(_Equation):
             for ep, feature, match in zip((0, 1), fs, (self.match_num, self.match_nums)):
                 if feature is not None and feature.size(0) > 1:  # 2개 이상일 경우만 classification 에 의미가 있음
                     target = None if targets is None else targets[i][ep]
-                    _output, _loss, _accuracy = self.match_num(feature, target)
+                    _output, _loss, _accuracy = match(feature, target)
 
                     loss.append(_loss)
                     accuracy.append(_accuracy)
