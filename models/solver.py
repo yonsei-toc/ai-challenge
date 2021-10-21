@@ -9,11 +9,11 @@ class TemplateSolver(base.Module):
         self.solvers = nn.ModuleList([
             _DiffPerm(hidden_size, p_drop),
             _CountFromRange(hidden_size, p_drop),
-            _FindSumFromRange(),
-            _WrongMultiply(),
-            _OrderByCompare(),
-            _HalfSub(),
-            _SumArgs()
+            _FindSumFromRange(hidden_size, p_drop),
+            # _WrongMultiply(),
+            # _OrderByCompare(),
+            # _HalfSub(),
+            # _SumArgs()
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
@@ -187,11 +187,44 @@ class _CountFromRange(_Equation):
 
 
 class _FindSumFromRange(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(_FindSumFromRange, self).__init__()
 
-    def forward(self, batch, features, mask):
-        pass
+        self.num_matchers = nn.ModuleList([
+            base.SingleTokenMatcher(hidden_size, p_drop),
+            base.SingleTokenMatcher(hidden_size, p_drop),
+            base.SingleTokenMatcher(hidden_size, p_drop),
+            base.SingleTokenMatcher(hidden_size, p_drop)
+        ])
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        loss, accuracy = [], []
+
+        equation_outputs = []
+        for i, num_feature in enumerate(num_features):
+            if num_feature is None or num_feature.numel() == 0:
+                continue
+
+            if num_feature.size(0) == 3:  # {0} 토큰은 1로 고정하고 나머지 분배
+                equation_output = [torch.tensor(-1, device=self.device)]
+            else:
+                equation_output = []
+
+            for ep, matcher in enumerate(self.num_matchers, start=len(equation_output)):
+                target = None if targets is None else targets[i][ep]
+
+                _output, _loss, _accuracy = matcher(num_feature, target)
+
+                loss.append(_loss)
+                accuracy.append(_accuracy)
+                equation_output.append(_output)
+            equation_outputs.append(torch.stack(equation_output))
+
+        equation_outputs = torch.stack(equation_outputs)
+
+        if targets is None:
+            return self.output(equation_outputs)
+        return self.output(equation_outputs, loss, accuracy)
 
 
 class _WrongMultiply(_Equation):

@@ -145,7 +145,10 @@ class TrainingPreprocessor(Preprocessor):
                 elif token in matched_nums:
                     equation_target.append(torch.tensor([list(matched_nums).index(token)]))
                 else:
-                    equation_target.append(torch.as_tensor(token))
+                    t = torch.as_tensor(token)
+                    if len(t.shape) == 0:
+                        t = t.unsqueeze(-1)
+                    equation_target.append(t)
             batch['equation_targets'].append(equation_target)
 
         # Make Question Targets
