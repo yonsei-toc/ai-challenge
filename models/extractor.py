@@ -3,15 +3,6 @@ import torch.nn as nn
 import models.base as base
 
 
-class QuestionEncoder(base.Module):
-    def __init__(self):
-        super(QuestionEncoder, self).__init__()
-
-    def forward(self, batch, features):
-        print(self)
-        return None
-
-
 class NamedEntityRecognition(base.Module):
     def __init__(self, hidden_size, p_drop):
         super(NamedEntityRecognition, self).__init__()
