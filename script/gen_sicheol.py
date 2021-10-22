@@ -892,7 +892,7 @@ def prob060302(sel, pl, clskey):
 
 # NOTE: This can generate a problem with a non-unique answer
 # NOTE: #1, #2가 body에서 언급되는 순서와 무관하게 무작위로 매겨짐.
-# @gen.problems.register
+@gen.problems.register
 def prob070301(sel, pl, clskey):
     """
     석진이는 호석이보다 무겁고 지민이보다 가볍습니다. 
@@ -910,83 +910,8 @@ def prob070301(sel, pl, clskey):
     names_k = pl.sample([ sel.get(clskey.name) for _ in range(n) ], n)
 
     # envdict
-    # envdict = { f'name{i}': names_k[i] for i in range(n) }
-    envdict = {'names': names_k}
-    envdict.update({ 'n': n_k })
-    envdict.update({ 'order': order })
-
-    pairs = list(itertools.combinations(range(n), 2))
-    random.shuffle(pairs)
-    pairs = pairs[:n * n // 4]
-
-    body = ""
-
-    # order variation...
-    order, order_of_reverse, question_trailing = random.choice([
-        ("{order}", "{order.of('reverse')}", "{#은} 누구인가?"),
-        ("{order.of('var')}", "{order.of('reverse_var')}", "{#은} 누구입니까?")
-    ])
-
-    flag = False
-    for n, (i, j) in enumerate(pairs):
-        if n == len(pairs)-1 or flag:
-            line = random.choice([
-                f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}다. ",
-                f"{{name{j}}}{{#는}} {{name{i}}}보다 {order_of_reverse}다. "
-            ])
-            flag = False
-        else:
-            if random.choice([0, 1]) == 0:
-                line = random.choice([
-                    f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}고 ",
-                    f"{{name{j}}}{{#는}} {{name{i}}}보다 {order_of_reverse}고 "
-                ])
-                flag = True
-            else:
-                line = random.choice([
-                    f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}다. ",
-                    f"{{name{j}}}{{#는}} {{name{i}}}보다 {order_of_reverse}다. "
-                ])
-                flag = False
-        body += line
-
-    question = random.choice(["{n}명 중 ", f""])
-    question += "가장 {order.of('reverse_adv')} 사람"
-    question += random.choice([
-        "을 구하시오.",
-        question_trailing
-    ])
-
-    equation = gen.EqnRef(
-        "order_by_comp", 0,
-        *[ names_k[pair[i]] for pair in pairs for i in range(2) ])
-
-    return gen.build(
-            body=body, 
-            question=question, 
-            equation=equation, 
-
-            env=envdict)
-
-# @gen.problems.register
-def prob070302(sel, pl, clskey):
-    """
-    석진이는 호석이보다 무겁고 지민이보다 가볍습니다. 
-    남준이는 지민이보다 무겁습니다. 
-    4명 중 가장 무거운 사람은 누구입니까?
-    """
-
-    n = random.randint(3, 5)
-
-    # items
-    order = sel.get(clskey.ord_rel)
-
-    # tokens
-    n_k = pl.new(n)
-    names_k = pl.sample([ sel.get(clskey.name) for _ in range(n) ], n)
-
-    # envdict
     envdict = { f'name{i}': names_k[i] for i in range(n) }
+    # envdict = {'names': names_k}
     envdict.update({ 'n': n_k })
     envdict.update({ 'order': order })
 
@@ -1025,16 +950,20 @@ def prob070302(sel, pl, clskey):
                 flag = False
         body += line
 
+    is_reversed = random.choice([True, False])
     question = random.choice(["{n}명 중 ", f""])
-    question += "가장 {order.of('adv')} 사람"
+    question += "".join(["가장 ",
+                         "{order.of('reverse_adv')}" if is_reversed else "가장 {order.of('adv')}",
+                         " 사람"])
     question += random.choice([
         "을 구하시오.",
         question_trailing
     ])
 
     equation = gen.EqnRef(
-        "order_by_comp", 1,
-        *[ names_k[pair[i]] for pair in pairs for i in range(2) ])
+        "order_by_comp",
+        *[ names_k[pair[i]] for pair in pairs for i in ([1,0] if is_reversed else [0,1]) ])
+        # *[ names_k[pair[i]] for pair in pairs for i in [1,0] ])
 
     return gen.build(
             body=body, 
