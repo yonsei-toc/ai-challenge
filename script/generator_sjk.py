@@ -451,7 +451,7 @@ def prob04_03_03(selector, tokenpool, clskey):
             equation=gen.EqnRef('prob04_03', over_k,*nums_k),
             env=envdict)
 
-@gen.problems.register
+#@gen.problems.register
 def prob04_03_05(selector, tokenpool, clskey):
     '''
 floor, room room 운동장, 연습장, ... , n,n,n,n,n 층에 있다. 이중 k층/칸 보다 높은 층에 있는 room의 개수는?
