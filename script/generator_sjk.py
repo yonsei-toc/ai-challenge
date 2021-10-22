@@ -119,6 +119,7 @@ def prob4_01_03(selector, tokenpool, clskey):
             question='많은 {item}{#를} 마신 사람의 l에서 가장 적은 {item}{#를} 마신 사람의 l를 뺀 수는 몇 l입니까?',
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
+
 # @gen.problems.register
 def prob4_01_04(selector, tokenpool, clskey):
     '''
@@ -130,6 +131,82 @@ def prob4_01_04(selector, tokenpool, clskey):
     nums_len = random.randint(2, 5)
     nums = [random.randint(0,100) for _ in range(0, nums_len)]
     unit = item.of('unit')
+
+    container_k  = tokenpool.new(container)
+    item_k     = tokenpool.new(item)
+    nums_k     = list(map(tokenpool.new, nums))
+    unit_k     = tokenpool.new(unit)
+
+    # syntactic randomize
+    ques_trailing = random.choice(['입니까?', '인지 구하시오.', '인가?'])
+
+    body = ' '.join(['{container}에 {item}이 각각 ',
+        ', '.join('{' + 'nums{}'.format(x) + '}{unit}' for x in range(nums_len)),
+        '있습니다.'
+    ])
+
+    envdict = {f'nums{i}': nums_k[i] for i in range(nums_len)}
+    envdict['ques_trailing'] = ques_trailing
+    envdict['container'] = container_k
+    envdict['unit']  = unit_k
+    envdict['item']  = item_k
+
+    # print 포함
+    return gen.build(
+            # body is the background of problem settings
+            body=body,
+            question='{item}{#이} 가장 많이 담긴 {item} 수에서 {item}{#이} 가장 적게 담긴 수를 뺀 수는 몇입니까?',
+            equation=gen.EqnRef('maxSubmin', *nums_k),
+            env=envdict)
+
+# @gen.problems.register
+def prob4_01_05(selector, tokenpool, clskey):
+    '''
+    - 외숙모의 나이는. 외삼촌의 나이는, ... 가장 나이가 많은 사람의 나이에서 나이가 적은 사람의 나이를 뺀 수는?
+    '''
+    # this may be a meta-token (e.g., #1), referring a number.
+    l    = random.randint(2,5)
+    name = [ selector.get(clskey.female_family_relation) for _ in range(0,l)]
+    nums = [ random.randint(0,100) for _ in range(0,l) ]
+
+    ## name overlab check
+    while len(set(name)) != len(name):
+        name = [selector.get(clskey.female_family_relation) for _ in range(0, l)]
+    nums_k = tokenpool.new(nums)
+
+    # syntactic randomize
+    ques_trailing = random.choice([' 수는 무엇입니까?', '수를 구하시오.'])
+    cent_trailing = random.choice(['나이','가족'])
+
+    body = ' '.join(['유나의 가족의 나이는 ',
+        ', '.join('{' + 'name{}'.format(x) + '의 나이는 nums{}'.format(x)+'}살' for x in range(l)),
+        '입니다.'
+    ])
+
+    envdict = {f'name{i}': f'name{i}' for i in range(l)}
+    envdict.update({f'nums{i}': nums_k[i] for i in range(l)})
+    envdict['ques_trailing'] = ques_trailing
+    envdict['cent_trailing'] = cent_trailing
+
+    # print 포함
+    return gen.build(
+            # body is the background of problem settings
+            body=body,
+            question='가장 나이가 많은 {cent_trailing}의 나이에서 가장 나이가 적은 {cent_trailing}의 나이를 뺀{ques_trailing}?',
+            equation=gen.EqnRef('maxSubmin', *nums_k),
+            env=envdict)
+
+# @gen.problems.register
+def prob4_01_06(selector, tokenpool, clskey):
+    '''
+    - 운동회에서 공던지기 대회에서 선수들은 각각 clskey.race m , ... 을 던졌습니다. 1등이 던진 거리에서 꼴등이 던진 거리를 뺀 거리는 몇 m입니까?
+    '''
+    # this may be a meta-token (e.g., #1), referring a number.
+    container = selector.get(clskey.container)
+    item = selector.get(clskey.flower)
+    nums_len = random.randint(2, 5)
+    nums = [random.randint(0,100) for _ in range(0, nums_len)]
+    unit = clskey.length_unit
 
     container_k  = tokenpool.new(container)
     item_k     = tokenpool.new(item)
@@ -887,7 +964,7 @@ def prob08_04_03(selector, tokenpool, clskey):
                 side = side
             ))
 
-# @gen.problems.register
+#@gen.problems.register
 def prob08_04_04(selector, tokenpool, clskey):
     '''한 변의 길이가 10cm인 정사각형 운동장과 둘레가 같은 정팔각형 종이가 있습니다.
      이때 종이의 한 변은 몇 {length}인지 소수점 둘째자리까지 구하시오.'''
@@ -925,9 +1002,10 @@ if __name__ == '__main__':
     class _Namespace():
         def __init__(self): pass
 
-    with open('dict.json', 'rt') as f:
+    with open('dict.json', 'rt', encoding='UTF8') as f:
         dictionary, clskey = gen.Dictionary.load(f.read())
     for fn in gen.problems:
+
         i = 0
         while i < 8:
             selector = gen.DictionarySelector(dictionary)
