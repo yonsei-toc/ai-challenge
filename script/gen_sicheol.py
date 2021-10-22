@@ -696,7 +696,7 @@ def prob030502(sel, pl, clskey):
     return
 
 # TODO : X, Y 문제
-# @gen.problems.register
+@gen.problems.register
 def prob060301(sel, pl, clskey):
     """
     두 자리 수끼리의 곱셈에서 곱하는 수의 십의 자리 숫자
@@ -793,7 +793,7 @@ def prob060301(sel, pl, clskey):
 
             env=envdict)
 
-# @gen.problems.register
+@gen.problems.register
 def prob060302(sel, pl, clskey):
     """
     두 자리 수끼리의 곱셈에서 곱하는 수의 십의 자리 숫자
