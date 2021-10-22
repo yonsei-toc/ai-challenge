@@ -7,7 +7,7 @@ import random
 import string
 
 
-# @gen.problems.register
+#@gen.problems.register
 def prob4_01_01(selector, tokenpool, clskey):
     '''
     - 43, 92, 71, 64가 있습니다. 그중에서 가장 큰 수에서 가장 작은 수를 뺀 값은 얼마입니까?
@@ -159,7 +159,7 @@ def prob4_01_04(selector, tokenpool, clskey):
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
-# @gen.problems.register
+#@gen.problems.register
 def prob4_01_05(selector, tokenpool, clskey):
     '''
     - 외숙모의 나이는. 외삼촌의 나이는, ... 가장 나이가 많은 사람의 나이에서 나이가 적은 사람의 나이를 뺀 수는?
@@ -172,18 +172,19 @@ def prob4_01_05(selector, tokenpool, clskey):
     ## name overlab check
     while len(set(name)) != len(name):
         name = [selector.get(clskey.female_family_relation) for _ in range(0, l)]
-    nums_k = tokenpool.new(nums)
+    nums_k = list(map(tokenpool.new, nums))
 
     # syntactic randomize
-    ques_trailing = random.choice([' 수는 무엇입니까?', '수를 구하시오.'])
-    cent_trailing = random.choice(['나이','가족'])
+    ques_trailing = random.choice([' 수는 무엇입니까?', ' 수를 구하시오.'])
+    cent_trailing = random.choice(['사람','가족'])
 
-    body = ' '.join(['유나의 가족의 나이는 ',
-        ', '.join('{' + 'name{}'.format(x) + '의 나이는 nums{}'.format(x)+'}살' for x in range(l)),
+    body = ' '.join(['유나의 ',
+           ', '.join('{' + 'name{}'.format(x) + '}' +
+                     '의 나이는 {' + 'nums{}'.format(x)+'}살' for x in range(l)),
         '입니다.'
     ])
 
-    envdict = {f'name{i}': f'name{i}' for i in range(l)}
+    envdict = {f'name{i}': name[i] for i in range(l)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(l)})
     envdict['ques_trailing'] = ques_trailing
     envdict['cent_trailing'] = cent_trailing
@@ -196,42 +197,37 @@ def prob4_01_05(selector, tokenpool, clskey):
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
-# @gen.problems.register
+#@gen.problems.register
 def prob4_01_06(selector, tokenpool, clskey):
     '''
-    - 운동회에서 공던지기 대회에서 선수들은 각각 clskey.race m , ... 을 던졌습니다. 1등이 던진 거리에서 꼴등이 던진 거리를 뺀 거리는 몇 m입니까?
+    - clskey.race에서 4명의 학생은 각각 ..점..점..점을 얻었습니다. 1등의 점수에서 꼴찌의 점수를 뺀 값은?
     '''
     # this may be a meta-token (e.g., #1), referring a number.
-    container = selector.get(clskey.container)
-    item = selector.get(clskey.flower)
-    nums_len = random.randint(2, 5)
-    nums = [random.randint(0,100) for _ in range(0, nums_len)]
-    unit = clskey.length_unit
+    l    = random.randint(2,5)
+    nums = [ random.randint(0,100) for _ in range(0,l) ]
+    race = selector.get(clskey.race)
 
-    container_k  = tokenpool.new(container)
-    item_k     = tokenpool.new(item)
-    nums_k     = list(map(tokenpool.new, nums))
-    unit_k     = tokenpool.new(unit)
+    nums_k = list(map(tokenpool.new, nums))
+    l_k    = tokenpool.new(l)
 
     # syntactic randomize
-    ques_trailing = random.choice(['입니까?', '인지 구하시오.', '인가?'])
+    ques_trailing = random.choice(['은 무엇입니까?', '을 구하시오.'])
 
-    body = ' '.join(['{container}에 {item}이 각각 ',
-        ', '.join('{' + 'nums{}'.format(x) + '}{unit}' for x in range(nums_len)),
-        '있습니다.'
+    body = ''.join(['{race}에서 {l}명의 학생은 각각 ',
+           ', '.join('{' + 'nums{}'.format(x) + '}점' for x in range(l)),
+        '을 얻었습니다.'
     ])
 
-    envdict = {f'nums{i}': nums_k[i] for i in range(nums_len)}
+    envdict = {f'nums{i}': nums_k[i] for i in range(l)}
+    envdict['race'] = race
+    envdict['l']    = l_k
     envdict['ques_trailing'] = ques_trailing
-    envdict['container'] = container_k
-    envdict['unit']  = unit_k
-    envdict['item']  = item_k
 
     # print 포함
     return gen.build(
             # body is the background of problem settings
             body=body,
-            question='{item}{#이} 가장 많이 담긴 {item} 수에서 {item}{#이} 가장 적게 담긴 수를 뺀 수는 몇입니까?',
+            question='1등의 점수에서 {l}등의 점수를 뺀 값{ques_trailing}',
             equation=gen.EqnRef('maxSubmin', *nums_k),
             env=envdict)
 
@@ -302,6 +298,53 @@ def prob04_02_02(selector, tokenpool, clskey):
     return gen.build(
             body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
             ]),
+            question=question,
+            equation=gen.EqnRef('prob04_02_02', catL_k,*nums_k),
+            env=envdict)
+
+#@gen.problems.register
+def prob04_02_03(selector, tokenpool, clskey):
+    '''
+    - {name, name, name}은 각각 cslkey.writable을 하나씩 뽑았다. 각 {writable}에 적힌 번호는 n.n.n 이다. 사람들이 뽑은 번호 중 k개를
+    뽑아 만들 수 있는 가장 작은 수는?
+    '''
+
+    # this may be a meta-token (e.g., #1), referring a number.
+    nums_len  = random.randint(2, 5)
+    catL = random.randint(1, nums_len)
+
+    nums_l   = [ i for i in range(0,9)]
+    nums     = random.sample(nums_l, nums_len)
+    names    = [ selector.get(clskey.name) for _ in range(0,len(nums_l))]
+    writable = selector.get(clskey.writable)
+
+    nums_k     = list(map(tokenpool.new, nums))
+    nums_len_k = tokenpool.new(nums_len)
+    catL_k     = tokenpool.new(catL)
+
+
+    # syntactic randomize
+    ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
+
+    body = ' '.join([', '.join('{' + 'names{}'.format(x) + '}' for x in range(nums_len)) + '{#는} {writable}{#을} 하나씩 뽑았다.'
+                    ,'각 {writable}에 적힌 번호는'
+                    ,', '.join('{' + 'nums{}'.format(x) + '}' for x in range(nums_len)) + '이다.'
+                     ])
+
+    question = ' '.join(['사람들이 뽑은 번호 중 {catL}개를 뽑아 만들 수 있는',
+                         f'{gen.korutil.num2korunit(catL)} 자리 수',
+                         '중에서 가장 작은 수{ques_trailing}'])
+
+    envdict = {f'nums{i}': nums_k[i] for i in range(0,nums_len)}
+    envdict.update({f'names{i}': names[i] for i in range(0, nums_len)})
+    envdict['nums_len']      = nums_len_k
+    envdict['ques_trailing'] = ques_trailing
+    envdict['catL']          = catL_k
+    envdict['writable']      = writable
+
+    # print 포함
+    return gen.build(
+            body=body,
             question=question,
             equation=gen.EqnRef('prob04_02', catL_k,*nums_k),
             env=envdict)
@@ -405,6 +448,47 @@ def prob04_03_03(selector, tokenpool, clskey):
                 '입니다.'
             ]),
             question='이 중에서 {over}{unit} 보다 무거운 {container}{#는} 모두 몇 개{ques_trailing}.',
+            equation=gen.EqnRef('prob04_03', over_k,*nums_k),
+            env=envdict)
+
+@gen.problems.register
+def prob04_03_05(selector, tokenpool, clskey):
+    '''
+floor, room room 운동장, 연습장, ... , n,n,n,n,n 층에 있다. 이중 k층/칸 보다 높은 층에 있는 room의 개수는?
+    '''
+    len_  = random.randint(1,5)
+    nums  = [ random.randint(0,len_) for _ in range(0,len_) ]
+    over  = random.randint(0,5)
+    floor = selector.get(clskey.floor)
+    field = [ selector.get(clskey.field) for _ in range(0, len_)]
+
+    ## field overlab check
+    while len(set(field)) != len(field):
+        field = [selector.get(clskey.field) for _ in range(0, len_)]
+
+    len_k  = tokenpool.new(len_)
+    nums_k = list(map(tokenpool.new, nums))
+    over_k = tokenpool.new(over)
+
+    # syntactic randomize
+    ques_trailing = random.choice(['에 있습니다.', ' 높이에 있습니다.'])
+    cent_trailing = random.choice(['모두',''])
+
+    envdict = {f'nums{i}': nums_k[i] for i in range(len_)}
+    envdict.update({f'field{i}': field[i] for i in range(len_)})
+    envdict['over']   = over_k
+    envdict['len_']   = len_k
+    envdict['floor']  = floor
+    envdict['ques_trailing'] = ques_trailing
+    envdict['cent_trailing'] = cent_trailing
+
+    return gen.build(
+            # body is the background of problem settings
+            body=' '.join([
+                ', '.join('{' + 'field{}'.format(x) + '}' + '{#이} '
+                          + '{' + 'nums{}'.format(x) + '}' + '{floor}' for x in range(len_)) + '{ques_trailing}'
+            ]),
+            question='이 중에서 {over}{floor} 보다 높은 {floor}에 있는 곳은 {cent_trailing} 몇 곳 입니까?',
             equation=gen.EqnRef('prob04_03', over_k,*nums_k),
             env=envdict)
 
@@ -596,6 +680,34 @@ def prob04_1_05(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
+# @gen.problems.register
+def prob04_1_05(selector, tokenpool, clskey):
+    '''
+    어떤 소수의 소수점을 왼쪽으로 두 자리 옮기면 원래의 소수보다 1.782만큼 작아집니다. 원래의 소수를 구하시오.
+    '''
+    # Claim items at first. They will not overlap (even for different keys).
+    n     = random.randint(0,3)
+    count1   = round(float(random.random()),2) + random.randint(0,10)
+
+    n_k   = tokenpool.new(n)
+    count1_k = tokenpool.new(count1)
+
+    # syntactic randomize
+    sent_trailing = random.choice(['집니다.','졌습니다.'])
+    ques_trailing = random.choice(['를 쓰시오', '는 무엇입니까?', '는 무엇인가?'])
+
+    return gen.build(
+            body=' '.join([
+                f'어떤 소수의 소수점을 왼쪽으로 {gen.korutil.num2korunit(n)}', '자리 옮기면 원래의 소수보다 {count1} 만큼 작아{sent_trailing}',
+            ]),
+            question='원래의 소수{ques_trailing}',
+            equation= gen.EqnRef('getDeci',count1_k, n_k),
+            env=gen.fnmap(
+                n= n_k,
+                count1=count1_k,
+                sent_trailing=sent_trailing,
+                ques_trailing=ques_trailing
+            ))
 # @gen.problems.register
 def prob06_04_01(selector, tokenpool, clskey):
     '''어떤 수에 14를 더한 후 14를 곱하고, 24를 뺀 값을 24로 나누면 13이 됩니다. 어떤 수를 소수자리에서 올림한 수를 구하시오.'''

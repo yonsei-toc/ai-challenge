@@ -414,6 +414,8 @@ def build_dictionary(dictionary, clskey):
     dictionary.add_token(clskey.field, gen.DictItem('경기장'))
     dictionary.add_token(clskey.field, gen.DictItem('운동장'))
     dictionary.add_token(clskey.field, gen.DictItem('극장'))
+    dictionary.add_token(clskey.field, gen.DictItem('연습장'))
+    dictionary.add_token(clskey.field, gen.DictItem('공연장'))
 
 
 class _Namespace:

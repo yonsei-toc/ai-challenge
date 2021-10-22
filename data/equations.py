@@ -430,6 +430,18 @@ def prob04_02(n, *number_list):
         f"lambda e: int(''.join(map(str, e))),",
         f"itertools.permutations(L, {n}))))"])
 
+@equations.register
+def prob04_02_02(n, *number_list):
+    """
+     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
+    """
+    return "".join([
+        "L = [{}]\n".format(', '.join(map(str, number_list))),
+        f"ans = max(filter(",
+        f"lambda e: e >= 10 ** ({n} - 1),",
+        f"map(",
+        f"lambda e: int(''.join(map(str, e))),",
+        f"itertools.permutations(L, {n}))))"])
 
 @equations.register
 def prob08_04(*args):
