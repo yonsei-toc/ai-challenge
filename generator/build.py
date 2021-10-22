@@ -125,7 +125,7 @@ def build(body, question, equation, variable=None, answer=None, env=None):
     eqn = eval(equn_p, local)
 
     # if answer is None:
-    _l = {}
+    _l = {'math': _math, 'itertools': _itertools}
     exec(eqn, _l)
     answer = _l['ans']
 

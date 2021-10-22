@@ -19,6 +19,9 @@ class Equations:
             raise RuntimeError("Duplicated equation ID: {}.".format(key))
 
         def _func_to_source(*args):
+            result = func(*args)
+            if not callable(result):
+                return result
             codes = inspect.getsourcelines(func(*args))[0][1:]
 
             indents = len(codes[0]) - len(codes[0].lstrip())
