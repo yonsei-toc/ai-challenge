@@ -6,6 +6,7 @@ from data.preprocessor import TrainingPreprocessor
 class AGCDataModule(LightningDataModule):
     def __init__(self, tokenizer, max_seq_len, n_aug_per_question=3, split=None, batch_size=32, wrap_numeric=2):
         super(AGCDataModule, self).__init__()
+        print(f"AGCDataModule() {n_aug_per_question=} {batch_size=} {wrap_numeric=}")
         self.n_aug_per_question = n_aug_per_question
         self.batch_size = batch_size
         self.train_dataset = None
