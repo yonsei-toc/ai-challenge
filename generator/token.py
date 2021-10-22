@@ -187,7 +187,8 @@ class TokenPool():
 
     def sample(self, lst, k=1):
         # return ListToken(self._get_token_id(), list(map(self.new, random.sample(lst, k=k))))
-        return ListToken(self._get_token_id(), random.sample(lst, k=k))
+        # return ListToken(self._get_token_id(), random.sample(lst, k=k))
+        return list(map(self.new, random.sample(lst, k=k)))
 
     def randint(self, start, end=None):
         return self.new(random.randint(start, end))

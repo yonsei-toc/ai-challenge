@@ -177,27 +177,16 @@ def wrong_multiply(*_args_):
 @equations.register
 def order_by_comp(*_args_):
     """
-    {2k} < {2k+1} 일 때, 가장 {0}인 사람은?
+    {2k} > {2k+1} 일 때, 가장 큰 사람은?
     :param
-        {0}  :  0 - 가장 작은
-                1 - 가장 큰
-        {1~} : 토큰
+        {0~} : 토큰
     """
-
-    if _args_[0] == 0:
-        def _equation():
-            L = _args_[1:]
-            names = {name: True for name in L}
-            for i in range(0, len(L), 2):
-                names[L[i]] = False
-            ans = [name for name in names.keys() if name[name]][0]
-    else:
-        def _equation():
-            L = _args_[1:]
-            names = {name: True for name in L}
-            for i in range(0, len(L), 2):
-                names[L[i]] = False
-            ans = [name for name in names.keys() if name[name]][-1]
+    def _equation():
+        L = _args_
+        names = {name: True for name in L}
+        for i in range(1, len(L), 2):
+            names[L[i]] = False
+        ans = [name for name in names.keys() if name[name]][-1]
 
     return _equation
 
