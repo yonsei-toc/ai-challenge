@@ -906,13 +906,12 @@ def prob070301(sel, pl, clskey):
     order = sel.get(clskey.ord_rel)
 
     # tokens
-    n_k = pl.new(n)
-    names_k = pl.sample([ sel.get(clskey.name) for _ in range(n) ], n)
+
+    name_ks = [pl.new(sel.get(clskey.name)) for _ in range(n)]
 
     # envdict
-    envdict = { f'name{i}': names_k[i] for i in range(n) }
+    envdict = { f'name{i}': name_ks[i] for i in range(n) }
     # envdict = {'names': names_k}
-    envdict.update({ 'n': n_k })
     envdict.update({ 'order': order })
 
     pairs = list(itertools.combinations(range(n), 2))
@@ -952,6 +951,9 @@ def prob070301(sel, pl, clskey):
 
     is_reversed = random.choice([True, False])
     question = random.choice(["{n}명 중 ", f""])
+    if "{n}" in question:
+        n_k = pl.new(n)
+        envdict.update({'n': n_k})
     question += "".join(["가장 ",
                          "{order.of('reverse_adv')}" if is_reversed else "가장 {order.of('adv')}",
                          " 사람"])
@@ -962,7 +964,7 @@ def prob070301(sel, pl, clskey):
 
     equation = gen.EqnRef(
         "order_by_comp",
-        *[ names_k[pair[i]] for pair in pairs for i in ([1,0] if is_reversed else [0,1]) ])
+        *[ name_ks[pair[i]] for pair in pairs for i in ([1,0] if is_reversed else [0,1]) ])
         # *[ names_k[pair[i]] for pair in pairs for i in [1,0] ])
 
     return gen.build(

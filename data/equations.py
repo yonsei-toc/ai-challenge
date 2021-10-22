@@ -30,6 +30,7 @@ class Equations:
             _replaced = ''.join(codes)
             for i, arg in enumerate(args):
                 _replaced = _replaced.replace(f'_args_[{i}]', repr(args[i]))
+            _replaced = _replaced.replace('_args_', repr(list(args)))
             return _replaced
 
         self.equations.append(_func_to_source)
@@ -182,11 +183,11 @@ def order_by_comp(*_args_):
         {0~} : 토큰
     """
     def _equation():
-        L = _args_
-        names = {name: True for name in L}
-        for i in range(1, len(L), 2):
-            names[L[i]] = False
-        ans = [name for name in names.keys() if name[name]][-1]
+        names = _args_
+        check = {name: True for name in names}
+        for i in range(1, len(names), 2):
+            check[names[i]] = False
+        ans = [name for name in check.keys() if check[name]][-1]
 
     return _equation
 
