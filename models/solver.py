@@ -11,7 +11,7 @@ class TemplateSolver(base.Module):
             _DiffPerm(hidden_size, p_drop),
             _CountFromRange(hidden_size, p_drop),
             _FindSumFromRange(hidden_size, p_drop),
-            # _WrongMultiply(),
+            _WrongMultiply(hidden_size, p_drop),
             # _OrderByCompare(),
             # _HalfSub(),
             # _SumArgs()
@@ -199,11 +199,24 @@ class _FindSumFromRange(_Equation):
 
 
 class _WrongMultiply(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(_WrongMultiply, self).__init__()
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 6)
+        self.type_matcher = base.SequenceClassifier(hidden_size, 4, p_drop)
 
-    def forward(self, batch, features, mask):
-        pass
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, num_features, nums_features, targets, batch_mask)
+
+        label_type = None if targets is None else torch.stack([t[6].squeeze() for t in targets])
+        x, loss_type, accuracy_type = self.type_matcher(features, label_type)
+        x = x.argmax(-1)
+
+        equation_outputs = torch.cat((equation_outputs, x.unsqueeze(-1)), -1)
+
+        loss = (torch.mean(torch.stack(loss)) + loss_type) if loss else loss_type
+        accuracy = (torch.mean(torch.stack(accuracy)) * 2 + accuracy_type) / 3 if accuracy else accuracy_type
+
+        return self.output(equation_outputs, loss, accuracy)
 
 
 class _OrderByCompare(_Equation):
