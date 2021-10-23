@@ -2,6 +2,7 @@ import random
 import re
 import torch
 from data.numerics import NumericProcessor
+from data.naming import NamingProcessor
 
 
 class Batch(dict):
@@ -19,10 +20,12 @@ class Preprocessor:
         self.max_seq_len = max_seq_len
         self.wrap_numeric = wrap_numeric
         self.numeric_processor = NumericProcessor("[NUM]", "[NUMS]")
-        custom_tokens = {token: token_id for token, token_id in zip(tokenizer.additional_special_tokens,
-                                                                    tokenizer.additional_special_tokens_ids)}
-        self.num_token_id = custom_tokens['[NUM]']
-        self.nums_token_id = custom_tokens['[NUMS]']
+        self.naming_processor = NamingProcessor()
+        self.custom_tokens = {token: token_id for token, token_id in zip(tokenizer.additional_special_tokens,
+                                                                         tokenizer.additional_special_tokens_ids)}
+        self.num_token_id = self.custom_tokens['[NUM]']
+        self.nums_token_id = self.custom_tokens['[NUMS]']
+        self.name_token_ids = {v: k for k, v in self.custom_tokens.items() if k not in ('[NUM]', '[NUMS]')}
 
         self._endings = tokenizer.convert_tokens_to_ids(['.', '?'])
 
@@ -32,6 +35,9 @@ class Preprocessor:
 
         # Replace numeric tokens
         batch['question'], batch['numerics'] = self.numeric_processor.replace_batch(batch['question'])
+
+        # Replace name tokens
+        batch['question'], batch['names'] = self.naming_processor.replace_batch(batch['question'])
 
         # Add Tokenized results
         batch.update(self.tokenizer(batch['question'], padding='longest', truncation=True))
@@ -82,7 +88,7 @@ class TrainingPreprocessor(Preprocessor):
         self.injection_prob = injection_prob
         self._question_suffixes = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("입니까 얼마입니까 구하시오 인가 됩니까 쓰시오 될까요 할까요"))
         self.search_token = re.compile("(\\#\\d)")
-        self.search_num = re.compile("(\\[NUM\\]|\\[NUMS\\])")
+        self.search_specials = re.compile('(' + '|'.join([re.escape(k) for k in self.custom_tokens]) + ')')
 
     def __call__(self, data):
         # Split body and question into each sentences
@@ -102,6 +108,8 @@ class TrainingPreprocessor(Preprocessor):
                 continue
             if len(data[j]['origin_sentences']) == 1:
                 continue
+            if data[i]['equation_type'] == data[j]['equation_type']:
+                continue
 
             inject_sentence = random.choice(data[j]['origin_sentences'][:-1])
             d['origin_sentences'].insert(0, inject_sentence)
@@ -120,59 +128,74 @@ class TrainingPreprocessor(Preprocessor):
             d['question'] = sep.join(sentences)
             d['t_question'] = sep.join(t_sentences)
 
+        # Tokenize
         batch = super(TrainingPreprocessor, self).__call__(data)
         raw_batch = batch.pop('raw_collated')
 
-        # Map Numerics with Token
+        # Map Special Tokens
         batch['matched_num'] = []
         batch['matched_nums'] = []
+        batch['matched_names'] = []
         for question, t_question, tokens in zip(batch['question'], batch['t_question'], batch['tokens']):
-            q_splits = self.search_num.split(question)
+            q_splits = self.search_specials.split(question)
             t_splits = self.search_token.split(t_question)
 
-            num_ltrs = [(q_splits[i - 1].strip(), q_splits[i], q_splits[i + 1].strip()) for i in range(1, len(q_splits) - 1, 2)]
-            token_ltrs = [(t_splits[i - 1].strip(), t_splits[i], t_splits[i + 1].strip()) for i in range(1, len(t_splits) - 1, 2)]
-            if not token_ltrs:
+            q_ltrs = [(q_splits[i - 1].strip(), q_splits[i], q_splits[i + 1].strip()) for i in range(1, len(q_splits) - 1, 2)]
+            t_ltrs = [(t_splits[i - 1].strip(), t_splits[i], t_splits[i + 1].strip()) for i in range(1, len(t_splits) - 1, 2)]
+
+            if not t_ltrs:
                 continue
 
             num_tokens = {}
             nums_tokens = {}
-            iter_token = iter(token_ltrs)
+            name_tokens = {}
+            iter_t_ltrs = iter(t_ltrs)
 
-            t_left, t_token, t_right = next(iter_token)
+            t_left, t_token, t_right = t_next = next(iter_t_ltrs)
+            first = True
 
-            for n_left, n_token, n_right in num_ltrs:
-                if t_left.endswith(n_left) and t_right.startswith(n_right):
+            for n_left, n_token, n_right in q_ltrs:
+                if ((first and t_left == n_left) or (not first and t_left.endswith(n_left))) and t_right.startswith(n_right):
                     if n_token == '[NUM]':
                         num_tokens[t_token] = tokens[t_token]
                     elif n_token == '[NUMS]':
                         nums_tokens[t_token] = tokens[t_token]
-
-                    if (next_ltr := next(iter_token, None)) is None:
+                    elif n_token.startswith('[NAME') and n_token.endswith(']'):
+                        name_tokens[t_token] = n_token
+                    else:
+                        raise ValueError(f"Not token : {n_token}")
+                    if (t_next := next(iter_t_ltrs, None)) is None:
                         break
-                    t_left, t_token, t_right = next_ltr
+                    t_left, t_token, t_right = t_next
+                first = False
 
-            all_keys = set(num_tokens.keys()).union(set(nums_tokens.keys()))
-            if all_keys != set(tokens.keys()):
-                raise ValueError(f"Error on matching : {num_tokens=} {nums_tokens=} {tokens=} {t_question=} {question=}")
+            if t_next is not None:
+                raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
 
             batch['matched_num'].append(num_tokens)
             batch['matched_nums'].append(nums_tokens)
+            batch['matched_names'].append(name_tokens)
 
         # Match Equation Targets
         batch['equation_targets'] = []
-        for equation_tokens, matched_num, matched_nums in zip(batch['equation_tokens'], batch['matched_num'], batch['matched_nums']):
-            equation_target = []
-            for token in equation_tokens:
-                if token in matched_num:
-                    equation_target.append(torch.tensor([list(matched_num).index(token)]))
-                elif token in matched_nums:
-                    equation_target.append(torch.tensor([list(matched_nums).index(token)]))
-                else:
-                    t = torch.as_tensor(token)
-                    if len(t.shape) == 0:
-                        t = t.unsqueeze(-1)
-                    equation_target.append(t)
+        for i, (eq_tokens, matched_num, matched_nums, eq_type) in enumerate(zip(batch['equation_tokens'], batch['matched_num'], batch['matched_nums'],
+                                                                                raw_batch['equation_type'])):
+            if eq_type == 4:
+                equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
+            else:
+                equation_target = []
+                for token in eq_tokens:
+                    if token in matched_num:
+                        equation_target.append(torch.tensor([list(matched_num).index(token)]))
+                    elif token in matched_nums:
+                        equation_target.append(torch.tensor([list(matched_nums).index(token)]))
+                    elif isinstance(token, str):
+                        raise ValueError(token)
+                    else:
+                        t = torch.as_tensor(token)
+                        if len(t.shape) == 0:
+                            t = t.unsqueeze(-1)
+                        equation_target.append(t)
             batch['equation_targets'].append(equation_target)
 
         # Make Question Targets
@@ -192,6 +215,44 @@ class TrainingPreprocessor(Preprocessor):
         batch['question_targets'] = _collate(question_targets)
 
         return batch
+
+    # Make OrderByComp Answer
+    def _make_order_by_comp_target(self, batch_idx, batch, raw_batch):
+        eq_tokens = batch['equation_tokens'][batch_idx]
+        seq_ids = raw_batch['input_ids'][batch_idx]
+        matched_names = batch['matched_names'][batch_idx]
+        t_question = batch['t_question'][batch_idx]
+        question = batch['question'][batch_idx]
+
+        question_tokens = self.search_token.findall(t_question)
+        q_names = [t for t in self.search_specials.findall(question) if t not in ('[NUM]', '[NUMS]')]
+        q_poses = [pos for pos, seq_id in enumerate(seq_ids) if seq_id in self.name_token_ids]
+
+        eq_token_group = list(zip(eq_tokens[0::2], eq_tokens[1::2]))
+        q_token_group = list(zip(question_tokens[0::2], question_tokens[1::2]))
+        eq_name_orders = [(matched_names[qg[0]], matched_names[qg[1]], qg in eq_token_group) for qg in q_token_group]
+
+        equation_target = [0] * len(seq_ids)
+        iter_qs = iter(zip(q_names, q_poses))
+        iter_eq_names = iter(eq_name_orders)
+
+        q_name1, q_pos1 = next(iter_qs)
+        q_name2, q_pos2 = next(iter_qs)
+        eq_name1, eq_name2, eq_ord = next(iter_eq_names)
+        for pos, seq_id in enumerate(seq_ids):
+            if pos == q_pos2:
+                if {q_name1, q_name2} == {eq_name1, eq_name2}:
+                    equation_target[q_pos1], equation_target[q_pos2] = (1, 2) if eq_ord else (2, 1)
+
+                    if (next_eq := next(iter_eq_names, None)) is None:
+                        break
+                    q_name1, q_pos1 = next(iter_qs, None)
+                    q_name2, q_pos2 = next(iter_qs, None)
+                    eq_name1, eq_name2, eq_ord = next_eq
+                else:
+                    q_name1, q_pos1 = q_name2, q_pos2
+
+        return torch.as_tensor(equation_target)
 
 
 def _collate(batch):

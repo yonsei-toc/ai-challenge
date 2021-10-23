@@ -12,7 +12,7 @@ class TemplateSolver(base.Module):
             _CountFromRange(hidden_size, p_drop),
             _FindSumFromRange(hidden_size, p_drop),
             _WrongMultiply(hidden_size, p_drop),
-            # _OrderByCompare(),
+            _OrderByCompare(hidden_size, p_drop, config),
             # _HalfSub(),
             # _SumArgs()
         ])
@@ -38,10 +38,11 @@ class TemplateSolver(base.Module):
             target_features = features[batch_mask, :]
             if target_features.size(0) == 0:
                 continue
+            bms = [m for m in batch_mask]
 
-            target_num = [n for n, m in zip(num_features, batch_mask) if m]
-            target_nums = [n for n, m in zip(nums_features, batch_mask) if m]
-            equation_targets = [e for e, m in zip(batch['equation_targets'], batch_mask) if m]
+            target_num = [n for n, m in zip(num_features, bms) if m]
+            target_nums = [n for n, m in zip(nums_features, bms) if m]
+            equation_targets = [e for e, m in zip(batch['equation_targets'], bms) if m]
 
             solve_output, solve_loss, solve_accuracy, solve_result = solver(batch, target_features, target_num, target_nums,
                                                                             equation_targets, batch_mask)
@@ -220,11 +221,19 @@ class _WrongMultiply(_Equation):
 
 
 class _OrderByCompare(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop, config):
         super(_OrderByCompare, self).__init__()
+        self.attention = base.AttentionLayer(config)
+        self.classifier = base.TokenClassifier(hidden_size, p_drop, 3)
 
-    def forward(self, batch, features, mask):
-        pass
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        attention_mask = batch['attention_mask'][batch_mask]
+
+        x = self.attention(features, attention_mask)
+        if targets is not None:
+            targets = torch.stack(targets)
+        outputs, loss, accuracy = self.classifier(x, targets, attention_mask)
+        return self.output(outputs, loss, accuracy)
 
 
 class _HalfSub(_Equation):

@@ -8,7 +8,7 @@ from data.datamodule import AGCDataModule
 
 def init_language(model_name):
     tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
-    tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", "[NAME]"]})
+    tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", *[f"[NAME{i}]" for i in range(1, 15)]]})
 
     language_model = ElectraModel.from_pretrained(model_name)
     language_model.resize_token_embeddings(len(tokenizer.vocab))
