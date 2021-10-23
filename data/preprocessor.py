@@ -108,6 +108,8 @@ class TrainingPreprocessor(Preprocessor):
                 continue
             if len(data[j]['origin_sentences']) == 1:
                 continue
+            if data[i]['equation_type'] == data[j]['equation_type']:
+                continue
 
             inject_sentence = random.choice(data[j]['origin_sentences'][:-1])
             d['origin_sentences'].insert(0, inject_sentence)
