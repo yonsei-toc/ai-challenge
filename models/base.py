@@ -79,6 +79,30 @@ class BinaryTagging(Module):
         return x.sigmoid(), None, None
 
 
+class TokenClassifier(Module):
+    def __init__(self, hidden_size, p_drop, n_labels):
+        super(TokenClassifier, self).__init__()
+        self.dropout = nn.Dropout(p_drop)
+        self.dense = nn.Linear(hidden_size, hidden_size)
+        self.activation = nn.GELU()
+        self.proj = nn.Linear(hidden_size, n_labels)
+        self.loss = MaskedCrossEntropyLoss(n_labels)
+
+    def forward(self, features, labels, mask):
+        x = self.dropout(features)
+        x = self.dense(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        x = self.proj(x)
+        outputs = x.argmax(-1)
+
+        if labels is None:
+            return outputs, None, None
+        loss = self.loss(x, labels, mask)
+        accuracy = torch.mean(((outputs == labels) & (mask == 1)).float())
+        return outputs, loss, accuracy
+
+
 class AttentionLayer(Module):
     def __init__(self, config):
         super(AttentionLayer, self).__init__()

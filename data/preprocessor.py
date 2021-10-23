@@ -176,21 +176,24 @@ class TrainingPreprocessor(Preprocessor):
 
         # Match Equation Targets
         batch['equation_targets'] = []
-        for eq_tokens, matched_num, matched_nums, eq_type in zip(batch['equation_tokens'], batch['matched_num'], batch['matched_nums'],
-                                                                 raw_batch['equation_type']):
-            equation_target = []
-            for token in eq_tokens:
-                if token in matched_num:
-                    equation_target.append(torch.tensor([list(matched_num).index(token)]))
-                elif token in matched_nums:
-                    equation_target.append(torch.tensor([list(matched_nums).index(token)]))
-                elif isinstance(token, str):
-                    pass
-                else:
-                    t = torch.as_tensor(token)
-                    if len(t.shape) == 0:
-                        t = t.unsqueeze(-1)
-                    equation_target.append(t)
+        for i, (eq_tokens, matched_num, matched_nums, eq_type) in enumerate(zip(batch['equation_tokens'], batch['matched_num'], batch['matched_nums'],
+                                                                                raw_batch['equation_type'])):
+            if eq_type == 4:
+                equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
+            else:
+                equation_target = []
+                for token in eq_tokens:
+                    if token in matched_num:
+                        equation_target.append(torch.tensor([list(matched_num).index(token)]))
+                    elif token in matched_nums:
+                        equation_target.append(torch.tensor([list(matched_nums).index(token)]))
+                    elif isinstance(token, str):
+                        raise ValueError(token)
+                    else:
+                        t = torch.as_tensor(token)
+                        if len(t.shape) == 0:
+                            t = t.unsqueeze(-1)
+                        equation_target.append(t)
             batch['equation_targets'].append(equation_target)
 
         # Make Question Targets
@@ -210,6 +213,44 @@ class TrainingPreprocessor(Preprocessor):
         batch['question_targets'] = _collate(question_targets)
 
         return batch
+
+    # Make OrderByComp Answer
+    def _make_order_by_comp_target(self, batch_idx, batch, raw_batch):
+        eq_tokens = batch['equation_tokens'][batch_idx]
+        seq_ids = raw_batch['input_ids'][batch_idx]
+        matched_names = batch['matched_names'][batch_idx]
+        t_question = batch['t_question'][batch_idx]
+        question = batch['question'][batch_idx]
+
+        question_tokens = self.search_token.findall(t_question)
+        q_names = [t for t in self.search_specials.findall(question) if t not in ('[NUM]', '[NUMS]')]
+        q_poses = [pos for pos, seq_id in enumerate(seq_ids) if seq_id in self.name_token_ids]
+
+        eq_token_group = list(zip(eq_tokens[0::2], eq_tokens[1::2]))
+        q_token_group = list(zip(question_tokens[0::2], question_tokens[1::2]))
+        eq_name_orders = [(matched_names[qg[0]], matched_names[qg[1]], qg in eq_token_group) for qg in q_token_group]
+
+        equation_target = [0] * len(seq_ids)
+        iter_qs = iter(zip(q_names, q_poses))
+        iter_eq_names = iter(eq_name_orders)
+
+        q_name1, q_pos1 = next(iter_qs)
+        q_name2, q_pos2 = next(iter_qs)
+        eq_name1, eq_name2, eq_ord = next(iter_eq_names)
+        for pos, seq_id in enumerate(seq_ids):
+            if pos == q_pos2:
+                if {q_name1, q_name2} == {eq_name1, eq_name2}:
+                    equation_target[q_pos1], equation_target[q_pos2] = (1, 2) if eq_ord else (2, 1)
+
+                    if (next_eq := next(iter_eq_names, None)) is None:
+                        break
+                    q_name1, q_pos1 = next(iter_qs, None)
+                    q_name2, q_pos2 = next(iter_qs, None)
+                    eq_name1, eq_name2, eq_ord = next_eq
+                else:
+                    q_name1, q_pos1 = q_name2, q_pos2
+
+        return torch.as_tensor(equation_target)
 
 
 def _collate(batch):
