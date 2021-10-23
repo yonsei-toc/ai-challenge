@@ -927,8 +927,8 @@ def prob070301(sel, pl, clskey):
     ])
 
     flag = False
-    for n, (i, j) in enumerate(pairs):
-        if n == len(pairs)-1 or flag:
+    for pi, (i, j) in enumerate(pairs):
+        if pi == len(pairs)-1 or flag:
             line = random.choice([
                 f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}다. ",
                 f"{{name{j}}}{{#는}} {{name{i}}}보다 {order_of_reverse}다. "
@@ -937,8 +937,8 @@ def prob070301(sel, pl, clskey):
         else:
             if random.choice([0, 1]) == 0:
                 line = random.choice([
-                    f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}고 ",
-                    f"{{name{j}}}{{#는}} {{name{i}}}보다 {order_of_reverse}고 "
+                    f"{{name{i}}}{{#는}} {{name{j}}}보다 {{order}}고 ",
+                    f"{{name{j}}}{{#는}} {{name{i}}}보다 {{order.of('reverse')}}고 "
                 ])
                 flag = True
             else:
@@ -950,10 +950,7 @@ def prob070301(sel, pl, clskey):
         body += line
 
     is_reversed = random.choice([True, False])
-    question = random.choice(["{n}명 중 ", f""])
-    if "{n}" in question:
-        n_k = pl.new(n)
-        envdict.update({'n': n_k})
+    question = random.choice([f"{n}명 중 ", f""])
     question += "".join(["가장 ",
                          "{order.of('reverse_adv')}" if is_reversed else "가장 {order.of('adv')}",
                          " 사람"])
