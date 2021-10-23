@@ -163,19 +163,6 @@ class TrainingPreprocessor(Preprocessor):
                         break
                     t_left, t_token, t_right = t_next
 
-            while t_next is not None:
-                t_left, t_token, t_right = t_next
-                lp, lsub = next(((lp, t_left[i:]) for i in range(len(t_left) - 1) if (lp := question.find(t_left[i:])) >= 0), (-1, ''))
-                rp, rsub = next(((rp, t_right[i:]) for i in range(len(t_right) - 1) if (rp := question.find(t_right[i:])) >= 0), (-1, ''))
-                lp += len(lsub)
-                if rp > lp >= 0 and lsub and rsub:
-                    raise ValueError(f"Not Error But check case : {lp=} {rp=} {question[lp:rp]=} {lsub=} {rsub=}"
-                                     f"{t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
-                else:
-                    raise ValueError(f"Extra Matching Error : {lp=} {rp=} {question[lp:rp]=} {lsub=} {rsub=}"
-                                     f"{t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
-
-                t_next = next(iter_t_ltrs, None)
             if t_next is not None:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
 
