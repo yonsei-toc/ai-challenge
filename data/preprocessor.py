@@ -150,18 +150,22 @@ class TrainingPreprocessor(Preprocessor):
             iter_t_ltrs = iter(t_ltrs)
 
             t_left, t_token, t_right = t_next = next(iter_t_ltrs)
+            first = True
 
             for n_left, n_token, n_right in q_ltrs:
-                if t_left.endswith(n_left) and t_right.startswith(n_right):
+                if ((first and t_left == n_left) or (not first and t_left.endswith(n_left))) and t_right.startswith(n_right):
                     if n_token == '[NUM]':
                         num_tokens[t_token] = tokens[t_token]
                     elif n_token == '[NUMS]':
                         nums_tokens[t_token] = tokens[t_token]
                     elif n_token.startswith('[NAME') and n_token.endswith(']'):
                         name_tokens[t_token] = n_token
+                    else:
+                        raise ValueError(f"Not token : {n_token}")
                     if (t_next := next(iter_t_ltrs, None)) is None:
                         break
                     t_left, t_token, t_right = t_next
+                first = False
 
             if t_next is not None:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
