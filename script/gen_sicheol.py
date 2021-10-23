@@ -506,7 +506,7 @@ def prob030301(sel, pl, clskey):
     ])
     question += "{c}{#는}"
     question += random.choice([
-        "모두 ", 
+        " 모두 ",
         " "
     ])
     question += random.choice([
