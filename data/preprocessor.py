@@ -1,5 +1,6 @@
 import random
 import re
+import difflib
 import torch
 from data.numerics import NumericProcessor
 from data.naming import NamingProcessor
@@ -111,9 +112,11 @@ class TrainingPreprocessor(Preprocessor):
             if data[i]['equation_type'] == data[j]['equation_type']:
                 continue
 
-            inject_sentence = random.choice(data[j]['origin_sentences'][:-1])
-            d['origin_sentences'].insert(0, inject_sentence)
-            d['token_sentences'].insert(0, inject_sentence)
+            d['inject_sentence'] = random.choice(data[j]['origin_sentences'][:-1])
+        for d in data:
+            if inject_sentence := d.pop('inject_sentence', None):
+                d['origin_sentences'].insert(0, inject_sentence)
+                d['token_sentences'].insert(0, inject_sentence)
 
         # Shuffle question and body with [SEP] token
         sep = ' '
@@ -154,8 +157,18 @@ class TrainingPreprocessor(Preprocessor):
             t_left, t_token, t_right = t_next = next(iter_t_ltrs)
             first = True
 
+            sm_left = difflib.SequenceMatcher(None)
+            sm_right = difflib.SequenceMatcher(None)
             for n_left, n_token, n_right in q_ltrs:
-                if ((first and t_left == n_left) or (not first and t_left.endswith(n_left))) and t_right.startswith(n_right):
+                sm_left.set_seqs(t_left, n_left)
+                sm_right.set_seqs(t_right, n_right)
+                left_match = sm_left.find_longest_match(0, len(t_left), 0, len(n_left))
+                right_match = sm_right.find_longest_match(0, len(t_right), 0, len(n_right))
+
+                if ((first and t_left == n_left) or (not first and left_match.b + left_match.size == len(n_left)
+                                                     and t_left.endswith(n_left[left_match.b:]))
+                ) and (right_match.b <= 6 and right_match.b + right_match.size == len(n_right)
+                       and t_right.startswith(n_right[right_match.b:])):
                     if n_token == '[NUM]':
                         num_tokens[t_token] = tokens[t_token]
                     elif n_token == '[NUMS]':
@@ -170,6 +183,8 @@ class TrainingPreprocessor(Preprocessor):
                 first = False
 
             if t_next is not None:
+                raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
+            if set(tokens.keys()) - (set(num_tokens.keys()) | set(nums_tokens.keys()) | set(name_tokens.keys())):
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
 
             batch['matched_num'].append(num_tokens)
@@ -218,39 +233,13 @@ class TrainingPreprocessor(Preprocessor):
 
     # Make OrderByComp Answer
     def _make_order_by_comp_target(self, batch_idx, batch, raw_batch):
-        eq_tokens = batch['equation_tokens'][batch_idx]
+        eq_token = batch['equation_tokens'][batch_idx][0]
         seq_ids = raw_batch['input_ids'][batch_idx]
         matched_names = batch['matched_names'][batch_idx]
-        t_question = batch['t_question'][batch_idx]
-        question = batch['question'][batch_idx]
 
-        question_tokens = self.search_token.findall(t_question)
-        q_names = [t for t in self.search_specials.findall(question) if t not in ('[NUM]', '[NUMS]')]
-        q_poses = [pos for pos, seq_id in enumerate(seq_ids) if seq_id in self.name_token_ids]
-
-        eq_token_group = list(zip(eq_tokens[0::2], eq_tokens[1::2]))
-        q_token_group = list(zip(question_tokens[0::2], question_tokens[1::2]))
-        eq_name_orders = [(matched_names[qg[0]], matched_names[qg[1]], qg in eq_token_group) for qg in q_token_group]
-
-        equation_target = [0] * len(seq_ids)
-        iter_qs = iter(zip(q_names, q_poses))
-        iter_eq_names = iter(eq_name_orders)
-
-        q_name1, q_pos1 = next(iter_qs)
-        q_name2, q_pos2 = next(iter_qs)
-        eq_name1, eq_name2, eq_ord = next(iter_eq_names)
-        for pos, seq_id in enumerate(seq_ids):
-            if pos == q_pos2:
-                if {q_name1, q_name2} == {eq_name1, eq_name2}:
-                    equation_target[q_pos1], equation_target[q_pos2] = (1, 2) if eq_ord else (2, 1)
-
-                    if (next_eq := next(iter_eq_names, None)) is None:
-                        break
-                    q_name1, q_pos1 = next(iter_qs, None)
-                    q_name2, q_pos2 = next(iter_qs, None)
-                    eq_name1, eq_name2, eq_ord = next_eq
-                else:
-                    q_name1, q_pos1 = q_name2, q_pos2
+        eq_name = matched_names[eq_token]
+        eq_token_id = self.custom_tokens[eq_name]
+        equation_target = [float(seq_id == eq_token_id) for seq_id in seq_ids]
 
         return torch.as_tensor(equation_target)
 

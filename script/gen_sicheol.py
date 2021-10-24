@@ -927,7 +927,9 @@ def prob070301(sel, pl, clskey):
     ])
 
     flag = False
+    sels = set()
     for pi, (i, j) in enumerate(pairs):
+        sels |= {i, j}
         if pi == len(pairs)-1 or flag:
             line = random.choice([
                 f"{{name{i}}}{{#는}} {{name{j}}}보다 {order}다. ",
@@ -948,6 +950,10 @@ def prob070301(sel, pl, clskey):
                 ])
                 flag = False
         body += line
+    for i in range(n):
+        if i not in sels:
+            name_ks.remove(envdict.pop(f'name{i}'))
+            n -= 1
 
     is_reversed = random.choice([True, False])
     question = random.choice([f"{n}명 중 ", f""])
@@ -959,10 +965,7 @@ def prob070301(sel, pl, clskey):
         question_trailing
     ])
 
-    equation = gen.EqnRef(
-        "order_by_comp",
-        *[ name_ks[pair[i]] for pair in pairs for i in ([1,0] if is_reversed else [0,1]) ])
-        # *[ names_k[pair[i]] for pair in pairs for i in [1,0] ])
+    equation = gen.EqnRef("order_by_comp", name_ks[-1 if is_reversed else 0])
 
     return gen.build(
             body=body, 
@@ -971,7 +974,7 @@ def prob070301(sel, pl, clskey):
 
             env=envdict)
 
-# @gen.problems.register
+@gen.problems.register
 def prob080301(sel, pl, clskey):
     """
     길이가 20cm인 철사로 직사각형을 만들었더니 철사가 남지도 모자라지도 않았습니다.

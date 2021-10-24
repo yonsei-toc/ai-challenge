@@ -13,7 +13,7 @@ class TemplateSolver(base.Module):
             _FindSumFromRange(hidden_size, p_drop),
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
-            # _HalfSub(),
+            _HalfSub(hidden_size, p_drop),
             # _SumArgs()
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
@@ -224,7 +224,7 @@ class _OrderByCompare(_Equation):
     def __init__(self, hidden_size, p_drop, config):
         super(_OrderByCompare, self).__init__()
         self.attention = base.AttentionLayer(config)
-        self.classifier = base.TokenClassifier(hidden_size, p_drop, 3)
+        self.binary_classifier = base.BinaryTagging(hidden_size, p_drop)
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         attention_mask = batch['attention_mask'][batch_mask]
@@ -232,16 +232,21 @@ class _OrderByCompare(_Equation):
         x = self.attention(features, attention_mask)
         if targets is not None:
             targets = torch.stack(targets)
-        outputs, loss, accuracy = self.classifier(x, targets, attention_mask)
+        outputs, loss, accuracy = self.binary_classifier(x, targets, attention_mask)
         return self.output(outputs, loss, accuracy)
 
 
 class _HalfSub(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(_HalfSub, self).__init__()
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 2)
 
-    def forward(self, batch, features, mask):
-        pass
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, num_features, nums_features, targets, batch_mask)
+        if targets is None:
+            return self.output(equation_outputs)
+
+        return self.output(equation_outputs, loss, accuracy)
 
 
 class _SumArgs(_Equation):

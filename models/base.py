@@ -68,15 +68,15 @@ class BinaryTagging(Module):
     def forward(self, features, labels, mask):
         x = self.dropout(features)
         x = self.proj(x).squeeze(-1)
+        outputs = x.sigmoid()
 
         if labels is not None:
             loss_fct = nn.BCEWithLogitsLoss(pos_weight=mask)
             loss = loss_fct(x, labels)
-            x = x.sigmoid()
-            accuracy = self.accuracy(x, labels == 1)
+            accuracy = self.accuracy(outputs, labels == 1)
 
             return x, loss, accuracy
-        return x.sigmoid(), None, None
+        return outputs, None, None
 
 
 class TokenClassifier(Module):
