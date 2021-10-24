@@ -112,9 +112,11 @@ class TrainingPreprocessor(Preprocessor):
             if data[i]['equation_type'] == data[j]['equation_type']:
                 continue
 
-            inject_sentence = random.choice(data[j]['origin_sentences'][:-1])
-            d['origin_sentences'].insert(0, inject_sentence)
-            d['token_sentences'].insert(0, inject_sentence)
+            d['inject_sentence'] = random.choice(data[j]['origin_sentences'][:-1])
+        for d in data:
+            if inject_sentence := d.pop('inject_sentence', None):
+                d['origin_sentences'].insert(0, inject_sentence)
+                d['token_sentences'].insert(0, inject_sentence)
 
         # Shuffle question and body with [SEP] token
         sep = ' '
