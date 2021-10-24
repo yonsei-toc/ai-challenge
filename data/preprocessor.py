@@ -233,39 +233,13 @@ class TrainingPreprocessor(Preprocessor):
 
     # Make OrderByComp Answer
     def _make_order_by_comp_target(self, batch_idx, batch, raw_batch):
-        eq_tokens = batch['equation_tokens'][batch_idx]
+        eq_token = batch['equation_tokens'][batch_idx][0]
         seq_ids = raw_batch['input_ids'][batch_idx]
         matched_names = batch['matched_names'][batch_idx]
-        t_question = batch['t_question'][batch_idx]
-        question = batch['question'][batch_idx]
 
-        question_tokens = self.search_token.findall(t_question)
-        q_names = [t for t in self.search_specials.findall(question) if t not in ('[NUM]', '[NUMS]')]
-        q_poses = [pos for pos, seq_id in enumerate(seq_ids) if seq_id in self.name_token_ids]
-
-        eq_token_group = list(zip(eq_tokens[0::2], eq_tokens[1::2]))
-        q_token_group = list(zip(question_tokens[0::2], question_tokens[1::2]))
-        eq_name_orders = [(matched_names[qg[0]], matched_names[qg[1]], qg in eq_token_group) for qg in q_token_group]
-
-        equation_target = [0] * len(seq_ids)
-        iter_qs = iter(zip(q_names, q_poses))
-        iter_eq_names = iter(eq_name_orders)
-
-        q_name1, q_pos1 = next(iter_qs)
-        q_name2, q_pos2 = next(iter_qs)
-        eq_name1, eq_name2, eq_ord = next(iter_eq_names)
-        for pos, seq_id in enumerate(seq_ids):
-            if pos == q_pos2:
-                if {q_name1, q_name2} == {eq_name1, eq_name2}:
-                    equation_target[q_pos1], equation_target[q_pos2] = (1, 2) if eq_ord else (2, 1)
-
-                    if (next_eq := next(iter_eq_names, None)) is None:
-                        break
-                    q_name1, q_pos1 = next(iter_qs, None)
-                    q_name2, q_pos2 = next(iter_qs, None)
-                    eq_name1, eq_name2, eq_ord = next_eq
-                else:
-                    q_name1, q_pos1 = q_name2, q_pos2
+        eq_name = matched_names[eq_token]
+        eq_token_id = self.custom_tokens[eq_name]
+        equation_target = [float(seq_id == eq_token_id) for seq_id in seq_ids]
 
         return torch.as_tensor(equation_target)
 

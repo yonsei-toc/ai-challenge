@@ -965,10 +965,7 @@ def prob070301(sel, pl, clskey):
         question_trailing
     ])
 
-    equation = gen.EqnRef(
-        "order_by_comp",
-        *[ name_ks[pair[i]] for pair in pairs for i in ([1,0] if is_reversed else [0,1]) ])
-        # *[ names_k[pair[i]] for pair in pairs for i in [1,0] ])
+    equation = gen.EqnRef("order_by_comp", name_ks[-1 if is_reversed else 0])
 
     return gen.build(
             body=body, 

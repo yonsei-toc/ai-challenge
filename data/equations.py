@@ -183,11 +183,7 @@ def order_by_comp(*_args_):
         {0~} : 토큰
     """
     def _equation():
-        names = _args_
-        check = {name: True for name in names}
-        for i in range(1, len(names), 2):
-            check[names[i]] = False
-        ans = [name for name in check.keys() if check[name]][-1]
+        ans = _args_[0]
 
     return _equation
 

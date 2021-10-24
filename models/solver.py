@@ -224,7 +224,7 @@ class _OrderByCompare(_Equation):
     def __init__(self, hidden_size, p_drop, config):
         super(_OrderByCompare, self).__init__()
         self.attention = base.AttentionLayer(config)
-        self.classifier = base.TokenClassifier(hidden_size, p_drop, 3)
+        self.binary_classifier = base.BinaryTagging(hidden_size, p_drop)
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         attention_mask = batch['attention_mask'][batch_mask]
@@ -232,7 +232,7 @@ class _OrderByCompare(_Equation):
         x = self.attention(features, attention_mask)
         if targets is not None:
             targets = torch.stack(targets)
-        outputs, loss, accuracy = self.classifier(x, targets, attention_mask)
+        outputs, loss, accuracy = self.binary_classifier(x, targets, attention_mask)
         return self.output(outputs, loss, accuracy)
 
 
