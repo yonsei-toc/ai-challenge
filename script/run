@@ -1,0 +1,21 @@
+#! /bin/sh
+set -euo pipefail
+
+resolve() {
+  (cd "$1"; pwd)
+}
+
+sd="$(resolve `pwd`"/$(dirname $0)")"
+dir="$(resolve ".")"
+
+while ! [ "$(resolve "$dir")" = "/" ]; do
+  if [ -d "$dir/.git" ]; then
+    echo "$dir"
+    PYTHONPATH="$(resolve "$dir")" exec /usr/bin/env python3 "$sd/$1"
+  fi
+  dir="$(resolve "$dir/..")"
+done
+
+echo "It seems that you did not clone the repository"
+exit 1
+

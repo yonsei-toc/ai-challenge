@@ -1,0 +1,5 @@
+torch
+transformers
+pytorch-lightning
+fire
+torchmetrics
