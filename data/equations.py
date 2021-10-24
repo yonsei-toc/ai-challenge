@@ -204,7 +204,7 @@ def half_sub(*_args_):
 
 # 6
 @equations.register
-def eqn_sum1(*_args_):
+def eqn_sum(*_args_):
     # return variable is ALWAYS [ans].
     def _equation():
         ans = sum(_args_)
