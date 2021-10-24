@@ -16,9 +16,8 @@ class Batch(dict):
 class Preprocessor:
     __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask', 'equation_type', 'unnum_mask'
 
-    def __init__(self, tokenizer, max_seq_len, wrap_numeric):
+    def __init__(self, tokenizer, wrap_numeric):
         self.tokenizer = tokenizer
-        self.max_seq_len = max_seq_len
         self.wrap_numeric = wrap_numeric
         self.numeric_processor = NumericProcessor("[NUM]", "[NUMS]")
         self.naming_processor = NamingProcessor()
@@ -83,8 +82,8 @@ class Preprocessor:
 
 
 class TrainingPreprocessor(Preprocessor):
-    def __init__(self, tokenizer, max_seq_len, wrap_numeric, injection_prob=0.5):
-        super(TrainingPreprocessor, self).__init__(tokenizer, max_seq_len, wrap_numeric)
+    def __init__(self, tokenizer, wrap_numeric, injection_prob=0.5):
+        super(TrainingPreprocessor, self).__init__(tokenizer, wrap_numeric)
 
         self.injection_prob = injection_prob
         self._question_suffixes = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("입니까 얼마입니까 구하시오 인가 됩니까 쓰시오 될까요 할까요"))
