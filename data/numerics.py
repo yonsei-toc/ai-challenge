@@ -26,7 +26,7 @@ class NumericProcessor:
     _over_10_only = "(?:(?:(?:[일이삼사오육칠팔구]?[백천만])+)?\\s?(?:열|스무|서른|마흔|쉰|예순|일흔|여든|아흔))"
     _exp_chinese_1 = f"(?:{'|'.join(_chinese_1.keys())})"
     _exp_chinese_10n = f"(?:{'|'.join(_chinese_10n.keys())})"
-    _exp_units = "(?:\\s?" + '|\\s?'.join(_units) + ")"
+    _exp_units = "(?:" + '|'.join(_units) + ")"
     _exp_arabic = "(?:-?\\d+(\\.\\d+)?)"
     _exp_kor = f"(?:(?:{_over_10_with_1}\\s*{_1})|(?:{_over_10_only}|{_1}))"
     _exp_kor_units = f"{_exp_kor}\\s*{_exp_units}"
@@ -125,3 +125,5 @@ if __name__ == "__main__":
 
     print(np.replace_token("10 이상 71 이하의 자연수를 모두 적으려고 합니다. 접시에 7, 3, 0이 적힌 카드가 들어있습니다."
                            " 접시에서 카드를 꺼내서 만들 수 있는 가장 작은 두 자리 수는 얼마입니까?"))
+    print(np.replace_token("직사각형의 세로 길이가 408밀리미터일 때, 가로 길이는 몇 mm인지 구하시오. 4, 0, 6, 3 중 1개의 서로 다른 숫자를 뽑아서 한 자리 수를 만들려고 한다."
+                           "길이가 186mm인 전선으로 직사각형을 만들었더니, 전선이 딱 맞아 떨어졌다."))
