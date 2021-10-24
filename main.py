@@ -3,7 +3,7 @@ from transformers import ElectraModel, ElectraTokenizerFast
 from pytorch_lightning import Trainer
 
 from models.agc import AGCModel
-from data.datamodule import AGCDataModule
+from data.datamodule import AGCDataModule, AGCPredictionDataModule
 
 
 def init_language(model_name):
@@ -27,21 +27,29 @@ def download(language_model=None):
 
 
 def train(epoch=4, gpu=0, resume=None,
-          max_seq_len=128, batch_size=32, augments=3,
+          batch_size=32, augments=3,
           language_model=".language-models/koelectra-base-v3-discriminator", **model_kwargs):
     print(f"train() : {epoch=} {gpu=} {language_model=} {resume=}")
     tokenizer, language_model = init_language(language_model)
 
     model = AGCModel(language_model, tokenizer, **model_kwargs)
 
-    datamodule = AGCDataModule(tokenizer, max_seq_len, batch_size=batch_size, n_aug_per_question=augments)
+    datamodule = AGCDataModule(tokenizer, batch_size=batch_size, n_aug_per_question=augments)
 
     trainer = Trainer(max_epochs=epoch, gpus=[gpu], resume_from_checkpoint=resume, stochastic_weight_avg=True)
     trainer.fit(model, datamodule=datamodule)
 
 
 def infer():
-    print("infer()")
+    lm_path = ".language-models/koelectra-base-v3-discriminator"
+    model_path = ""
+    data_path = "input.json"
+
+    tokenizer, language_model = init_language(lm_path)
+    model = AGCModel(language_model, tokenizer)
+    datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=1)
+    trainer = Trainer(resume_from_checkpoint=model_path)
+    trainer.predict(model, datamodule=datamodule)
 
 
 def main(command=None, *_, **__):
