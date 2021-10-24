@@ -13,7 +13,7 @@ class TemplateSolver(base.Module):
             _FindSumFromRange(hidden_size, p_drop),
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
-            # _HalfSub(),
+            _HalfSub(hidden_size, p_drop),
             # _SumArgs()
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
@@ -237,11 +237,16 @@ class _OrderByCompare(_Equation):
 
 
 class _HalfSub(_Equation):
-    def __init__(self):
+    def __init__(self, hidden_size, p_drop):
         super(_HalfSub, self).__init__()
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 2)
 
-    def forward(self, batch, features, mask):
-        pass
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, num_features, nums_features, targets, batch_mask)
+        if targets is None:
+            return self.output(equation_outputs)
+
+        return self.output(equation_outputs, loss, accuracy)
 
 
 class _SumArgs(_Equation):

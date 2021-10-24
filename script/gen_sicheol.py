@@ -971,7 +971,7 @@ def prob070301(sel, pl, clskey):
 
             env=envdict)
 
-# @gen.problems.register
+@gen.problems.register
 def prob080301(sel, pl, clskey):
     """
     길이가 20cm인 철사로 직사각형을 만들었더니 철사가 남지도 모자라지도 않았습니다.
