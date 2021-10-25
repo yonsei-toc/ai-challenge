@@ -6,7 +6,7 @@ class NamingProcessor:
     _target_tags = {'entity.name', 'entity.subject'}
 
     def __init__(self, dict_file='script/dict.json'):
-        with open(dict_file, 'r', encoding='utf-8-sig') as f:
+        with open(dict_file, 'r', encoding='utf8') as f:
             dictionary, clskey = Dictionary.load(f.read())
         self.tokens = [str(t) for t in dictionary.tokens if (self._target_tags & t.tags) and len(str(t)) > 1]
         self.tokens.sort(key=len, reverse=True)
