@@ -26,8 +26,8 @@ def download(language_model=None):
         model.save_pretrained(path)
 
 
-def train(epoch=4, gpu=0, resume=None,
-          batch_size=32, augments=3,
+def train(epoch=40, gpu=0, resume=None,
+          batch_size=32, augments=200,
           language_model=".language-models/koelectra-base-v3-discriminator", **model_kwargs):
     print(f"train() : {epoch=} {gpu=} {language_model=} {resume=}")
     tokenizer, language_model = init_language(language_model)
