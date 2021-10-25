@@ -3142,7 +3142,7 @@ def prob02_5_10(selector, tokenpool, clskey):
 ######################################################################################
 ################################## problem 06_2 ######################################
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_1(selector, tokenpool, clskey):
     ''' 어떤 수에서 46을 빼야하는데 잘못하여 59를 뺐더니 43이 되었습니다.
     바르게 계산한 결과를 구하시오. '''
@@ -3165,19 +3165,17 @@ def prob06_2_1(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         if case2 == '뺐더니':
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if case2 == '뺐더니':
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body=' '.join(['어떤 수에서 {orig_num}을 {case1} {exp_wrong} {wrong_num}를 '\
@@ -3192,15 +3190,15 @@ def prob06_2_1(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
 
                 total=total,
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_2(selector, tokenpool, clskey):
     ''' 어떤 수보다 59만큼 작은 수는 43입니다.
     어떤 수보다 46만큼 작은 수를 구하시오. '''
@@ -3223,25 +3221,23 @@ def prob06_2_2(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='어떤 수보다 {wrong_num}만큼 {big_or_small_0} 수는 {wrong_result}입니다.',
@@ -3254,8 +3250,8 @@ def prob06_2_2(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 big_or_small_0=big_or_small_0,
                 big_or_small_1=big_or_small_1,
 
@@ -3264,7 +3260,7 @@ def prob06_2_2(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_3(selector, tokenpool, clskey):
     ''' 어떤 수에서(와) 59를 빼면 43입니다.
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3286,25 +3282,23 @@ def prob06_2_3(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='어떤 수에서 {wrong_num}{#를} {case2} {wrong_result}입니다.',
@@ -3316,8 +3310,8 @@ def prob06_2_3(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 big_or_small_0=big_or_small_0,
                 big_or_small_1=big_or_small_1,
 
@@ -3326,7 +3320,7 @@ def prob06_2_3(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_4(selector, tokenpool, clskey):
     ''' 59를 어떤 수에서 빼면 43이 나올 때, 46을 어떤 수에서 빼면 얼마인지 구하시오. '''
 
@@ -3347,25 +3341,23 @@ def prob06_2_4(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         big_or_small_1 = '작은'
         if case2 == '뺐더니':
             big_or_small_0 = '작은'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             big_or_small_0 = '큰'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='{wrong_num}{#를} 어떤 수에서 {case2} {wrong_result}이 나온다면, ',
@@ -3377,8 +3369,8 @@ def prob06_2_4(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 big_or_small_0=big_or_small_0,
                 big_or_small_1=big_or_small_1,
 
@@ -3388,7 +3380,7 @@ def prob06_2_4(selector, tokenpool, clskey):
             ))
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_5(selector, tokenpool, clskey):
     ''' 어떤 수는 43에서 59를 더한 수입니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3410,23 +3402,21 @@ def prob06_2_5(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         if case2 == '뺐더니':
             case2_reverse = '더한'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             case2_reverse = '뺀'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if case2 == '뺐더니':
             case2_reverse = '더한'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             case2_reverse = '뺀'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     case2_reverse_k=tokenpool.new(case2_reverse)
 
@@ -3440,8 +3430,8 @@ def prob06_2_5(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 case2_reverse=case2_reverse_k,
 
                 total=total,
@@ -3450,7 +3440,7 @@ def prob06_2_5(selector, tokenpool, clskey):
             ))
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_6(selector, tokenpool, clskey):
     ''' 어떤 수 빼기 59는 43과 같습니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3472,23 +3462,21 @@ def prob06_2_6(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         if case2 == '뺐더니':
             sent1 = '빼기'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             sent1 = '더하기'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if case2 == '뺐더니':
             sent1 = '빼기'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             sent1 = '더하기'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     sent1_k=tokenpool.new(sent1)
 
@@ -3502,8 +3490,8 @@ def prob06_2_6(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 sent1=sent1_k,
 
                 total=total,
@@ -3511,7 +3499,7 @@ def prob06_2_6(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_7(selector, tokenpool, clskey):
     ''' 어떤 수에 59를 빼서 43을 만들었습니다. 
     어떤 수에서 46을 빼면 얼마인지 구해 보세요. '''
@@ -3533,23 +3521,21 @@ def prob06_2_7(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '빼' in case1:
         if case2 == '뺐더니':
             sent1 = '빼서'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             sent1 = '더해서'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if case2 == '뺐더니':
             sent1 = '빼서'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             sent1 = '더해서'
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     sent1_k=tokenpool.new(sent1)
 
@@ -3563,8 +3549,8 @@ def prob06_2_7(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 sent1=sent1_k,
 
                 total=total,
@@ -3572,7 +3558,7 @@ def prob06_2_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_8(selector, tokenpool, clskey):
     ''' 상자에서 사과를 59개 꺼내면 43개가 남습니다. 
     만약 46개를 빼면 상자에 몇 개의 사과가 남는지 구하시오. '''
@@ -3597,28 +3583,23 @@ def prob06_2_8(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '꺼내면' in case1:
         sent3 = '남는지'
         if case2 == '꺼내면':
             sent2 = '남습니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             sent2 = '됩니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         sent3 = '되는지'
         if case2 == '꺼내면':
             sent2 = '남습니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             sent2 = '됩니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
-
-    sent2_k=tokenpool.new(sent2)
-    sent3_k=tokenpool.new(sent3)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='{container}에서 {item} {wrong_num}개를 {case2} {wrong_result}개가 {sent2}',
@@ -3632,17 +3613,17 @@ def prob06_2_8(selector, tokenpool, clskey):
                 wrong_result=wrong_result_k,
                 container=container,
                 item=item,
-                case1=case1_k,
-                case2=case2_k,
-                sent2=sent2_k,
-                sent3=sent3_k,
+                case1=case1,
+                case2=case2,
+                sent2=sent2,
+                sent3=sent3,
 
                 total=total,
                 sent_trailing=sent_trailing,
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_9(selector, tokenpool, clskey):
     ''' 정국이가 친구들에게 59권의 책을 나눠주면 43개가 남습니다. 
     만약 46개의 책을 나눠주면 몇 권의 책이 남는지 구하시오. '''
@@ -3672,30 +3653,23 @@ def prob06_2_9(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
-    item_k = tokenpool.new(case2)
-    item_k.unit = unit
 
     if '나눠주면' in case1:
         sent3 = '남는지'
         if case2 == '나눠주면':
             sent2 = '남습니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
             sent2 = '됩니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         sent3 = '되는지'
         if case2 == '나눠주면':
             sent2 = '남습니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
             sent2 = '됩니다. '
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
-
-    sent2_k=tokenpool.new(sent2)
-    sent3_k=tokenpool.new(sent3)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='{name1}{#이?}가 친구들에게 {item} {wrong_num}{unit}{#을} {case2} {wrong_result}{unit}가 {sent2}',
@@ -3709,10 +3683,10 @@ def prob06_2_9(selector, tokenpool, clskey):
                 wrong_result=wrong_result_k,
                 item=item,
                 name1=name1,
-                case1=case1_k,
-                case2=case2_k,
-                sent3=sent3_k,
-                sent2=sent2_k,
+                case1=case1,
+                case2=case2,
+                sent3=sent3,
+                sent2=sent2,
                 unit=unit,
 
                 total=total,
@@ -3720,7 +3694,7 @@ def prob06_2_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_10(selector, tokenpool, clskey):
     ''' 정국이는 민영이에게 책을 59권 받고, 태형이에게 43권 받았습니다. 
     만약, 정국이가 지민이에게 46권의 책을 준다면 남는 책은 몇 권입니까? '''
@@ -3754,21 +3728,17 @@ def prob06_2_10(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
-    item_k = tokenpool.new(case2)
-    item_k.unit = unit
 
     if '준다면' in case2:
         if '받고' in case1:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if '받고' in case1:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='{name1}{#이?}는 {name2}에게 {item}{#을} {wrong_num}{unit}{#을} {case1}, '\
@@ -3786,8 +3756,8 @@ def prob06_2_10(selector, tokenpool, clskey):
                 name2=name2,
                 name3=name3,
                 name4=name4,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 unit=unit,
 
                 total=total,
@@ -3795,7 +3765,7 @@ def prob06_2_10(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_11(selector, tokenpool, clskey):
     ''' 59와 43을 더한 값에서 46을 뺀(빼면) 결과값은 얼마인가? '''
 
@@ -3817,19 +3787,17 @@ def prob06_2_11(selector, tokenpool, clskey):
     orig_num_k = tokenpool.new(orig_num) # 46
     wrong_num_k = tokenpool.new(wrong_num) # 59
     wrong_result_k = tokenpool.new(wrong_result) # 43
-    case1_k = tokenpool.new(case1)
-    case2_k = tokenpool.new(case2)
 
     if '뺀' in case2:
         if '더한' in case1:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, -orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, -orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, -orig_num_k)
     else:
         if '더한' in case1:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, wrong_num_k, orig_num_k)
         else:
-            equation_temp = gen.EqnRef('sum', wrong_result_k, -wrong_num_k, orig_num_k)
+            equation_temp = gen.EqnRef('sum_num_sig', wrong_result_k, -wrong_num_k, orig_num_k)
 
     return gen.build(
             body='',
@@ -3841,8 +3809,8 @@ def prob06_2_11(selector, tokenpool, clskey):
                 orig_num=orig_num_k,
                 wrong_num=wrong_num_k,
                 wrong_result=wrong_result_k,
-                case1=case1_k,
-                case2=case2_k,
+                case1=case1,
+                case2=case2,
                 sent1=sent1,
 
                 sent_trailing=sent_trailing,
