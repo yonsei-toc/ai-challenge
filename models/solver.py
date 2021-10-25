@@ -28,7 +28,7 @@ class TemplateSolver(base.Module):
 
         loss, accuracy = [], []
         label_answer_type = batch['equation_type']
-        solve_outputs = []
+        solve_outputs = [None] * features.size(0)
         solve_results = {}
         for i, solver in enumerate(self.solvers):
             if label_answer_type is not None:
@@ -40,15 +40,16 @@ class TemplateSolver(base.Module):
             target_features = features[batch_mask, :]
             if target_features.size(0) == 0:
                 continue
-            bms = [m for m in batch_mask]
+            batch_idxes = [bi for bi, m in enumerate(batch_mask) if m]
 
-            target_num = [n for n, m in zip(num_features, bms) if m]
-            target_nums = [n for n, m in zip(nums_features, bms) if m]
-            equation_targets = [e for e, m in zip(batch['equation_targets'], bms) if m]
+            target_num = [num_features[bi] for bi in batch_idxes]
+            target_nums = [nums_features[bi] for bi in batch_idxes]
+            equation_targets = [batch['equation_targets'][bi] for bi in batch_idxes]
 
             solve_output, solve_loss, solve_accuracy, solve_result = solver(batch, target_features, target_num, target_nums,
                                                                             equation_targets, batch_mask)
-            solve_outputs.append(solve_output)
+            for si, bi in enumerate(batch_idxes):
+                solve_outputs[bi] = solve_output[si]
             if solve_loss is not None:
                 loss.append(solve_loss)
                 accuracy.append(solve_accuracy)
