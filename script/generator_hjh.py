@@ -8,7 +8,7 @@ import string
 
 
 
-# @gen.problems.register
+@gen.problems.register
 def c5p1v0(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
@@ -44,7 +44,7 @@ def c5p1v0(sel, tokenpool, clskey):
             num4=num4_token
     ))
 
-# @gen.problems.register
+@gen.problems.register
 def c5p1v1(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
@@ -76,7 +76,7 @@ def c5p1v1(sel, tokenpool, clskey):
             name_aug=name_aug
     ))
 
-# @gen.problems.register
+@gen.problems.register
 def c5p1v2(sel, tokenpool, clskey):
     name1 = sel.get(clskey.alpha)
     name2 = sel.get(clskey.alpha)
