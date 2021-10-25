@@ -236,6 +236,13 @@ class _OrderByCompare(_Equation):
         if targets is not None:
             targets = torch.stack(targets)
         outputs, loss, accuracy = self.binary_classifier(x, targets, attention_mask)
+
+        input_ids = batch['input_ids'][batch_mask]
+        output_idx = outputs.argmax(-1, keepdim=True)
+        outputs = input_ids.gather(1, output_idx)
+        if accuracy is not None:
+            target_idx = targets.argmax(-1, keepdim=True)
+            accuracy = torch.mean((outputs == input_ids.gather(1, target_idx)).float())
         return self.output(outputs, loss, accuracy)
 
 
