@@ -269,13 +269,12 @@ def prob04_03_01(selector, tokenpool, clskey):
     nums = [round(float(random.uniform(0, 3)), 1) for _ in range(0, len_)]
     over = random.randint(0, 2)
 
-    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
     envdict = {f'num{i}': nums_k[i] for i in range(len_)}
     envdict['over'] = over_k
-    envdict['len_'] = len_k
+    envdict['len_'] = len_
 
     return gen.build(
         # body is the background of problem settings
@@ -301,21 +300,18 @@ def prob04_03_02(selector, tokenpool, clskey):
     over = random.randint(0, 2)
     item = selector.get(clskey.tool)
 
-    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
-    names_k = list(map(tokenpool.new, names))
-    item_k = tokenpool.new(item)
 
     # syntactic randomize
     ques_trailing = random.choice(['인지 구하시오.', '입니까?'])
 
     envdict = {f'num{i}': nums_k[i] for i in range(len_)}
-    envdict.update({f'name{i}': names_k[i] for i in range(len_)})
+    envdict.update({f'name{i}': names[i] for i in range(len_)})
     envdict['over'] = over_k
-    envdict['len_'] = len_k
+    envdict['len_'] = len_
+    envdict['item'] = item
     envdict['ques_trailing'] = ques_trailing
-    envdict['item'] = item_k
 
     return gen.build(
         # body is the background of problem settings
@@ -339,7 +335,6 @@ def prob04_03_03(selector, tokenpool, clskey):
     nums = [round(float(random.uniform(0, 3)), 1) for _ in range(0, len_)]
     over = random.randint(0, 2)
 
-    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
@@ -379,7 +374,6 @@ floor, room room 운동장, 연습장, ... , n,n,n,n,n 층에 있다. 이중 k�
     while len(set(field)) != len(field):
         field = [selector.get(clskey.field) for _ in range(0, len_)]
 
-    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
@@ -390,7 +384,7 @@ floor, room room 운동장, 연습장, ... , n,n,n,n,n 층에 있다. 이중 k�
     envdict = {f'nums{i}': nums_k[i] for i in range(len_)}
     envdict.update({f'field{i}': field[i] for i in range(len_)})
     envdict['over'] = over_k
-    envdict['len_'] = len_k
+    envdict['len_'] = len_
     envdict['floor'] = floor
     envdict['ques_trailing'] = ques_trailing
     envdict['cent_trailing'] = cent_trailing
@@ -418,7 +412,6 @@ def prob04_03_04(selector, tokenpool, clskey):
     nums = [round(float(random.uniform(0, 3)), 1) for _ in range(0, len_)]
     over = random.randint(0, 2)
 
-    len_k = tokenpool.new(len_)
     nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
@@ -428,10 +421,10 @@ def prob04_03_04(selector, tokenpool, clskey):
     envdict = {f'num{i}': nums_k[i] for i in range(len_)}
     envdict['over'] = over_k
     envdict['len_'] = len_
-    envdict['ques_trailing'] = ques_trailing
     envdict['unit'] = unit
     envdict['unit_len'] = unit_len
     envdict['item'] = item
+    envdict['ques_trailing'] = ques_trailing
 
     return gen.build(
         # body is the background of problem settings
@@ -577,8 +570,8 @@ def prob04_04_05(selector, tokenpool, clskey):
     # Claim items at first. They will not overlap (even for different keys).
     name     = selector.get(clskey.name)
     count1   = random.randrange(1, 400, 2)
+    item = selector.get(clskey.fruit)
     count1_k = tokenpool.new(count1)
-    item     = selector.get(clskey.fruit)
 
     # syntactic randomize
     sent_trailing = random.choice(['입니다.','이다'])
@@ -949,15 +942,13 @@ def prob07_04(selector, tokenpool, clskey):
     while len(set(name)) != len(name):
         name = [selector.get(clskey.name) for _ in range(0, 4)]
 
-    item_k = tokenpool.new(item)
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
-    envdict['item'] = item_k
+    envdict['unit'] = unit
+    envdict['item'] = item
 
     return gen.build(
             body=' '.join([
@@ -986,15 +977,13 @@ def prob07_04_02(selector, tokenpool, clskey):
     while len(set(name)) != len(name):
         name = [selector.get(clskey.name) for _ in range(0, 4)]
 
-    item_k = tokenpool.new(item)
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
-    envdict['item'] = item_k
+    envdict['unit'] = unit
+    envdict['item'] = item
 
     return gen.build(
         body=' '.join([
@@ -1024,15 +1013,13 @@ def prob07_04_03(selector, tokenpool, clskey):
     while len(set(name)) != len(name):
         name = [selector.get(clskey.name) for _ in range(0, 4)]
 
-    item_k = tokenpool.new(item)
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
-    envdict['item'] = item_k
+    envdict['unit'] = unit
+    envdict['item'] = item
 
     return gen.build(
         body=' '.join([
@@ -1061,13 +1048,12 @@ def prob07_04_04(selector, tokenpool, clskey):
     while len(set(name)) != len(name):
         name = [selector.get(clskey.place) for _ in range(0, 4)]
 
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
+    envdict['unit'] = unit
 
     return gen.build(
             body=' '.join([
@@ -1095,15 +1081,12 @@ def prob07_04_05(selector, tokenpool, clskey):
     while len(set(name)) != len(name):
         name = [selector.get(clskey.name) for _ in range(0, 4)]
 
-    item_k = tokenpool.new(item)
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
-    envdict['item'] = item_k
+    envdict['unit'] = unit
     envdict['item'] = item
 
     return gen.build(
@@ -1128,15 +1111,12 @@ def prob07_04_06(selector, tokenpool, clskey):
     name = [ chr(65 + i) for i in range(0,4)]
     nums = [ round(float(random.uniform(0,2)),1) for _ in range(0,4) ]
 
-    item_k = tokenpool.new(item)
-    unit_k = tokenpool.new(unit)
     name_k = list(map(tokenpool.new, name))
     nums_k = list(map(tokenpool.new, nums))
 
     envdict = {f'name{i}': name_k[i] for i in range(4)}
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
-    envdict['unit'] = unit_k
-    envdict['item'] = item_k
+    envdict['unit'] = unit
     envdict['item'] = item
 
     return gen.build(
@@ -1163,7 +1143,6 @@ def prob08_04(selector, tokenpool, clskey):
     item1_k = tokenpool.new(item1)
     item2_k = tokenpool.new(item2)
     l_k = tokenpool.new(l)
-    unit_k = tokenpool.new(unit)
     edge_k = edge
 
     return gen.build(
@@ -1176,7 +1155,7 @@ def prob08_04(selector, tokenpool, clskey):
             item1=item1_k,
             item2=item2_k,
             l=l_k,
-            unit=unit_k,
+            unit=unit,
             edge=edge_k
         ))
 
@@ -1197,7 +1176,6 @@ def prob08_04_02(selector, tokenpool, clskey):
     item1_k = tokenpool.new(item1)
     item2_k = tokenpool.new(item2)
     l_k = tokenpool.new(l)
-    unit_k = tokenpool.new(unit)
     edge_k = edge
 
     return gen.build(
@@ -1211,7 +1189,7 @@ def prob08_04_02(selector, tokenpool, clskey):
             item1=item1_k,
             item2=item2_k,
             l=l_k,
-            unit=unit_k,
+            unit=unit,
             edge=edge_k,
             wire=wire
         ))
@@ -1232,7 +1210,6 @@ def prob08_04_03(selector, tokenpool, clskey):
     item1_k = tokenpool.new(item1)
     item2_k = tokenpool.new(item2)
     l_k = tokenpool.new(l)
-    unit_k = tokenpool.new(unit)
     edge_k = edge
 
     return gen.build(
@@ -1245,7 +1222,7 @@ def prob08_04_03(selector, tokenpool, clskey):
             item1=item1_k,
             item2=item2_k,
             l=l_k,
-            unit=unit_k,
+            unit=unit,
             edge=edge_k,
             side=side
         ))
@@ -1266,7 +1243,6 @@ def prob08_04_04(selector, tokenpool, clskey):
     item1_k = tokenpool.new(item1)
     item2_k = tokenpool.new(item2)
     l_k = tokenpool.new(l)
-    unit_k = tokenpool.new(unit)
     edge_k = edge
 
     return gen.build(
@@ -1279,7 +1255,7 @@ def prob08_04_04(selector, tokenpool, clskey):
             item1=item1_k,
             item2=item2_k,
             l=l_k,
-            unit=unit_k,
+            unit=unit,
             edge=edge_k,
             field=field
         ))
@@ -1298,7 +1274,6 @@ def prob08_04_05(selector, tokenpool, clskey):
     item1_k  = tokenpool.new(item1)
     item2_k  = tokenpool.new(item2)
     l_k      = tokenpool.new(l)
-    unit_k   = tokenpool.new(unit)
     edge_k   = edge
 
     sent_q = random.choice(['까지 구하시오.', '까지 쓰시오.','는 무엇입니까?'])
@@ -1313,7 +1288,7 @@ def prob08_04_05(selector, tokenpool, clskey):
                 item1=item1_k,
                 item2=item2_k,
                 l=l_k,
-                unit = unit_k,
+                unit = unit,
                 edge = edge_k,
                 place = place,
                 sent_q = sent_q
@@ -1333,7 +1308,6 @@ def prob08_04_06(selector, tokenpool, clskey):
     item1_k  = tokenpool.new(item1)
     item2_k  = tokenpool.new(item2)
     l_k      = tokenpool.new(l)
-    unit_k   = tokenpool.new(unit)
     edge_k   = edge
 
     sent_q = random.choice(['까지 구하시오.', '까지 쓰시오.','는 무엇입니까?'])
@@ -1348,7 +1322,7 @@ def prob08_04_06(selector, tokenpool, clskey):
                 item1=item1_k,
                 item2=item2_k,
                 l=l_k,
-                unit = unit_k,
+                unit = unit,
                 edge = edge_k,
                 container = container,
                 sent_q = sent_q
