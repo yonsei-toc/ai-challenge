@@ -29,7 +29,7 @@ def randreal(st, ed, *, ndigits = 2):
 ##   problems    ##
 ###################
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_1(selector, tokenpool, clskey):
     # entities
     container1 = selector.get(clskey.container)
@@ -39,6 +39,8 @@ def prob1_1(selector, tokenpool, clskey):
     count2 = random.randint(1,100)
 
     # word for entities
+    container1_k = tokenpool.new(container1)
+    item1_k = tokenpool.new(item1)
     count1_k = tokenpool.new(count1)
     count2_k = tokenpool.new(count2)
 
@@ -63,12 +65,12 @@ def prob1_1(selector, tokenpool, clskey):
         # question
         question = '{container1} 안에 있는 {item1}{#는} {total}몇 {unit}{ques_trailing}',
         # equation
-        equation = gen.EqnRef('sum_num_sig', count1_k, count2_k),
+        equation = gen.EqnRef('eqn_sum', count1_k, count2_k),
         
         # env
         env=gen.fnmap(
-            container1 = container1,
-            item1 = item1,
+            container1 = container1_k,
+            item1 = item1_k,
             name1 = name1,
             count1=count1_k,
             count2=count2_k,
@@ -80,7 +82,7 @@ def prob1_1(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_2(selector, tokenpool, clskey):
     # entities
     name1 = selector.get(clskey.name)
@@ -92,6 +94,9 @@ def prob1_2(selector, tokenpool, clskey):
     count3 = random.randint(1, 100)
     
     # word for entities
+    relation1_k = tokenpool.new(relation1)
+    relation2_k = tokenpool.new(relation2)
+    item1_k = tokenpool.new(item1)
     count1_k = tokenpool.new(count1)
     count2_k = tokenpool.new(count2)
     count3_k = tokenpool.new(count3)
@@ -118,14 +123,14 @@ def prob1_2(selector, tokenpool, clskey):
         # question
         question = '{init_time}{name1}{#이}가 {own_item}{item1}은 몇 {unit}{ques_trailing}',
         # equation
-        equation = gen.EqnRef('sum_num_sig', count1_k, count2_k, count3_k),
+        equation = gen.EqnRef('eqn_sum', count1_k, count2_k, count3_k),
 
         # env
         env=gen.fnmap(
             name1 = name1,
-            relation1 = relation1,
-            relation2 = relation2,
-            item1 = item1,
+            relation1 = relation1_k,
+            relation2 = relation2_k,
+            item1 = item1_k,
             count1 = count1_k,
             count2 = count2_k,
             count3 = count3_k,
@@ -138,7 +143,7 @@ def prob1_2(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_3(selector, tokenpool, clskey):
     # entities
     item1 = selector.get(clskey.item)
@@ -148,6 +153,8 @@ def prob1_3(selector, tokenpool, clskey):
     count3 = count1*2+count2
 
     # word for entities
+    item1_k = tokenpool.new(item1)
+    item2_k = tokenpool.new(item2)
     count2_k = tokenpool.new(count2)
     count3_k = tokenpool.new(count3)
 
@@ -174,8 +181,8 @@ def prob1_3(selector, tokenpool, clskey):
 
         # env
         env=gen.fnmap(
-            item1 = item1,
-            item2 = item2,
+            item1 = item1_k,
+            item2 = item2_k,
             count2 = count2_k,
             count3 = count3_k,
             unit = unit,
@@ -184,7 +191,7 @@ def prob1_3(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_4(selector, tokenpool, clskey):
     # entities
     item1 = selector.get(clskey.item)
@@ -194,6 +201,7 @@ def prob1_4(selector, tokenpool, clskey):
     count4 = random.randint(1,100)
 
     # entity reference
+    item1_k = tokenpool.new(item1)
     count1_k = tokenpool.new(count1)
     count2_k = tokenpool.new(count2)
     count3_k = tokenpool.new(count3)
@@ -222,7 +230,7 @@ def prob1_4(selector, tokenpool, clskey):
         # equation for question
         equation = gen.EqnRef('split_oops_split',count3_k,count2_k,count4_k,count1_k),
         env= gen.fnmap(
-            item1 = item1,
+            item1 = item1_k,
             count1 = count1_k,
             count2 = count2_k,
             count3 = count3_k,
@@ -255,6 +263,8 @@ def prob1_5(selector, tokenpool, clskey):
     count5 = random.randint(1,count4)
 
     # entity reference
+    group1_k = tokenpool.new(group1)
+    item1_k = tokenpool.new(item1)
     count1_k = tokenpool.new(count1)
     count2_k = tokenpool.new(count2)
     count3_k = tokenpool.new(count3)
@@ -279,8 +289,8 @@ def prob1_5(selector, tokenpool, clskey):
 
         env=gen.fnmap(
             name1 = name1,
-            group1 = group1,
-            item1 = item1,
+            group1 = group1_k,
+            item1 = item1_k,
             count1 = count1_k,
             count2 = count2_k,
             count3 = count3_k,
@@ -292,7 +302,7 @@ def prob1_5(selector, tokenpool, clskey):
     )
     
 
-@gen.problems.register
+# @gen.problems.register
 def prob6_1(selector, tokenpool, clskey):
     # entities
     # entity numbers
@@ -313,7 +323,7 @@ def prob6_1(selector, tokenpool, clskey):
         # what to ask
         question = '어떤 수를 구하시오.',
         # equation for question
-        equation = gen.EqnRef('sum_num_sig', count1_k, count2_k),
+        equation = gen.EqnRef('eqn_sum',count1,count2),
         env = gen.fnmap(
             count1 = count1_k,
             count2 = count2_k,
@@ -384,7 +394,7 @@ def prob7_1(selector, tokenpool, clskey):
     )
     
 
-@gen.problems.register
+# @gen.problems.register
 def prob8_1(selector, tokenpool, clskey):
     # entities
     # entity numbers
@@ -402,7 +412,7 @@ def prob8_1(selector, tokenpool, clskey):
         # what to ask
         question = '{count1.to_kor()}각형의 변의 개수와 {count2.to_kor()}각형의 변의 개수의 합을 구하시오.',
         # equation for question
-        equation = gen.EqnRef('sum_num_sig',count1_k,count2_k),
+        equation = gen.EqnRef('eqn_sum',count1_k,count2_k),
         env = gen.fnmap(
             count1 = count1_k,
             count2 = count2_k

@@ -1,7 +1,6 @@
 import itertools
 import torch
 import torch.nn as nn
-
 import models.base as base
 
 
@@ -15,8 +14,7 @@ class TemplateSolver(base.Module):
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
-            _SumNumSig(hidden_size, p_drop),
-            _MaxSubMin(hidden_size, p_drop)
+            # _SumArgs()
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
@@ -28,7 +26,7 @@ class TemplateSolver(base.Module):
 
         loss, accuracy = [], []
         label_answer_type = batch['equation_type']
-        solve_outputs = [None] * features.size(0)
+        solve_outputs = []
         solve_results = {}
         for i, solver in enumerate(self.solvers):
             if label_answer_type is not None:
@@ -40,16 +38,15 @@ class TemplateSolver(base.Module):
             target_features = features[batch_mask, :]
             if target_features.size(0) == 0:
                 continue
-            batch_idxes = [bi for bi, m in enumerate(batch_mask) if m]
+            bms = [m for m in batch_mask]
 
-            target_num = [num_features[bi] for bi in batch_idxes]
-            target_nums = [nums_features[bi] for bi in batch_idxes]
-            equation_targets = [batch['equation_targets'][bi] for bi in batch_idxes]
+            target_num = [n for n, m in zip(num_features, bms) if m]
+            target_nums = [n for n, m in zip(nums_features, bms) if m]
+            equation_targets = [e for e, m in zip(batch['equation_targets'], bms) if m]
 
             solve_output, solve_loss, solve_accuracy, solve_result = solver(batch, target_features, target_num, target_nums,
                                                                             equation_targets, batch_mask)
-            for si, bi in enumerate(batch_idxes):
-                solve_outputs[bi] = solve_output[si]
+            solve_outputs.append(solve_output)
             if solve_loss is not None:
                 loss.append(solve_loss)
                 accuracy.append(solve_accuracy)
@@ -236,13 +233,6 @@ class _OrderByCompare(_Equation):
         if targets is not None:
             targets = torch.stack(targets)
         outputs, loss, accuracy = self.binary_classifier(x, targets, attention_mask)
-
-        input_ids = batch['input_ids'][batch_mask]
-        output_idx = outputs.argmax(-1, keepdim=True)
-        outputs = input_ids.gather(1, output_idx)
-        if accuracy is not None:
-            target_idx = targets.argmax(-1, keepdim=True)
-            accuracy = torch.mean((outputs == input_ids.gather(1, target_idx)).float())
         return self.output(outputs, loss, accuracy)
 
 
@@ -259,40 +249,9 @@ class _HalfSub(_Equation):
         return self.output(equation_outputs, loss, accuracy)
 
 
-class _SumNumSig(_Equation):
-    def __init__(self, hidden_size, p_drop):
-        super(_SumNumSig, self).__init__()
-        self.num_classifier = base.SequenceTagging(hidden_size, 3, p_drop)
-
-    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        equation_outputs, loss, accuracy = [], [], []
-        for i, num_feature in enumerate(num_features):
-            _output, _loss, _accuracy = self.num_classifier(num_feature, targets[i], None)
-
-            equation_outputs.append(_output)
-            loss.append(_loss)
-            accuracy.append(_accuracy)
-
-        return self.output(equation_outputs, loss, accuracy)
-
+class _SumArgs(_Equation):
+    def __init__(self):
+        super(_SumArgs, self).__init__()
 
     def forward(self, batch, features, mask):
         pass
-
-
-class _MaxSubMin(_Equation):
-    def __init__(self, hidden_size, p_drop):
-        super(_MaxSubMin, self).__init__()
-        self.nums_matcher = _NumberMatcher(hidden_size, p_drop, 1)
-
-    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        equation_outputs, loss, accuracy = self.nums_matcher(batch, features, nums_features, None, targets, batch_mask)
-        if targets is None:
-            return self.output(equation_outputs)
-
-        return self.output(equation_outputs, loss, accuracy)
-
-
-class _MaxSubMin2(_Equation):
-    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        return self.output(features, None, None)

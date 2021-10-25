@@ -44,23 +44,18 @@ class SequenceTagging(Module):
         super(SequenceTagging, self).__init__()
         self.dropout = nn.Dropout(p_drop)
         self.classifier = nn.Linear(hidden_size, n_tags)
-        self.masked_loss = MaskedCrossEntropyLoss(n_tags)
-        self.loss = nn.CrossEntropyLoss()
+        self.loss = MaskedCrossEntropyLoss(n_tags)
 
     def forward(self, features, labels, mask):
         x = self.dropout(features)
         x = self.classifier(x)
-        outputs = x.argmax(-1)
 
         if labels is not None:
-            if mask is None:
-                loss = self.loss(x, labels)
-            else:
-                loss = self.masked_loss(x, labels, mask)
-            accuracy = torch.mean((outputs == labels).float())
+            loss = self.loss(x, labels, mask)
+            accuracy = 0
 
-            return outputs, loss, accuracy
-        return outputs, None, None
+            return x, loss, accuracy
+        return x, None, None
 
 
 class BinaryTagging(Module):
