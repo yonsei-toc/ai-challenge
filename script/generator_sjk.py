@@ -215,80 +215,7 @@ def prob4_01_06(selector, tokenpool, clskey):
         env=envdict)
 
 
-# @gen.problems.register
-def prob04_02(selector, tokenpool, clskey):
-    '''
-    - 0, 3, 5, 6 중에서 서로 다른 숫자 3개를 뽑아 만들 수 있는 세 자리 수 중 에서 가장 작은 수를 쓰시오.
-    '''
-
-    # this may be a meta-token (e.g., #1), referring a number.
-    nums_len = random.randint(2, 5)
-    nums_l = [i for i in range(0, 9)]
-    nums = random.sample(nums_l, nums_len)
-    catL = random.randint(1, nums_len)
-
-    nums_k = list(map(tokenpool.new, nums))
-    nums_len_k = tokenpool.new(nums_len)
-    catL_k = tokenpool.new(catL)
-
-    # syntactic randomize
-    ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
-
-    question = ' '.join(['그 중에서 서로 다른 숫자 {catL}개를 뽑아 만들 수 있는',
-                         f'{gen.korutil.num2korunit(catL)} 자리 수',
-                         ' 중에서 가장 작은 수{ques_trailing}'])
-    envdict = {f'num{i}': nums_k[i] for i in range(0, nums_len)}
-    envdict['nums_len'] = nums_len_k
-    envdict['ques_trailing'] = ques_trailing
-    envdict['catL'] = catL_k
-
-    # print 포함
-    return gen.build(
-        body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
-                       ]),
-        question=question,
-        equation=gen.EqnRef('prob04_02', catL_k, *nums_k),
-        env=envdict)
-
-
-# equation 과 같은 문제로 augment 힘들어서 eq를 추가함
-# @gen.problems.register
-def prob04_02_02(selector, tokenpool, clskey):
-    '''
-    - 0, 3, 5, 6 중에서 서로 다른 숫자 3개를 뽑아 만들 수 있는 세 자리 수 중 에서 가장 큰 수를 쓰시오.
-    '''
-
-    # this may be a meta-token (e.g., #1), referring a number.
-    nums_len = random.randint(2, 5)
-    nums_l = [i for i in range(0, 9)]
-    nums = random.sample(nums_l, nums_len)
-    catL = random.randint(1, nums_len)
-
-    nums_k = list(map(tokenpool.new, nums))
-    nums_len_k = tokenpool.new(nums_len)
-    catL_k = tokenpool.new(catL)
-
-    # syntactic randomize
-    ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
-
-    question = ' '.join(['그 중에서 서로 다른 숫자 {catL}개를 뽑아 만들 수 있는',
-                         f'{gen.korutil.num2korunit(catL)} 자리 수',
-                         ' 중에서 가장 작은 수{ques_trailing}'])
-    envdict = {f'num{i}': nums_k[i] for i in range(0, nums_len)}
-    envdict['nums_len'] = nums_len_k
-    envdict['ques_trailing'] = ques_trailing
-    envdict['catL'] = catL_k
-
-    # print 포함
-    return gen.build(
-        body=' '.join([', '.join('{' + 'num{}'.format(x) + '}' for x in range(nums_len)), '가 있습니다.'
-                       ]),
-        question=question,
-        equation=gen.EqnRef('prob04_02_02', catL_k, *nums_k),
-        env=envdict)
-
-
-# @gen.problems.register
+@gen.problems.register
 def prob04_02_03(selector, tokenpool, clskey):
     '''
     - {name, name, name}은 각각 cslkey.writable을 하나씩 뽑았다. 각 {writable}에 적힌 번호는 n.n.n 이다. 사람들이 뽑은 번호 중 k개를
@@ -297,41 +224,38 @@ def prob04_02_03(selector, tokenpool, clskey):
 
     # this may be a meta-token (e.g., #1), referring a number.
     nums_len = random.randint(2, 5)
-    catL = random.randint(1, nums_len)
 
-    nums_l = [i for i in range(0, 9)]
-    nums = random.sample(nums_l, nums_len)
-    names = [selector.get(clskey.name) for _ in range(0, len(nums_l))]
+    nums_k = tokenpool.sample(range(10), nums_len)
+    names = [selector.get(clskey.name) for _ in range(nums_len)]
     writable = selector.get(clskey.writable)
 
-    nums_k = list(map(tokenpool.new, nums))
-    nums_len_k = tokenpool.new(nums_len)
-    catL_k = tokenpool.new(catL)
+    catL_k = tokenpool.randint(1, nums_len)
 
     # syntactic randomize
     ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
 
-    body = ' '.join([', '.join('{' + 'names{}'.format(x) + '}' for x in range(nums_len)) + '{#는} {writable}{#을} 하나씩 뽑았다.'
+    body = ' '.join([', '.join(names) + '{#는} {writable}{#을} 하나씩 뽑았다.'
                         , '각 {writable}에 적힌 번호는'
-                        , ', '.join('{' + 'nums{}'.format(x) + '}' for x in range(nums_len)) + '이다.'
+                        , '{nums} 이다.'
                      ])
+    q_target = random.randint(0, 3)
+    target_desc = ['중에서 가장 큰 수', '중에서 가장 작은 수', '중에서 가장 큰 수와 가장 작은 수의 차이',
+                   '의 개수'][q_target]
 
     question = ' '.join(['사람들이 뽑은 번호 중 {catL}개를 뽑아 만들 수 있는',
-                         f'{gen.korutil.num2korunit(catL)} 자리 수',
-                         '중에서 가장 작은 수{ques_trailing}'])
+                         '{catL.to_korunit()} 자리 수',
+                         target_desc + '{ques_trailing}'])
 
-    envdict = {f'nums{i}': nums_k[i] for i in range(0, nums_len)}
-    envdict.update({f'names{i}': names[i] for i in range(0, nums_len)})
-    envdict['nums_len'] = nums_len_k
-    envdict['ques_trailing'] = ques_trailing
-    envdict['catL'] = catL_k
-    envdict['writable'] = writable
+    envdict = {'nums': nums_k,
+               'ques_trailing': ques_trailing,
+               'catL': catL_k,
+               'writable': writable}
 
     # print 포함
     return gen.build(
         body=body,
         question=question,
-        equation=gen.EqnRef('prob04_02', catL_k, *nums_k),
+        equation=gen.EqnRef('diff_perm', catL_k, nums_k, q_target),
         env=envdict)
 
 
