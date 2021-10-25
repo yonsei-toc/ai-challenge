@@ -22,7 +22,7 @@ class Equations:
             result = func(*args)
             if not callable(result):
                 return result
-            codes = inspect.getsourcelines(func(*args))[0][1:]
+            codes = inspect.getsourcelines(result)[0][1:]
 
             indents = len(codes[0]) - len(codes[0].lstrip())
             codes = ['import math, itertools\n'] + [c[indents:] for c in codes]  # + ['print(ans)']
