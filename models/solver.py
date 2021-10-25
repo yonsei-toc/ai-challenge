@@ -266,8 +266,11 @@ class _SumNumSig(_Equation):
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         equation_outputs, loss, accuracy = [], [], []
+        _target = None
         for i, num_feature in enumerate(num_features):
-            _output, _loss, _accuracy = self.num_classifier(num_feature, targets[i], None)
+            if targets is not None:
+                _target = targets[i]
+            _output, _loss, _accuracy = self.num_classifier(num_feature, _target, None)
 
             equation_outputs.append(_output)
             loss.append(_loss)
