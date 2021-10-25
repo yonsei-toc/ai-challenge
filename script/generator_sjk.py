@@ -1013,7 +1013,7 @@ def prob06_04_05(selector, tokenpool, clskey):
                 unit = unit
             ))
 
-# @gen.problems.register
+#@gen.problems.register
 def prob07_04(selector, tokenpool, clskey):
     '''
     !! name overlap !!
@@ -1040,8 +1040,8 @@ def prob07_04(selector, tokenpool, clskey):
 
     return gen.build(
             body=' '.join([
-                '{name0}{#이}는 {item}{#를} {nums0}{unit} 마셨습니다.',
-                '{name1}{#이}는 {name0}{#이}보다 {nums1}{unit} 더 적게 마셨습니다. ',
+                '{name0}{#이} {item}{#를} {nums0}{unit} 마셨습니다.',
+                '{name1}{#이} {name0}{#이}보다 {nums1}{unit} 더 적게 마셨습니다. ',
                 '{name2}{#는} {nums2}{unit} 마셨고, {name3}{#는} {name0}{#이}보다 {nums3}{unit} 더 많이 마셨습니다.'
             ]),
             question='주스를 가장 많이 마신사람은 누구입니까?',
@@ -1159,14 +1159,14 @@ def prob07_04_04(selector, tokenpool, clskey):
             env=envdict
     )
 
-@gen.problems.register
+#@gen.problems.register
 def prob07_04_05(selector, tokenpool, clskey):
     '''
     !! name overlap !!
-    지민이는 주스를 0.7l 마셨습니다. 은지는 지민이보다 1/10l 더 적게 마셨습니다. 윤기는 4/5l 마셨고, 유나는 지민이보다 0.2l 더 많이 마셨습니다. 주스를 가장 많이 마신사람은 누구입니까?
+    지민이는 clskey.field를 0.7m 달렸습니다. 은지는 지민이보다 1/10l 더 적게 달렸습니다. 윤기는 4/5l 달렸고, 유나는 지민이보다 0.2l 더 많이 달렸습니다. 주스를 가장 많이 마신사람은 누구입니까?
     '''
-    item = selector.get(clskey.drink)
-    unit = selector.get(clskey.volume_unit)
+    item = selector.get(clskey.field)
+    unit = selector.get(clskey.length_unit)
     name = [ selector.get(clskey.name) for _ in range(0,4)]
     nums = [ round(float(random.uniform(0,2)),1) for _ in range(0,4) ]
 
@@ -1183,14 +1183,48 @@ def prob07_04_05(selector, tokenpool, clskey):
     envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
     envdict['unit'] = unit_k
     envdict['item'] = item_k
+    envdict['item'] = item
 
     return gen.build(
             body=' '.join([
-                '{name0}{#이}는 {item}{#를} {nums0}{unit} 마셨습니다.',
-                '{name1}{#이}는 {name0}{#이}보다 {nums1}{unit} 더 적게 마셨습니다. ',
-                '{name2}{#는} {nums2}{unit} 마셨고, {name3}{#는} {name0}{#이}보다 {nums3}{unit} 더 많이 마셨습니다.'
+                '{name0}{#이} {item}{#를} 돌며 {nums0}{unit} 달렸습니다.',
+                '{name1}{#이} {name0}{#이}보다 {nums1}{unit} 짧게 달렸습니다. ',
+                '{name2}{#는} {nums2}{unit} 달렸고, {name3}{#는} {name0}{#이}보다 {nums3}{unit} 더 많이 달렸습니다.'
             ]),
-            question='주스를 가장 많이 마신사람은 누구입니까?',
+            question='{item}{#을} 가장 많이 달린 사람은 누구입니까?',
+            equation=gen.EqnRef('prob07_04', name_k[0], name_k[1], name_k[2], name_k[3], *nums_k),
+            env=envdict
+    )
+
+#@gen.problems.register
+def prob07_04_06(selector, tokenpool, clskey):
+    '''
+    !! name overlap !!
+    주전자 A의 무게는  0.7{weight_unit} 입니다. 은지는 지민이보다 1/10l 더 적게 달렸습니다. 윤기는 4/5l 달렸고, 유나는 지민이보다 0.2l 더 많이 달렸습니다. 주스를 가장 많이 마신사람은 누구입니까?
+    '''
+    item = selector.get(clskey.container)
+    unit = selector.get(clskey.length_unit)
+    name = [ chr(65 + i) for i in range(0,4)]
+    nums = [ round(float(random.uniform(0,2)),1) for _ in range(0,4) ]
+
+    item_k = tokenpool.new(item)
+    unit_k = tokenpool.new(unit)
+    name_k = list(map(tokenpool.new, name))
+    nums_k = list(map(tokenpool.new, nums))
+
+    envdict = {f'name{i}': name_k[i] for i in range(4)}
+    envdict.update({f'nums{i}': nums_k[i] for i in range(4)})
+    envdict['unit'] = unit_k
+    envdict['item'] = item_k
+    envdict['item'] = item
+
+    return gen.build(
+            body=' '.join(['{item}',
+                '{name0}의 무게는 {nums0}{unit} 입니다.',
+                '{name1}의 {name0}보다 {nums1}{unit} 가볍습니다.',
+                '{name2}의 무게는 {nums2}{unit}이고, {name3}는 {name0}보다 {nums3}{unit} 더 무겁습니다.'
+            ]),
+            question='가장 무거운 {item}{#은} 무엇입니까?',
             equation=gen.EqnRef('prob07_04', name_k[0], name_k[1], name_k[2], name_k[3], *nums_k),
             env=envdict
     )
@@ -1296,7 +1330,7 @@ def prob08_04_03(selector, tokenpool, clskey):
 
 #@gen.problems.register
 def prob08_04_04(selector, tokenpool, clskey):
-    '''한 변의 길이가 10cm인 정사각형 운동장과 둘레가 같은 정팔각형 종이가 있습니다.
+    '''한 변의 길이가 10cm인 정사각형 운동장과 둘레가 같은 정팔각형 운동장가 있습니다.
      이때 종이의 한 변은 몇 {length}인지 소수점 둘째자리까지 구하시오.'''
     # 한 / 두 /.. num2kororder는 한..두.. 아홉까지 있어 choice를 사용함
     edge     = random.choice(['한','두','세'])
@@ -1327,6 +1361,75 @@ def prob08_04_04(selector, tokenpool, clskey):
                 field = field
             ))
 
+#@gen.problems.register
+def prob08_04_05(selector, tokenpool, clskey):
+    '''한 벽의 길이가 10cm인 정사각형 clskey.place 과 둘레가 같은 정팔각형 clskey.place이 있습니다. 이 정팔각형 clskey.place의 한 벽의 길이는 몇 cm인지 소수점 둘째자리까지 구하시오.'''
+    # 한 / 두 /.. num2kororder는 한..두.. 아홉까지 있어 choice를 사용함
+    place    = selector.get(clskey.place)
+    edge     = random.choice(['한','두','세'])
+    item1    = selector.get(clskey.jshape)
+    item2    = selector.get(clskey.jshape)
+    l      = random.randint(1,100)
+    unit   = selector.get(clskey.length_unit)
+
+    item1_k  = tokenpool.new(item1)
+    item2_k  = tokenpool.new(item2)
+    l_k      = tokenpool.new(l)
+    unit_k   = tokenpool.new(unit)
+    edge_k   = edge
+
+    sent_q = random.choice(['까지 구하시오.', '까지 쓰시오.','는 무엇입니까?'])
+
+    return gen.build(
+            body=' '.join([
+                '{edge} 벽의 길이가 {l}{unit}인 {item1} {place}{#와} 둘레가 같은 {item2} {place}{#가} 있습니다.',
+            ]),
+            question='이 {item2} {place}의 하나의 벽의 길이는 몇 {unit}인지 소수 둘째자리{sent_q}',
+            equation=gen.EqnRef('prob08_04',item1_k, item2_k, l_k, edge_k),
+            env=gen.fnmap(
+                item1=item1_k,
+                item2=item2_k,
+                l=l_k,
+                unit = unit_k,
+                edge = edge_k,
+                place = place,
+                sent_q = sent_q
+            ))
+
+#@gen.problems.register
+def prob08_04_06(selector, tokenpool, clskey):
+    '''{container}의 한 변의 길이가 10cm인 정사각형 {container}{#와} 둘레가 같은 정팔각형 container{#가} 있습니다. 이 정팔각형 clskey.place의 한 벽의 길이는 몇 cm인지 소수점 둘째자리까지 구하시오.'''
+    # 한 / 두 /.. num2kororder는 한..두.. 아홉까지 있어 choice를 사용함
+    container    = selector.get(clskey.container)
+    edge     = random.choice(['한','두','세'])
+    item1    = selector.get(clskey.jshape)
+    item2    = selector.get(clskey.jshape)
+    l      = random.randint(1,100)
+    unit   = selector.get(clskey.length_unit)
+
+    item1_k  = tokenpool.new(item1)
+    item2_k  = tokenpool.new(item2)
+    l_k      = tokenpool.new(l)
+    unit_k   = tokenpool.new(unit)
+    edge_k   = edge
+
+    sent_q = random.choice(['까지 구하시오.', '까지 쓰시오.','는 무엇입니까?'])
+
+    return gen.build(
+            body=' '.join([
+                '{container}의 {edge} 변의 길이가 {l}{unit}인 {item1} {container}{#와} 둘레가 같은 {item2} {container}{#가} 있습니다.',
+            ]),
+            question='이 {item2} {container}의 하나의 변의 길이는 몇 {unit}인지 소수 둘째자리{sent_q}',
+            equation=gen.EqnRef('prob08_04',item1_k, item2_k, l_k, edge_k),
+            env=gen.fnmap(
+                item1=item1_k,
+                item2=item2_k,
+                l=l_k,
+                unit = unit_k,
+                edge = edge_k,
+                container = container,
+                sent_q = sent_q
+            ))
 
 if __name__ == '__main__':
     class _Namespace():
