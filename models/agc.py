@@ -78,3 +78,6 @@ class AGCModel(LightningModule):
 
     def test_step(self, batch, batch_idx):
         pass
+
+    def predict_step(self, batch, batch_idx, dataloader_idx=None):
+        outputs, _, _ = self.get_action_results(batch, 'predict')

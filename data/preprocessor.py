@@ -16,9 +16,8 @@ class Batch(dict):
 class Preprocessor:
     __collate_slots = 'input_ids', 'token_type_ids', 'attention_mask', 'equation_type', 'unnum_mask'
 
-    def __init__(self, tokenizer, max_seq_len, wrap_numeric):
+    def __init__(self, tokenizer, wrap_numeric):
         self.tokenizer = tokenizer
-        self.max_seq_len = max_seq_len
         self.wrap_numeric = wrap_numeric
         self.numeric_processor = NumericProcessor("[NUM]", "[NUMS]")
         self.naming_processor = NamingProcessor()
@@ -83,8 +82,8 @@ class Preprocessor:
 
 
 class TrainingPreprocessor(Preprocessor):
-    def __init__(self, tokenizer, max_seq_len, wrap_numeric, injection_prob=0.5):
-        super(TrainingPreprocessor, self).__init__(tokenizer, max_seq_len, wrap_numeric)
+    def __init__(self, tokenizer, wrap_numeric, injection_prob=0.5):
+        super(TrainingPreprocessor, self).__init__(tokenizer, wrap_numeric)
 
         self.injection_prob = injection_prob
         self._question_suffixes = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("입니까 얼마입니까 구하시오 인가 됩니까 쓰시오 될까요 할까요"))
@@ -149,9 +148,10 @@ class TrainingPreprocessor(Preprocessor):
             if not t_ltrs:
                 continue
 
-            num_tokens = {}
-            nums_tokens = {}
+            num_tokens = []
+            nums_tokens = []
             name_tokens = {}
+            all_ts = set()
             iter_t_ltrs = iter(t_ltrs)
 
             t_left, t_token, t_right = t_next = next(iter_t_ltrs)
@@ -159,32 +159,44 @@ class TrainingPreprocessor(Preprocessor):
 
             sm_left = difflib.SequenceMatcher(None)
             sm_right = difflib.SequenceMatcher(None)
+            flag_break = False
             for n_left, n_token, n_right in q_ltrs:
+                if n_token == '[NUM]':
+                    num_tokens.append(None)
+                elif n_token == '[NUMS]':
+                    nums_tokens.append(None)
+                if flag_break:
+                    continue
                 sm_left.set_seqs(t_left, n_left)
                 sm_right.set_seqs(t_right, n_right)
                 left_match = sm_left.find_longest_match(0, len(t_left), 0, len(n_left))
                 right_match = sm_right.find_longest_match(0, len(t_right), 0, len(n_right))
 
-                if ((first and t_left == n_left) or (not first and left_match.b + left_match.size == len(n_left)
-                                                     and t_left.endswith(n_left[left_match.b:]))
-                ) and (right_match.b <= 6 and right_match.b + right_match.size == len(n_right)
-                       and t_right.startswith(n_right[right_match.b:])):
+                if ((first and t_left == n_left) or
+                    (not first and left_match.b + left_match.size == len(n_left) and
+                     t_left.endswith(n_left[left_match.b:]))
+                    ) and ((right_match.b <= 6 and right_match.b + right_match.size == len(n_right) and
+                            t_right.startswith(n_right[right_match.b:])) or
+                           (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
+                           ):
                     if n_token == '[NUM]':
-                        num_tokens[t_token] = tokens[t_token]
+                        num_tokens[-1] = t_token
                     elif n_token == '[NUMS]':
-                        nums_tokens[t_token] = tokens[t_token]
+                        nums_tokens[-1] = t_token
                     elif n_token.startswith('[NAME') and n_token.endswith(']'):
                         name_tokens[t_token] = n_token
                     else:
                         raise ValueError(f"Not token : {n_token}")
+                    all_ts.add(t_token)
                     if (t_next := next(iter_t_ltrs, None)) is None:
-                        break
+                        flag_break = True
+                        continue
                     t_left, t_token, t_right = t_next
                 first = False
 
             if t_next is not None:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
-            if set(tokens.keys()) - (set(num_tokens.keys()) | set(nums_tokens.keys()) | set(name_tokens.keys())):
+            if set(tokens.keys()) - all_ts:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
 
             batch['matched_num'].append(num_tokens)
@@ -197,13 +209,15 @@ class TrainingPreprocessor(Preprocessor):
                                                                                 raw_batch['equation_type'])):
             if eq_type == 4:
                 equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
+            elif eq_type == 6:
+                equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
             else:
                 equation_target = []
                 for token in eq_tokens:
                     if token in matched_num:
-                        equation_target.append(torch.tensor([list(matched_num).index(token)]))
+                        equation_target.append(torch.tensor([matched_num.index(token)]))
                     elif token in matched_nums:
-                        equation_target.append(torch.tensor([list(matched_nums).index(token)]))
+                        equation_target.append(torch.tensor([matched_nums.index(token)]))
                     elif isinstance(token, str):
                         raise ValueError(token)
                     else:
@@ -241,6 +255,22 @@ class TrainingPreprocessor(Preprocessor):
         eq_token_id = self.custom_tokens[eq_name]
         equation_target = [float(seq_id == eq_token_id) for seq_id in seq_ids]
 
+        return torch.as_tensor(equation_target)
+
+    # Make SumNumSig Answer
+    def _make_sum_num_sig_target(self, batch_idx, batch, raw_batch):
+        eq_token = batch['equation_args'][batch_idx]
+        matched_num = batch['matched_num'][batch_idx]
+        equation_target = []
+        for num in matched_num:
+            if num is None:
+                equation_target.append(0)
+                continue
+            target_token = next((t for t in eq_token if t.token == num), None)
+            if target_token.sgn >= 0:
+                equation_target.append(target_token.sgn)
+            else:
+                equation_target.append(2)
         return torch.as_tensor(equation_target)
 
 
