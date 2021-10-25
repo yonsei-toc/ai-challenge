@@ -15,7 +15,7 @@ class TemplateSolver(base.Module):
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
-            _SumArgs(),
+            _SumNumSig(hidden_size, p_drop),
             _MaxSubMin(hidden_size, p_drop)
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
@@ -259,9 +259,22 @@ class _HalfSub(_Equation):
         return self.output(equation_outputs, loss, accuracy)
 
 
-class _SumArgs(_Equation):
-    def __init__(self):
-        super(_SumArgs, self).__init__()
+class _SumNumSig(_Equation):
+    def __init__(self, hidden_size, p_drop):
+        super(_SumNumSig, self).__init__()
+        self.num_classifier = base.SequenceTagging(hidden_size, 3, p_drop)
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = [], [], []
+        for i, num_feature in enumerate(num_features):
+            _output, _loss, _accuracy = self.num_classifier(num_feature, targets[i], None)
+
+            equation_outputs.append(_output)
+            loss.append(_loss)
+            accuracy.append(_accuracy)
+
+        return self.output(equation_outputs, loss, accuracy)
+
 
     def forward(self, batch, features, mask):
         pass

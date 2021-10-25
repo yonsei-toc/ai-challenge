@@ -3380,7 +3380,7 @@ def prob06_2_4(selector, tokenpool, clskey):
             ))
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_5(selector, tokenpool, clskey):
     ''' 어떤 수는 43에서 59를 더한 수입니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3440,7 +3440,7 @@ def prob06_2_5(selector, tokenpool, clskey):
             ))
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_6(selector, tokenpool, clskey):
     ''' 어떤 수 빼기 59는 43과 같습니다. 
     어떤 수에서 46을 빼면 얼마인지 구하시오. '''
@@ -3499,7 +3499,7 @@ def prob06_2_6(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_7(selector, tokenpool, clskey):
     ''' 어떤 수에 59를 빼서 43을 만들었습니다. 
     어떤 수에서 46을 빼면 얼마인지 구해 보세요. '''
@@ -3558,7 +3558,7 @@ def prob06_2_7(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_8(selector, tokenpool, clskey):
     ''' 상자에서 사과를 59개 꺼내면 43개가 남습니다. 
     만약 46개를 빼면 상자에 몇 개의 사과가 남는지 구하시오. '''
@@ -3623,7 +3623,7 @@ def prob06_2_8(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_9(selector, tokenpool, clskey):
     ''' 정국이가 친구들에게 59권의 책을 나눠주면 43개가 남습니다. 
     만약 46개의 책을 나눠주면 몇 권의 책이 남는지 구하시오. '''
@@ -3694,7 +3694,7 @@ def prob06_2_9(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_10(selector, tokenpool, clskey):
     ''' 정국이는 민영이에게 책을 59권 받고, 태형이에게 43권 받았습니다. 
     만약, 정국이가 지민이에게 46권의 책을 준다면 남는 책은 몇 권입니까? '''
@@ -3765,7 +3765,7 @@ def prob06_2_10(selector, tokenpool, clskey):
                 ques_trailing=ques_trailing
             ))
 
-# @gen.problems.register
+@gen.problems.register
 def prob06_2_11(selector, tokenpool, clskey):
     ''' 59와 43을 더한 값에서 46을 뺀(빼면) 결과값은 얼마인가? '''
 

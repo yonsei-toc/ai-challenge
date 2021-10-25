@@ -159,7 +159,14 @@ class TrainingPreprocessor(Preprocessor):
 
             sm_left = difflib.SequenceMatcher(None)
             sm_right = difflib.SequenceMatcher(None)
+            flag_break = False
             for n_left, n_token, n_right in q_ltrs:
+                if n_token == '[NUM]':
+                    num_tokens.append(None)
+                elif n_token == '[NUMS]':
+                    nums_tokens.append(None)
+                if flag_break:
+                    continue
                 sm_left.set_seqs(t_left, n_left)
                 sm_right.set_seqs(t_right, n_right)
                 left_match = sm_left.find_longest_match(0, len(t_left), 0, len(n_left))
@@ -173,22 +180,18 @@ class TrainingPreprocessor(Preprocessor):
                            (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
                            ):
                     if n_token == '[NUM]':
-                        num_tokens.append(t_token)
+                        num_tokens[-1] = t_token
                     elif n_token == '[NUMS]':
-                        nums_tokens.append(t_token)
+                        nums_tokens[-1] = t_token
                     elif n_token.startswith('[NAME') and n_token.endswith(']'):
                         name_tokens[t_token] = n_token
                     else:
                         raise ValueError(f"Not token : {n_token}")
                     all_ts.add(t_token)
                     if (t_next := next(iter_t_ltrs, None)) is None:
-                        break
+                        flag_break = True
+                        continue
                     t_left, t_token, t_right = t_next
-                else:
-                    if n_token == '[NUM]':
-                        num_tokens.append(None)
-                    elif n_token == '[NUMS]':
-                        nums_tokens.append(None)
                 first = False
 
             if t_next is not None:
@@ -206,6 +209,8 @@ class TrainingPreprocessor(Preprocessor):
                                                                                 raw_batch['equation_type'])):
             if eq_type == 4:
                 equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
+            elif eq_type == 6:
+                equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
             else:
                 equation_target = []
                 for token in eq_tokens:
@@ -250,6 +255,22 @@ class TrainingPreprocessor(Preprocessor):
         eq_token_id = self.custom_tokens[eq_name]
         equation_target = [float(seq_id == eq_token_id) for seq_id in seq_ids]
 
+        return torch.as_tensor(equation_target)
+
+    # Make SumNumSig Answer
+    def _make_sum_num_sig_target(self, batch_idx, batch, raw_batch):
+        eq_token = batch['equation_args'][batch_idx]
+        matched_num = batch['matched_num'][batch_idx]
+        equation_target = []
+        for num in matched_num:
+            if num is None:
+                equation_target.append(0)
+                continue
+            target_token = next((t for t in eq_token if t.token == num), None)
+            if target_token.sgn >= 0:
+                equation_target.append(target_token.sgn)
+            else:
+                equation_target.append(2)
         return torch.as_tensor(equation_target)
 
 
