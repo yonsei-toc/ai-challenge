@@ -1435,7 +1435,7 @@ if __name__ == '__main__':
         def __init__(self): pass
 
 
-    with open('dict.json', 'rt', encoding='UTF8') as f:
+    with open('dict.json', 'rt', encoding='utf-8-sig') as f:
         dictionary, clskey = gen.Dictionary.load(f.read())
 
     for fn in gen.problems:
