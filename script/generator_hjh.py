@@ -19,9 +19,6 @@ def c5p1v0(sel, tokenpool, clskey):
     num3 = random.randint(1,9)
     num4 = random.randint(1,9)
 
-    name1_token = tokenpool.new(name1)
-    name2_token = tokenpool.new(name2)
-
     num1_token = tokenpool.new(num1)
     num2_token = tokenpool.new(num2)
     num3_token = tokenpool.new(num3)
@@ -32,15 +29,15 @@ def c5p1v0(sel, tokenpool, clskey):
         '{name1}{#는} {num1}보다 {num2} 큰 수이고, {name2}보다 {num3} 작은 수는 {num4}입니다.'
         ])
     question0 = '{name1}{#와} {name2}의 합을 구하시오.'
-    equation0 = gen.EqnRef('sum',num1_token, num2_token, num3_token, num4_token)
+    equation0 = gen.EqnRef('sum_num_sig',num1_token, num2_token, num3_token, num4_token)
     return gen.build(
         body = body0,
         question = question0,
         equation = equation0,
 
         env = gen.fnmap(
-            name1=name1_token,
-            name2=name2_token,
+            name1=name1,
+            name2=name2,
             num1=num1_token,
             num2=num2_token,
             num3=num3_token,
@@ -56,10 +53,6 @@ def c5p1v1(sel, tokenpool, clskey):
     num1 = random.randint(1,9)
     num2 = random.randint(1,9)
     num3 = random.randint(1,9)
-    num4 = random.randint(1,9)
-
-    name1_token = tokenpool.new(name1)
-    name2_token = tokenpool.new(name2)
 
     num1_token = tokenpool.new(num1)
     num2_token = tokenpool.new(num2)
@@ -68,15 +61,15 @@ def c5p1v1(sel, tokenpool, clskey):
     # body1 -> name1, num1, num2, num3, name_aug
     body1 = '{name_aug}{#는} {name1}에 {num1}{#을} 더해 {num2}{#을} 얻었습니다.'
     question1 = '{name1}에 {num3}{#을} 더한 결과를 구하시오.'
-    equation1 = gen.EqnRef('sum',num1_token, num2_token, num3_token)
+    equation1 = gen.EqnRef('sum_num_sig',num1_token, num2_token, num3_token)
     return gen.build(
         body = body1,
         question = question1,
         equation = equation1,
 
         env = gen.fnmap(
-            name1=name1_token,
-            name2=name2_token,
+            name1=name1,
+            name2=name2,
             num1=num1_token,
             num2=num2_token,
             num3=num3_token,
@@ -90,20 +83,12 @@ def c5p1v2(sel, tokenpool, clskey):
 
     # 숫자는 한자리 숫자여야함
     num1 = random.randint(1,9)
-    num2 = random.randint(1,9)
-    num3 = random.randint(1,9)
-    num4 = random.randint(1,9)
-
-    name1_token = tokenpool.new(name1)
-    name2_token = tokenpool.new(name2)
 
     num1_token = tokenpool.new(num1)
 
-    name_aug = sel.get(clskey.name)
-
 # body2 -> name1, name2, num1
     question2 = '덧셈식 \'{name1}+{name2}={num1}\'에서 {name1}{#와} {name2}의 합을 구하시오.'
-    equation2 = gen.EqnRef('sum',num1_token)
+    equation2 = gen.EqnRef('sum_num_sig',num1_token)
 
     return gen.build(
         body='',
@@ -111,8 +96,8 @@ def c5p1v2(sel, tokenpool, clskey):
         equation = equation2,
 
         env = gen.fnmap(
-            name1=name1_token,
-            name2=name2_token,
+            name1=name1,
+            name2=name2,
             num1=num1_token
     ))
 

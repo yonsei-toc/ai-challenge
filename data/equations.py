@@ -205,11 +205,12 @@ def half_sub(*_args_):
 
 # 6
 @equations.register
-def eqn_sum(*_args_):
+def sum_num_sig(*_args_):
     # return variable is ALWAYS [ans].
     def _equation():
         ans = sum(_args_)
-    # return 'ans = sum([{}])'.format(', '.join(map(str, args)))
+
+    return _equation
 
 
 # def eqn_sum2(*_args_):
