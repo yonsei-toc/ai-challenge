@@ -182,6 +182,7 @@ def order_by_comp(*_args_):
     :param
         {0~} : 토큰
     """
+
     def _equation():
         ans = _args_[0]
 
@@ -212,6 +213,24 @@ def eqn_sum(*_args_):
 
 
 # def eqn_sum2(*_args_):
+
+
+# 7
+@equations.register
+def max_sub_min(*_args_):
+    def _equation():
+        ans = max(_args_[0]) - min(_args_[0])
+
+    return _equation
+
+
+# 8
+@equations.register
+def max_sub_min2(*_args_):
+    def _equation():
+        ans = max(_args_) - min(_args_)
+
+    return _equation
 
 
 @equations.register
@@ -270,14 +289,6 @@ def eq_c8p5(n1, n2):
 @equations.register
 def eqn_avg(*args):
     return 'ans = sum({}) / {}'.format(repr(args), len(args))
-
-
-@equations.register
-def max_sub_min(*args):
-    # return variable is ALWAYS [ans].
-
-    input = ','.join(list(map(str, args)))
-    return 'ans = max([{}]) - min([{}])'.format(input, input)
 
 
 @equations.register
@@ -354,12 +365,6 @@ def num_sequence_with_diff(start, diff, length):
 
 
 @equations.register
-def maxSubmin(*args):
-    input = ','.join(list(map(str, args)))
-    return 'ans = max([{}]) - min([{}])'.format(input, input)
-
-
-@equations.register
 def halfOdd(*args):
     # return variable is ALWAYS [ans].
 
@@ -416,6 +421,7 @@ def prob04_02(n, *number_list):
         f"lambda e: int(''.join(map(str, e))),",
         f"itertools.permutations(L, {n}))))"])
 
+
 @equations.register
 def prob04_02_02(n, *number_list):
     """
@@ -428,6 +434,7 @@ def prob04_02_02(n, *number_list):
         f"map(",
         f"lambda e: int(''.join(map(str, e))),",
         f"itertools.permutations(L, {n}))))"])
+
 
 @equations.register
 def prob08_04(*args):

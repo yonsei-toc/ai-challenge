@@ -1,6 +1,7 @@
 import itertools
 import torch
 import torch.nn as nn
+
 import models.base as base
 
 
@@ -14,7 +15,8 @@ class TemplateSolver(base.Module):
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
-            # _SumArgs()
+            _SumArgs(),
+            _MaxSubMin(hidden_size, p_drop)
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
@@ -255,3 +257,21 @@ class _SumArgs(_Equation):
 
     def forward(self, batch, features, mask):
         pass
+
+
+class _MaxSubMin(_Equation):
+    def __init__(self, hidden_size, p_drop):
+        super(_MaxSubMin, self).__init__()
+        self.nums_matcher = _NumberMatcher(hidden_size, p_drop, 1)
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = self.nums_matcher(batch, features, nums_features, None, targets, batch_mask)
+        if targets is None:
+            return self.output(equation_outputs)
+
+        return self.output(equation_outputs, loss, accuracy)
+
+
+class _MaxSubMin2(_Equation):
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        return self.output(features, None, None)
