@@ -164,10 +164,13 @@ class TrainingPreprocessor(Preprocessor):
                 left_match = sm_left.find_longest_match(0, len(t_left), 0, len(n_left))
                 right_match = sm_right.find_longest_match(0, len(t_right), 0, len(n_right))
 
-                if ((first and t_left == n_left) or (not first and left_match.b + left_match.size == len(n_left)
-                                                     and t_left.endswith(n_left[left_match.b:]))
-                ) and (right_match.b <= 6 and right_match.b + right_match.size == len(n_right)
-                       and t_right.startswith(n_right[right_match.b:])):
+                if ((first and t_left == n_left) or
+                    (not first and left_match.b + left_match.size == len(n_left) and
+                     t_left.endswith(n_left[left_match.b:]))
+                    ) and ((right_match.b <= 6 and right_match.b + right_match.size == len(n_right) and
+                            t_right.startswith(n_right[right_match.b:])) or
+                           (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
+                           ):
                     if n_token == '[NUM]':
                         num_tokens[t_token] = tokens[t_token]
                     elif n_token == '[NUMS]':
