@@ -65,11 +65,10 @@ def prob4_01_02(selector, tokenpool, clskey):
         '{unit_}{#를} 가지고 있습니다.'
     ])
 
-    envdict = {f'nums{i}': nums_k[i] for i in range(nums_len)}
-    envdict.update({f'name{i}': name_k[i] for i in range(nums_len)})
-    envdict['ques_trailing'] = ques_trailing
-    envdict['item'] = item_k
-    envdict['unit_'] = unit_k
+    envdict = {f'nums': nums_k}
+    envdict.update({f'name{i}': name[i] for i in range(nums_len)})
+    envdict['item'] = item
+    envdict['unit_'] = unit_
 
     # print 포함
     return gen.build(
@@ -109,10 +108,9 @@ def prob4_01_03(selector, tokenpool, clskey):
         '를 마셨습니다.'
     ])
 
-    envdict = {f'nums{i}': nums_k[i] for i in range(nums_len)}
-    envdict.update({f'name{i}': name_k[i] for i in range(nums_len)})
-    envdict['ques_trailing'] = ques_trailing
-    envdict['item'] = item_k
+    envdict = {'nums': nums_k}
+    envdict.update({f'name{i}': names[i] for i in range(nums_len)})
+    envdict['item'] = item
 
     # print 포함
     return gen.build(
