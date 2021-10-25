@@ -145,7 +145,7 @@ def prob4_01_04(selector, tokenpool, clskey):
         env=envdict)
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob4_01_05(selector, tokenpool, clskey):
     '''
     - 외숙모의 나이는. 외삼촌의 나이는, ... 가장 나이가 많은 사람의 나이에서 나이가 적은 사람의 나이를 뺀 수는?
@@ -234,7 +234,7 @@ def prob04_02_03(selector, tokenpool, clskey):
     # syntactic randomize
     ques_trailing = random.choice(['는 무엇입니까?', '를 쓰시오.'])
 
-    body = ' '.join([', '.join(names) + '{#는} {writable}{#을} 하나씩 뽑았다.'
+    body = ' '.join([', '.join('{' + f'name{x}' + '}' for x in range(nums_len)) + '{#는} {writable}{#을} 하나씩 뽑았다.'
                         , '각 {writable}에 적힌 번호는'
                         , '{nums} 이다.'
                      ])
@@ -250,6 +250,7 @@ def prob04_02_03(selector, tokenpool, clskey):
                'ques_trailing': ques_trailing,
                'catL': catL_k,
                'writable': writable}
+    envdict.update({f'name{i}': names[i] for i in range(nums_len)})
 
     # print 포함
     return gen.build(
