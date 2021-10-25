@@ -194,6 +194,7 @@ def prob4_01_06(selector, tokenpool, clskey):
     race = selector.get(clskey.race)
 
     nums_k = tokenpool.sample(range(0, 100), l)
+    end = random.choice(['꼴찌의', '꼴등의', '최하위', '마지막 등수의'])
 
     # syntactic randomize
     ques_trailing = random.choice(['은 무엇입니까?', '을 구하시오.'])
@@ -203,13 +204,13 @@ def prob4_01_06(selector, tokenpool, clskey):
                     '점을 얻었습니다.'
                     ])
 
-    envdict = {f'nums': nums_k, 'race': race, 'l': l, 'ques_trailing': ques_trailing}
+    envdict = {f'nums': nums_k, 'race': race, 'l': l, 'ques_trailing': ques_trailing, 'end': end}
 
     # print 포함
     return gen.build(
         # body is the background of problem settings
         body=body,
-        question='1등의 점수에서 {l}등의 점수를 뺀 값{ques_trailing}',
+        question='1등의 점수에서 {end}의 점수를 뺀 값{ques_trailing}',
         equation=gen.EqnRef('max_sub_min', nums_k),
         env=envdict)
 
