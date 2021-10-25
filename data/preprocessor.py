@@ -148,9 +148,10 @@ class TrainingPreprocessor(Preprocessor):
             if not t_ltrs:
                 continue
 
-            num_tokens = {}
-            nums_tokens = {}
+            num_tokens = []
+            nums_tokens = []
             name_tokens = {}
+            all_ts = set()
             iter_t_ltrs = iter(t_ltrs)
 
             t_left, t_token, t_right = t_next = next(iter_t_ltrs)
@@ -172,21 +173,27 @@ class TrainingPreprocessor(Preprocessor):
                            (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
                            ):
                     if n_token == '[NUM]':
-                        num_tokens[t_token] = tokens[t_token]
+                        num_tokens.append(t_token)
                     elif n_token == '[NUMS]':
-                        nums_tokens[t_token] = tokens[t_token]
+                        nums_tokens.append(t_token)
                     elif n_token.startswith('[NAME') and n_token.endswith(']'):
                         name_tokens[t_token] = n_token
                     else:
                         raise ValueError(f"Not token : {n_token}")
+                    all_ts.add(t_token)
                     if (t_next := next(iter_t_ltrs, None)) is None:
                         break
                     t_left, t_token, t_right = t_next
+                else:
+                    if n_token == '[NUM]':
+                        num_tokens.append(None)
+                    elif n_token == '[NUMS]':
+                        nums_tokens.append(None)
                 first = False
 
             if t_next is not None:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
-            if set(tokens.keys()) - (set(num_tokens.keys()) | set(nums_tokens.keys()) | set(name_tokens.keys())):
+            if set(tokens.keys()) - all_ts:
                 raise ValueError(f"Error on matching : {t_next=} {num_tokens=} {nums_tokens=} {name_tokens=} {tokens=} {t_question=} {question=}")
 
             batch['matched_num'].append(num_tokens)
@@ -203,9 +210,9 @@ class TrainingPreprocessor(Preprocessor):
                 equation_target = []
                 for token in eq_tokens:
                     if token in matched_num:
-                        equation_target.append(torch.tensor([list(matched_num).index(token)]))
+                        equation_target.append(torch.tensor([matched_num.index(token)]))
                     elif token in matched_nums:
-                        equation_target.append(torch.tensor([list(matched_nums).index(token)]))
+                        equation_target.append(torch.tensor([matched_nums.index(token)]))
                     elif isinstance(token, str):
                         raise ValueError(token)
                     else:
