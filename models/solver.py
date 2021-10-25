@@ -276,10 +276,6 @@ class _SumNumSig(_Equation):
         return self.output(equation_outputs, loss, accuracy)
 
 
-    def forward(self, batch, features, mask):
-        pass
-
-
 class _MaxSubMin(_Equation):
     def __init__(self, hidden_size, p_drop):
         super(_MaxSubMin, self).__init__()
