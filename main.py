@@ -59,6 +59,7 @@ def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
     model_path = "model.ckpt"
     data_path = "problemsheet_5_00.json"
+    output_path = "answersheet_5_00_greghahn.json"
 
     tokenizer = init_tokenizer(lm_path)
     model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
@@ -75,7 +76,7 @@ def infer():
 
             answersheet[key] = {"answer": str(answer), "equation": code}
 
-    with open('answersheet_5_00_greghahn.json', 'w', encoding="utf-8-sig") as outfile:
+    with open(output_path, 'w', encoding="utf-8-sig") as outfile:
         json.dump(answersheet, outfile, indent=4, ensure_ascii=False)
 
 
