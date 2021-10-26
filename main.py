@@ -39,6 +39,19 @@ def train(epoch=40, gpu=0, resume=None,
     trainer.fit(model, datamodule=datamodule)
 
 
+def sample():
+    tokenizer = init_tokenizer(".language-models/koelectra-base-v3-discriminator")
+    d = AGCDataModule(tokenizer, batch_size=1, n_aug_per_question=200)
+    d.setup('fit')
+    dataloader = d.train_dataloader()
+    import json
+
+    rows = [row['origin_question'][0] for row in dataloader]
+    print(f'Problem generated : {len(rows)}')
+    with open("prob.json", 'w', encoding='utf-8-sig') as f:
+        json.dump(rows, f, ensure_ascii=False)
+
+
 def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
     model_path = "model.ckpt"

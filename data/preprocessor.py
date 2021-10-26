@@ -127,7 +127,7 @@ class TrainingPreprocessor(Preprocessor):
             sentences, t_sentences = zip(*z)
 
             question_pos.append(sentences.index(question))
-            d['question'] = sep.join(sentences)
+            d['origin_question'] = d['question'] = sep.join(sentences)
             d['t_question'] = sep.join(t_sentences)
 
         # Tokenize
