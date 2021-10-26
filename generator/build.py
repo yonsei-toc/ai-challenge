@@ -126,7 +126,7 @@ def build(body, question, equation, variable=None, answer=None, env=None):
 
     # if answer is None:
     _l = {'math': _math, 'itertools': _itertools}
-    exec(eqn, _l)
+    exec(eqn.replace('print(ans)\n', ''), _l)
     answer = _l['ans']
 
     return fnmap(

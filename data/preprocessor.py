@@ -31,7 +31,7 @@ class Preprocessor:
 
     def __call__(self, batch):
         # Merge keys in batch
-        batch = Batch({key: [d[key] for d in batch] for key in batch[0]})
+        batch = {key: [d[key] for d in batch] for key in batch[0]}
 
         # Replace numeric tokens
         batch['question'], batch['numerics'] = self.numeric_processor.replace_batch(batch['question'])
@@ -61,8 +61,8 @@ class Preprocessor:
         batch['nums_pos_mask'] = [torch.as_tensor(m) for m in nums_pos_mask]
         batch['nums_attn_mask'] = [torch.as_tensor(m) for m in nums_attn_mask]
 
-        raws = {k: batch[k] for k in self.__collate_slots}
-        batch = {k: _collate(v) if k in self.__collate_slots else v for k, v in batch.items()}
+        raws = {k: batch[k] for k in self.__collate_slots if k in batch}
+        batch = Batch({k: _collate(v) if k in self.__collate_slots else v for k, v in batch.items()})
         batch['raw_collated'] = raws
 
         return batch
@@ -127,7 +127,7 @@ class TrainingPreprocessor(Preprocessor):
             sentences, t_sentences = zip(*z)
 
             question_pos.append(sentences.index(question))
-            d['question'] = sep.join(sentences)
+            d['origin_question'] = d['question'] = sep.join(sentences)
             d['t_question'] = sep.join(t_sentences)
 
         # Tokenize

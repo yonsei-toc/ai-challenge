@@ -4,21 +4,21 @@ from pytorch_lightning import Trainer
 
 from models.agc import AGCModel
 from data.datamodule import AGCDataModule, AGCPredictionDataModule
+import json
 
 
-def init_language(model_name):
+def init_tokenizer(model_name):
     tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
     tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", *[f"[NAME{i}]" for i in range(1, 15)]]})
-
-    language_model = ElectraModel.from_pretrained(model_name)
-    language_model.resize_token_embeddings(len(tokenizer.vocab))
-    return tokenizer, language_model
+    return tokenizer
 
 
 def download(language_model=None):
     print(f"download() : {language_model=}")
     if language_model:
-        tokenizer, model = init_language(language_model)
+        tokenizer = init_tokenizer(language_model)
+        model = ElectraModel.from_pretrained(language_model)
+        model.resize_token_embeddings(len(tokenizer.vocab))
 
         path = f".language-models/{language_model.split('/')[-1]}"
 
@@ -30,7 +30,7 @@ def train(epoch=40, gpu=0, resume=None,
           batch_size=32, augments=200,
           language_model=".language-models/koelectra-base-v3-discriminator", **model_kwargs):
     print(f"train() : {epoch=} {gpu=} {language_model=} {resume=}")
-    tokenizer, language_model = init_language(language_model)
+    tokenizer = init_tokenizer(language_model)
 
     model = AGCModel(language_model, tokenizer, **model_kwargs)
 
@@ -40,16 +40,43 @@ def train(epoch=40, gpu=0, resume=None,
     trainer.fit(model, datamodule=datamodule)
 
 
+def sample():
+    tokenizer = init_tokenizer(".language-models/koelectra-base-v3-discriminator")
+    d = AGCDataModule(tokenizer, batch_size=1, n_aug_per_question=200)
+    d.setup('fit')
+    dataloader = d.train_dataloader()
+
+    rows = [row['origin_question'][0] for row in dataloader]
+    print(f'Problem generated : {len(rows)}')
+    problem_data = dict()
+    for i in range(len(rows)):
+        problem_data[str(i + 1)] = {"question": "{}".format(rows[i])}
+    with open("problemsheet_5_00.json", 'w', encoding='utf-8-sig') as f:
+        json.dump(problem_data, f, indent=4, ensure_ascii=False)
+
+
 def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
-    model_path = ""
-    data_path = "input.json"
+    model_path = "model.ckpt"
+    data_path = "problemsheet_5_00.json"
 
-    tokenizer, language_model = init_language(lm_path)
-    model = AGCModel(language_model, tokenizer)
-    datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=1)
+    tokenizer = init_tokenizer(lm_path)
+    model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
+    datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=32)
     trainer = Trainer(resume_from_checkpoint=model_path)
-    trainer.predict(model, datamodule=datamodule)
+    results = trainer.predict(model, datamodule=datamodule, return_predictions=True)
+
+    answersheet = {}
+    for batch in results:
+        for key, answer, code in zip(*batch):
+            if isinstance(answer, float):
+                answer = round(answer, 2)
+                code = code.replace('print(ans)\n', 'print(round(ans, 2))\n')
+
+            answersheet[key] = {"answer": str(answer), "equation": code}
+
+    with open('answersheet_5_00_greghahn.json', 'w', encoding="utf-8-sig") as outfile:
+        json.dump(answersheet, outfile, indent=4, ensure_ascii=False)
 
 
 def main(command=None, *_, **__):
