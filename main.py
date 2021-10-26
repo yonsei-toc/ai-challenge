@@ -4,7 +4,7 @@ from pytorch_lightning import Trainer
 
 from models.agc import AGCModel
 from data.datamodule import AGCDataModule, AGCPredictionDataModule
-
+import json
 
 def init_tokenizer(model_name):
     tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
@@ -44,12 +44,14 @@ def sample():
     d = AGCDataModule(tokenizer, batch_size=1, n_aug_per_question=200)
     d.setup('fit')
     dataloader = d.train_dataloader()
-    import json
 
     rows = [row['origin_question'][0] for row in dataloader]
     print(f'Problem generated : {len(rows)}')
-    with open("prob.json", 'w', encoding='utf-8-sig') as f:
-        json.dump(rows, f, ensure_ascii=False)
+    problem_data = dict()
+    for i in range(len(rows)):
+        problem_data[str(i+1)] = {"question": "{}".format(rows[i])}
+    with open("problemsheet_5_00.json", 'w', encoding='utf-8-sig') as f:
+        json.dump(problem_data, f, indent=4, ensure_ascii=False)
 
 
 def infer():
