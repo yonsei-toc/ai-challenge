@@ -6,19 +6,18 @@ from models.agc import AGCModel
 from data.datamodule import AGCDataModule, AGCPredictionDataModule
 
 
-def init_language(model_name):
+def init_tokenizer(model_name):
     tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
     tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", *[f"[NAME{i}]" for i in range(1, 15)]]})
-
-    language_model = ElectraModel.from_pretrained(model_name)
-    language_model.resize_token_embeddings(len(tokenizer.vocab))
-    return tokenizer, language_model
+    return tokenizer
 
 
 def download(language_model=None):
     print(f"download() : {language_model=}")
     if language_model:
-        tokenizer, model = init_language(language_model)
+        tokenizer = init_tokenizer(language_model)
+        model = ElectraModel.from_pretrained(language_model)
+        model.resize_token_embeddings(len(tokenizer.vocab))
 
         path = f".language-models/{language_model.split('/')[-1]}"
 
@@ -30,7 +29,7 @@ def train(epoch=40, gpu=0, resume=None,
           batch_size=32, augments=200,
           language_model=".language-models/koelectra-base-v3-discriminator", **model_kwargs):
     print(f"train() : {epoch=} {gpu=} {language_model=} {resume=}")
-    tokenizer, language_model = init_language(language_model)
+    tokenizer = init_tokenizer(language_model)
 
     model = AGCModel(language_model, tokenizer, **model_kwargs)
 
@@ -42,14 +41,15 @@ def train(epoch=40, gpu=0, resume=None,
 
 def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
-    model_path = ""
+    model_path = "model.ckpt"
     data_path = "input.json"
 
-    tokenizer, language_model = init_language(lm_path)
-    model = AGCModel(language_model, tokenizer)
+    tokenizer = init_tokenizer(lm_path)
+    model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
     datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=1)
     trainer = Trainer(resume_from_checkpoint=model_path)
-    trainer.predict(model, datamodule=datamodule)
+    results = trainer.predict(model, datamodule=datamodule, return_predictions=True)
+    print(results)
 
 
 def main(command=None, *_, **__):

@@ -1,15 +1,18 @@
 import torch
 from pytorch_lightning import LightningModule
+from transformers import ElectraModel
 from models.extractor import NamedEntityRecognition, QuestionTargetRecognition, AnswerTypeClassification
 from models.solver import TemplateSolver
 
 
 class AGCModel(LightningModule):
-    def __init__(self, language_model, tokenizer, learning_rate=5e-5, p_drop=0.1):
+    def __init__(self, language_model=None, tokenizer=None, learning_rate=5e-5, p_drop=0.1):
         super(AGCModel, self).__init__()
-        self.save_hyperparameters(ignore=['language_model', 'tokenizer'])
-        self.save_hyperparameters({'language_model': language_model.name_or_path})
+        self.save_hyperparameters(ignore=['tokenizer'])
         print(f"AGC Model()\n{self.hparams}")
+
+        language_model = ElectraModel.from_pretrained(language_model)
+        language_model.resize_token_embeddings(len(tokenizer.vocab))
 
         hidden_size = language_model.config.hidden_size
 
