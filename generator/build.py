@@ -152,7 +152,7 @@ def build_problems():
     import generator.dictselector as gds
     import script
 
-    with open('script/dict.json', 'rt', encoding='utf-8-sig') as f:
+    with open('dict.json', 'rt', encoding='utf-8-sig') as f:
         dictionary, clskey = gd.Dictionary.load(f.read())
 
     problem_fns = gp.problems
