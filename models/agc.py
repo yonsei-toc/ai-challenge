@@ -1,6 +1,6 @@
 import torch
 from pytorch_lightning import LightningModule
-from transformers import ElectraModel
+from transformers import ElectraModel, ElectraConfig
 from models.extractor import NamedEntityRecognition, QuestionTargetRecognition, AnswerTypeClassification
 from models.solver import TemplateSolver
 from data.equations import equations
@@ -12,7 +12,11 @@ class AGCModel(LightningModule):
         self.save_hyperparameters(ignore=['tokenizer'])
         print(f"AGC Model()\n{self.hparams}")
 
-        language_model = ElectraModel.from_pretrained(language_model)
+        try:
+            language_model = ElectraModel.from_pretrained(language_model)
+        except OSError:
+            config = ElectraConfig.from_pretrained(language_model)
+            language_model = ElectraModel(config)
         language_model.resize_token_embeddings(len(tokenizer.vocab))
         self.id_to_token = {token_id: token for token, token_id in zip(tokenizer.additional_special_tokens,
                                                                        tokenizer.additional_special_tokens_ids)}
