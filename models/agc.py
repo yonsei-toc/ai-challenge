@@ -90,6 +90,7 @@ class AGCModel(LightningModule):
 
     def predict_step(self, batch, batch_idx, dataloader_idx=None):
         (answer_types, model_outputs), _, _ = self.get_action_results(batch, 'predict')
+        keys = []
         answers = []
         output_codes = []
 
@@ -109,8 +110,8 @@ class AGCModel(LightningModule):
         batch_names = batch['names']
         min_name_id = self.token_to_id['[NAME1]']
 
-        for ans_type, model_output, input_ids, num, nums, names in zip(answer_types, model_outputs,
-                                                                       batch['input_ids'], batch_num_list, batch_nums_list, batch_names):
+        for ans_type, model_output, key, input_ids, num, nums, names in zip(answer_types, model_outputs, batch['key'],
+                                                                            batch['input_ids'], batch_num_list, batch_nums_list, batch_names):
             ans_type = ans_type.item()
             answer = 0
             code = 'print(0)  # Failed to solve\n'
@@ -211,9 +212,10 @@ class AGCModel(LightningModule):
                         answer = _var['ans']
             except:
                 pass
+            keys.append(key)
             answers.append(answer)
             output_codes.append(code)
-        return answers, output_codes
+        return keys, answers, output_codes
 
 
 def _order_by_comp_equation(names, name):

@@ -6,6 +6,7 @@ from models.agc import AGCModel
 from data.datamodule import AGCDataModule, AGCPredictionDataModule
 import json
 
+
 def init_tokenizer(model_name):
     tokenizer = ElectraTokenizerFast.from_pretrained(model_name)
     tokenizer.add_special_tokens({'additional_special_tokens': ["[NUM]", "[NUMS]", *[f"[NAME{i}]" for i in range(1, 15)]]})
@@ -49,7 +50,7 @@ def sample():
     print(f'Problem generated : {len(rows)}')
     problem_data = dict()
     for i in range(len(rows)):
-        problem_data[str(i+1)] = {"question": "{}".format(rows[i])}
+        problem_data[str(i + 1)] = {"question": "{}".format(rows[i])}
     with open("problemsheet_5_00.json", 'w', encoding='utf-8-sig') as f:
         json.dump(problem_data, f, indent=4, ensure_ascii=False)
 
@@ -57,14 +58,25 @@ def sample():
 def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
     model_path = "model.ckpt"
-    data_path = "prob.json"
+    data_path = "problemsheet_5_00.json"
 
     tokenizer = init_tokenizer(lm_path)
     model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
     datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=32)
     trainer = Trainer(resume_from_checkpoint=model_path)
     results = trainer.predict(model, datamodule=datamodule, return_predictions=True)
-    print(results)
+
+    answersheet = {}
+    for batch in results:
+        for key, answer, code in zip(*batch):
+            if isinstance(answer, float):
+                answer = round(answer, 2)
+                code = code.replace('print(ans)\n', 'print(round(ans, 2))\n')
+
+            answersheet[key] = {"answer": str(answer), "equation": code}
+
+    with open('answersheet_5_00_greghahn.json', 'w', encoding="utf-8-sig") as outfile:
+        json.dump(answersheet, outfile, indent=4, ensure_ascii=False)
 
 
 def main(command=None, *_, **__):

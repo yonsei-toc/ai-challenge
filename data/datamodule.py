@@ -66,10 +66,12 @@ class AGCPredictionDataModule(LightningDataModule):
 class AGCPredictDataset(Dataset):
     def __init__(self, path):
         with open(path, 'r', encoding='utf-8-sig') as f:
-            data = json.load(f)
+            raw_data = json.load(f)
         self.data = []
-        for d in data:
-            self.data.append({'question': d})
+        for key in raw_data:
+            d = raw_data[key]
+            d['key'] = key
+            self.data.append(d)
 
     def __len__(self):
         return len(self.data)
