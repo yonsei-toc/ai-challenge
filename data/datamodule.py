@@ -1,3 +1,5 @@
+import json
+
 from torch.utils.data import Dataset, DataLoader
 from pytorch_lightning import LightningDataModule
 from data.preprocessor import TrainingPreprocessor, Preprocessor
@@ -31,20 +33,6 @@ class AGCDataModule(LightningDataModule):
         return DataLoader(self.val_dataset, collate_fn=self.val_preprocessor, batch_size=self.batch_size, shuffle=True)
 
 
-class AGCPredictionDataModule(LightningDataModule):
-    def __init__(self, path, tokenizer, batch_size=1, wrap_numeric=2):
-        super(AGCPredictionDataModule, self).__init__()
-        self.preprocessor = Preprocessor(tokenizer, wrap_numeric)
-        self.path = path
-        self.batch_size = batch_size
-
-    def setup(self, stage=None):
-        self.dataset = load_dataset(self.path)  # TODO
-
-    def predict_dataloader(self):
-        return DataLoader(self.dataset, collate_fn=self.preprocessor, batch_size=self.batch_size)
-
-
 class AGCTrainDataset(Dataset):
     def __init__(self, targets, generate_problem):
         super(AGCTrainDataset, self).__init__()
@@ -58,3 +46,33 @@ class AGCTrainDataset(Dataset):
         problem_id = self.targets[idx]
         problem = self.generate_problem(problem_id)
         return problem
+
+
+class AGCPredictionDataModule(LightningDataModule):
+    def __init__(self, path, tokenizer, batch_size=1, wrap_numeric=2):
+        super(AGCPredictionDataModule, self).__init__()
+        self.preprocessor = Preprocessor(tokenizer, wrap_numeric)
+        self.path = path
+        self.batch_size = batch_size
+        self.dataset = None
+
+    def setup(self, stage=None):
+        self.dataset = AGCPredictDataset(self.path)
+
+    def predict_dataloader(self):
+        return DataLoader(self.dataset, collate_fn=self.preprocessor, batch_size=self.batch_size, drop_last=False)
+
+
+class AGCPredictDataset(Dataset):
+    def __init__(self, path):
+        with open(path, 'r', encoding='utf-8-sig') as f:
+            data = json.load(f)
+        self.data = []
+        for d in data:
+            self.data.append({'question': d})
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx]

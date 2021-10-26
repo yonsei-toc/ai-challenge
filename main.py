@@ -55,7 +55,7 @@ def sample():
 def infer():
     lm_path = ".language-models/koelectra-base-v3-discriminator"
     model_path = "model.ckpt"
-    data_path = "input.json"
+    data_path = "prob.json"
 
     tokenizer = init_tokenizer(lm_path)
     model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)

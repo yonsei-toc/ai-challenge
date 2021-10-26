@@ -46,7 +46,10 @@ class TemplateSolver(base.Module):
 
             target_num = [num_features[bi] for bi in batch_idxes]
             target_nums = [nums_features[bi] for bi in batch_idxes]
-            equation_targets = [batch['equation_targets'][bi] for bi in batch_idxes]
+            if batch['equation_targets'] is not None:
+                equation_targets = [batch['equation_targets'][bi] for bi in batch_idxes]
+            else:
+                equation_targets = None
 
             solve_output, solve_loss, solve_accuracy, solve_result = solver(batch, target_features, target_num, target_nums,
                                                                             equation_targets, batch_mask)
@@ -145,7 +148,10 @@ class _NumberMatcher(_Equation):
             equation_outputs.append(torch.stack(equation_output))
 
         equation_outputs = torch.stack(equation_outputs)
-        return equation_outputs, loss, accuracy
+        if targets:
+            return equation_outputs, loss, accuracy
+        else:
+            return equation_outputs, None, None
 
 
 class _DiffPerm(_Equation):
