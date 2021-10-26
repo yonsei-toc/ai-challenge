@@ -27,7 +27,7 @@ class NumericProcessor:
     _exp_chinese_1 = f"(?:{'|'.join(_chinese_1.keys())})"
     _exp_chinese_10n = f"(?:{'|'.join(_chinese_10n.keys())})"
     _exp_units = "(?:" + '|'.join(_units) + ")"
-    _exp_arabic = "(?:-?\\d+(\\.\\d+)?)"
+    _exp_arabic = "(?:-?\\d+(?:(?:\\.\\d+)|(?:\\/\\d+))?)"
     _exp_kor = f"(?:(?:{_over_10_with_1}\\s*{_1})|(?:{_over_10_only}|{_1}))"
     _exp_kor_units = f"{_exp_kor}\\s*{_exp_units}"
     _exp_kor_nonunits = f"{_over_10_with_1}\\s*{_1_others}"
@@ -83,7 +83,13 @@ class NumericProcessor:
 
     def _get_number(self, s):
         if n := self.arabic_pattern.search(s):
-            return float(n) if '.' in (n := n.group()) else int(n)
+            n = n.group()
+            if '.' in n:
+                return float(n)
+            elif '/' in n:
+                a, b = n.split('/')
+                return int(a) / int(b)
+            return int(n)
         elif (n := self.kor_pattern.search(s)) or (n := self.chn_pattern.search(s)):
             n = n.group()
             result = 0
@@ -128,3 +134,4 @@ if __name__ == "__main__":
     print(np.replace_token("직사각형의 세로 길이가 408밀리미터일 때, 가로 길이는 몇 mm인지 구하시오. 4, 0, 6, 3 중 1개의 서로 다른 숫자를 뽑아서 한 자리 수를 만들려고 한다."
                            "길이가 186mm인 전선으로 직사각형을 만들었더니, 전선이 딱 맞아 떨어졌다."))
     print(np.replace_token("많은 배를 가진사람의 개수에서 가장 작은 배를 가진 사람의 개수를 뺀 수는 몇 개입니까? 윤기 , 유나 은 각각 배를 10, 39 개를 가지고 있습니다."))
+    print(np.replace_token("5개의 수 1.4, 9/10, 1, 0.5, 13/10이 있습니다.이 중에서 1보다 큰 수는 모두 몇 개입니까?"))

@@ -175,10 +175,10 @@ class TrainingPreprocessor(Preprocessor):
                 if ((first and t_left == n_left) or
                     (not first and left_match.b + left_match.size == len(n_left) and
                      t_left.endswith(n_left[left_match.b:]))
-                    ) and ((right_match.b <= 6 and right_match.b + right_match.size == len(n_right) and
-                            t_right.startswith(n_right[right_match.b:])) or
-                           (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
-                           ):
+                ) and ((right_match.b <= 6 and right_match.b + right_match.size == len(n_right) and
+                        t_right.startswith(n_right[right_match.b:])) or
+                       (right_match.a <= 6 and right_match.b == 0 and right_match.size == len(n_right))
+                ):
                     if n_token == '[NUM]':
                         num_tokens[-1] = t_token
                     elif n_token == '[NUMS]':
@@ -211,6 +211,8 @@ class TrainingPreprocessor(Preprocessor):
                 equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
             elif eq_type == 6:
                 equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
+            elif eq_type == 8:
+                equation_target = self._make_max_sub_min2_target(i, batch, raw_batch)
             else:
                 equation_target = []
                 for token in eq_tokens:
@@ -271,6 +273,12 @@ class TrainingPreprocessor(Preprocessor):
                 equation_target.append(target_token.sgn)
             else:
                 equation_target.append(2)
+        return torch.as_tensor(equation_target)
+
+    def _make_max_sub_min2_target(self, batch_idx, batch, raw_batch):
+        eq_token = batch['equation_tokens'][batch_idx]
+        matched_num = batch['matched_num'][batch_idx]
+        equation_target = [0. if num is None or num not in eq_token else 1. for num in matched_num]
         return torch.as_tensor(equation_target)
 
 

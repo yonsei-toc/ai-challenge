@@ -1046,7 +1046,7 @@ def prob080302(sel, pl, clskey):
     return
 
 if __name__ == '__main__':
-    with open('dict.json', 'rt') as f:
+    with open('../dict.json', 'rt') as f:
        dictionary, clskey = gen.Dictionary.load(f.read())
 
     for fn in gen.problems:
