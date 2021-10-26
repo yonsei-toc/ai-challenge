@@ -34,8 +34,7 @@ class TemplateSolver(base.Module):
                 n_num = 0 if num_features[bi] is None else num_features[bi].size(0)
                 n_nums = 0 if nums_features[bi] is None else nums_features[bi].size(0)
                 n_names = (input_ids[bi] >= 35002).sum().item()
-                solver_type = self.solvers[answer_type].match_solver(n_num, n_nums, n_names)
-                solver_id = next((i for i, solver in enumerate(self.solvers) if type(solver) == solver_type), solver_type)
+                solver_id = self.solvers[answer_type].match_solver(n_num, n_nums, n_names)
                 solver_ids.append(solver_id)
 
             answer_types = torch.as_tensor(solver_ids, device=self.device)
@@ -51,7 +50,7 @@ class TemplateSolver(base.Module):
                 else:
                     fetched.append((True, None, None, None, None, None, None))
         else:
-            for i, solver in enumerate(self.solvers):
+            for i, solver in enumerate(self.solvers[:10]):
                 batch_mask = (label_answer_type == i)
                 target_features = features[batch_mask, :]
                 if target_features.size(0) > 0:
@@ -73,7 +72,7 @@ class TemplateSolver(base.Module):
         solve_outputs = [None] * features.size(0)
         solve_results = {}
         fetched, answer_types = self.fetch_all(batch, answer_types, features, num_features, nums_features)
-        for i, solver in enumerate(self.solvers):
+        for i, solver in enumerate(self.solvers[:10]):
             skip_solver, batch_mask, target_features, batch_idxes, target_num, target_nums, equation_targets = fetched[i]
             if skip_solver:
                 continue
@@ -142,12 +141,21 @@ class _Equation(base.Module):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num > 0:
-            return _SumNumSig
+            return 6
         elif n_nums > 0 and n_names == 0:
             return -1  # Sum
         elif n_names > 0:
-            return _OrderByCompare
+            return 4
         return -99  # Can't find answer
+
+
+class _EmptyEquation(_Equation):
+    def __init__(self, eq_id):
+        super(_EmptyEquation, self).__init__()
+        self.eq_id = eq_id
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        return None, None, None
 
 
 class _NumberMatcher(base.Module):
@@ -211,7 +219,7 @@ class _DiffPerm(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1 and n_nums >= 1:
-            return _DiffPerm
+            return 0
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -231,7 +239,7 @@ class _CountFromRange(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 2:
-            return _CountFromRange
+            return 1
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -251,7 +259,7 @@ class _FindSumFromRange(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 3:
-            return _FindSumFromRange
+            return 2
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -277,7 +285,7 @@ class _WrongMultiply(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 3:
-            return _WrongMultiply
+            return 3
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -305,7 +313,7 @@ class _OrderByCompare(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_names >= 1:
-            return _OrderByCompare
+            return 4
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -323,7 +331,7 @@ class _HalfSub(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 2:
-            return _HalfSub
+            return 5
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -348,7 +356,7 @@ class _SumNumSig(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:
-            return _SumNumSig
+            return 6
         return -1
 
 
@@ -366,9 +374,9 @@ class _MaxSubMin(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_nums >= 1:
-            return _MaxSubMin
+            return 7
         elif n_num >= 1:
-            return _MaxSubMin2
+            return 8
         return super(_MaxSubMin, self).match_solver(n_num, n_nums, n_names)
 
 
@@ -393,9 +401,9 @@ class _MaxSubMin2(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:
-            return _MaxSubMin2
+            return 8
         elif n_nums >= 1:
-            return _MaxSubMin
+            return 7
         return super().match_solver(n_num, n_nums, n_names)
 
 
@@ -430,5 +438,5 @@ class _CountFromComparePivot(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1 and n_nums >= 1:
-            return _CountFromComparePivot
+            return 9
         return super().match_solver(n_num, n_nums, n_names)
