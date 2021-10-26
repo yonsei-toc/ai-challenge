@@ -1155,7 +1155,7 @@ if __name__ == '__main__':
     class _Namespace:
         def __init__(self): pass
 
-    with open('dict.json', 'rt') as f:
+    with open('../dict.json', 'rt') as f:
        dictionary, clskey = gen.Dictionary.load(f.read())
     for fn in gen.problems:
         i = 0

@@ -16,7 +16,9 @@ class TemplateSolver(base.Module):
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
             _SumNumSig(hidden_size, p_drop),
-            _MaxSubMin(hidden_size, p_drop)
+            _MaxSubMin(hidden_size, p_drop),
+            _MaxSubMin2(hidden_size, p_drop),
+            _CountFromComparePivot(hidden_size, p_drop)
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
@@ -266,8 +268,11 @@ class _SumNumSig(_Equation):
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         equation_outputs, loss, accuracy = [], [], []
+        _target = None
         for i, num_feature in enumerate(num_features):
-            _output, _loss, _accuracy = self.num_classifier(num_feature, targets[i], None)
+            if targets is not None:
+                _target = targets[i]
+            _output, _loss, _accuracy = self.num_classifier(num_feature, _target, None)
 
             equation_outputs.append(_output)
             loss.append(_loss)
@@ -290,5 +295,50 @@ class _MaxSubMin(_Equation):
 
 
 class _MaxSubMin2(_Equation):
+    def __init__(self, hidden_size, p_drop):
+        super(_MaxSubMin2, self).__init__()
+        self.choose_num = base.BinaryTagging(hidden_size, p_drop)
+
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        return self.output(features, None, None)
+        equation_outputs, loss, accuracy = [], [], []
+        _target = None
+        for i, num_feature in enumerate(num_features):
+            if targets is not None:
+                _target = targets[i]
+            _output, _loss, _accuracy = self.choose_num(num_feature, _target, None)
+
+            equation_outputs.append(_output)
+            loss.append(_loss)
+            accuracy.append(_accuracy)
+
+        return self.output(equation_outputs, loss, accuracy)
+
+
+class _CountFromComparePivot(_Equation):
+    def __init__(self, hidden_size, p_drop):
+        super(_CountFromComparePivot, self).__init__()
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 2)
+        self.match_type = base.SequenceClassifier(hidden_size, 4, p_drop)
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        if targets:
+            label_type, label_n = [], []
+            for t in targets:
+                label_type.append(t[0].squeeze())
+                label_n.append(t[1:])
+            label_type = torch.stack(label_type)
+        else:
+            label_type, label_n = None, None
+
+        equation_outputs, loss, accuracy = self.num_matcher(batch, features, zip(num_features, nums_features), None, label_n, batch_mask)
+
+        # Match Equation Subtype
+        x, loss_type, accuracy_type = self.match_type(features, label_type)
+        x = x.argmax(-1)
+
+        equation_outputs = torch.cat((x.unsqueeze(-1), equation_outputs), -1)
+
+        loss = (torch.mean(torch.stack(loss)) * 2 + loss_type) / 3 if loss else loss_type
+        accuracy = (torch.mean(torch.stack(accuracy)) * 2 + accuracy_type) / 3 if accuracy else accuracy_type
+
+        return self.output(equation_outputs, loss, accuracy)

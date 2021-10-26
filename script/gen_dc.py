@@ -4327,7 +4327,7 @@ def prob08_2_11(selector, tokenpool, clskey):
 
 
 if __name__ == '__main__':
-    with open('dict.json', 'rt') as f:
+    with open('../dict.json', 'rt') as f:
        dictionary, clskey = gen.Dictionary.load(f.read())
 
     for fn in gen.problems:

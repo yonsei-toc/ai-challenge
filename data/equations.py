@@ -234,6 +234,30 @@ def max_sub_min2(*_args_):
     return _equation
 
 
+# 9
+@equations.register
+def count_from_compare_pivot(*_args_):
+    '''
+    {2} 중에서 {1} 보다 {0} 수는 모두 몇 개입니까?
+    :param: {1} - 숫자, {2} - 숫자 리스트
+            {0} - 0 큰 / 1 작은 / 2 같거나 큰 / 3 같거나 작은
+    '''
+    # return variable is ALWAYS [ans]..
+    if _args_[0] == 0:
+        def _equation():
+            ans = list(map(lambda x: x > _args_[1], _args_[2])).count(True)
+    elif _args_[0] == 1:
+        def _equation():
+            ans = list(map(lambda x: x < _args_[1], _args_[2])).count(True)
+    elif _args_[0] == 2:
+        def _equation():
+            ans = list(map(lambda x: x >= _args_[1], _args_[2])).count(True)
+    else:
+        def _equation():
+            ans = list(map(lambda x: x <= _args_[1], _args_[2])).count(True)
+    return _equation
+
+
 @equations.register
 def eq_c5p2(n1, n2, n3, n4):
     # 상수 사용
