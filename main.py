@@ -59,7 +59,7 @@ def infer():
 
     tokenizer = init_tokenizer(lm_path)
     model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
-    datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=1)
+    datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=32)
     trainer = Trainer(resume_from_checkpoint=model_path)
     results = trainer.predict(model, datamodule=datamodule, return_predictions=True)
     print(results)
