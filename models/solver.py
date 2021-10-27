@@ -151,12 +151,21 @@ class _Equation(base.Module):
 
 
 class _EmptyEquation(_Equation):
-    def __init__(self, eq_id):
+    def __init__(self, eq_id, condition_fn, redirect_fn=None):
         super(_EmptyEquation, self).__init__()
         self.eq_id = eq_id
+        self.condition_fn = condition_fn
+        self.redirect_fn = redirect_fn
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         return None, None, None
+
+    def match_solver(self, n_num, n_nums, n_names):
+        if (r := self.condition_fn(n_num, n_nums, n_names)) is not None:
+            return r
+        if (r := self.redirect_fn_fn(n_num, n_nums, n_names)) is not None:
+            return r
+        return super().match_solver(n_num, n_nums, n_names)
 
 
 class _NumberMatcher(base.Module):
