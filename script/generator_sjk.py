@@ -289,7 +289,7 @@ def prob04_03_01(selector, tokenpool, clskey):
         env=envdict)
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob04_03_02(selector, tokenpool, clskey):
     '''
     유나의 키는 156cm, ..의키는.. 입니다. 이중 160cm 보다 의 키보다 큰 사람은 모두 몇 명 입니까?
@@ -301,13 +301,18 @@ def prob04_03_02(selector, tokenpool, clskey):
     nums = [over + round(float(random.uniform(-15, 15)), 1) for _ in range(0, len_)]
     item = selector.get(clskey.tool)
 
-    nums_k = tokenpool.sample(nums, len_)
+    nums_k = list(map(tokenpool.new, nums))
     over_k = tokenpool.new(over)
 
     # syntactic randomize
     ques_trailing = random.choice(['인지 구하시오.', '입니까?'])
 
-    envdict = {'nums': nums_k}
+    dir_i = random.randint(0, 3)
+    dir_desc = ['큰', '작은',
+                random.choice(['같거나 큰', '크거나 같은']),
+                random.choice(['같거나 작은', '작거나 같은'])]
+
+    envdict = {f'num{i}': nums_k[i] for i in range(len_)}
     envdict.update({f'name{i}': names[i] for i in range(len_)})
     envdict['over'] = over_k
     envdict['len_'] = len_
@@ -320,7 +325,7 @@ def prob04_03_02(selector, tokenpool, clskey):
             ', '.join('{' + 'name{}'.format(x) + '}의 {item}{#은} ' + '{' + 'num{}'.format(x) + '}cm' for x in range(len_)),
             '입니다.'
         ]),
-        question='이 중에서 {over}cm 보다 {item}{#가} 큰 사람은 모두 몇 명{ques_trailing}.',
+        question='이 중에서 {over}cm 보다 {item}{#가} ' + dir_desc[dir_i] + ' 사람은 모두 몇 명{ques_trailing}.',
         equation=gen.EqnRef('count_from_compare_pivot2', dir_i, over_k, *nums_k),
         env=envdict)
 
@@ -366,12 +371,12 @@ def prob04_03_03(selector, tokenpool, clskey):
         env=envdict)
 
 
-# @gen.problems.register
+@gen.problems.register
 def prob04_03_05(selector, tokenpool, clskey):
     '''
     floor, room room 운동장, 연습장, ... , n,n,n,n,n 층에 있다. 이중 k층/칸 보다 높은 층에 있는 room의 개수는?
     '''
-    len_ = random.randint(2, 6)
+    len_ = random.randint(2, 5)
     nums = [random.randint(1, 10) for _ in range(0, len_)]
     over = random.randint(2, 10)
     floor = selector.get(clskey.floor)
@@ -396,9 +401,9 @@ def prob04_03_05(selector, tokenpool, clskey):
     envdict['floor'] = floor
     envdict['ques_trailing'] = ques_trailing
     envdict['cent_trailing'] = cent_trailing
-    dir_desc = ['보다 무거운', '보다 가벼운',
-                random.choice(['{#와} 무게가 같거나 무거운', '{#와} 무겁거나 같은']),
-                random.choice(['{#와} 무게가 같거나 가벼운', '{#와} 가볍거나 같은'])]
+    dir_desc = ['보다 높은', '보다 낮은',
+                random.choice(['{#와} 같거나 높은', '{#와} 높거나 같은']),
+                random.choice(['{#와} 같거나 낮은', '{#와} 낮거나 같은'])]
 
     return gen.build(
         # body is the background of problem settings
@@ -406,7 +411,7 @@ def prob04_03_05(selector, tokenpool, clskey):
             ', '.join('{' + 'field{}'.format(x) + '}' + '{#이} '
                       + '{' + 'nums{}'.format(x) + '}' + '{floor}' for x in range(len_)) + '{ques_trailing}'
         ]),
-        question='이 중에서 {over}{floor} 보다 높은 {floor}에 있는 곳은 {cent_trailing} 몇 곳 입니까?',
+        question='이 중에서 {over}{floor}' + dir_desc[dir_i] +' {floor}에 있는 곳은 {cent_trailing} 몇 곳 입니까?',
         equation=gen.EqnRef('count_from_compare_pivot2', dir_i, over_k, *nums_k),
         env=envdict)
 

@@ -18,7 +18,8 @@ class TemplateSolver(base.Module):
             _SumNumSig(hidden_size, p_drop),
             _MaxSubMin(hidden_size, p_drop),
             _MaxSubMin2(hidden_size, p_drop),
-            _CountFromComparePivot(hidden_size, p_drop)
+            _CountFromComparePivot(hidden_size, p_drop),
+            _CountFromComparePivot2(hidden_size, p_drop)
         ])
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
@@ -50,7 +51,7 @@ class TemplateSolver(base.Module):
                 else:
                     fetched.append((True, None, None, None, None, None, None))
         else:
-            for i, solver in enumerate(self.solvers[:10]):
+            for i, solver in enumerate(self.solvers[:11]):
                 batch_mask = (label_answer_type == i)
                 target_features = features[batch_mask, :]
                 if target_features.size(0) > 0:
@@ -72,7 +73,7 @@ class TemplateSolver(base.Module):
         solve_outputs = [None] * features.size(0)
         solve_results = {}
         fetched, answer_types = self.fetch_all(batch, answer_types, features, num_features, nums_features)
-        for i, solver in enumerate(self.solvers[:10]):
+        for i, solver in enumerate(self.solvers[:11]):
             skip_solver, batch_mask, target_features, batch_idxes, target_num, target_nums, equation_targets = fetched[i]
             if skip_solver:
                 continue
@@ -438,5 +439,70 @@ class _CountFromComparePivot(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1 and n_nums >= 1:
+            return 9
+        elif n_num > 3:
+            return 10
+        return super().match_solver(n_num, n_nums, n_names)
+
+
+class _CountFromComparePivot2(_Equation):
+    def __init__(self, hidden_size, p_drop):
+        super(_CountFromComparePivot2, self).__init__()
+        self.match_num = _NumberMatcher(hidden_size, p_drop, 1)
+        self.choose_num = base.BinaryTagging(hidden_size, p_drop)
+        self.match_type = base.SequenceClassifier(hidden_size, 4, p_drop)
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        if targets is not None:
+            label_type = torch.stack([t[0].squeeze() for t in targets])
+            label_pivot = [[t[1]] for t in targets]
+        else:
+            label_type, label_pivot = None, None
+
+        # Match Equation Subtype
+        x, loss_type, accuracy_type = self.match_type(features, label_type)
+        output_type = x.argmax(-1)
+
+        # Match Number
+        output_num, loss_num, accuracy_num = self.match_num(num_features, label_pivot)
+
+        # Tag Numbers
+        output_tags, loss_tags, accuracy_tags = [], [], []
+        label_n = None
+        for i, num_feature in enumerate(num_features):
+            if targets is not None:
+                label_n = targets[i][2]
+            _output, _loss, _accuracy = self.choose_num(num_feature, label_n, None)
+
+            output_tags.append(_output)
+            if _loss:
+                loss_tags.append(_loss)
+            if _accuracy:
+                accuracy_tags.append(_accuracy)
+
+        loss_tags = torch.mean(torch.stack(loss_tags)) if loss_tags else None
+        accuracy_tags = torch.mean(torch.stack(accuracy_tags)) if accuracy_tags else None
+
+        equation_outputs = list(zip(output_type, output_num, output_tags))
+        if targets is None:
+            return self.output(equation_outputs)
+        loss_type = loss_type if loss_type is not None else 0
+        loss_num = torch.mean(torch.stack(loss_num)) if loss_num is not None else 0
+        loss = (loss_tags * 2 + loss_type + loss_num) / 4 if loss_tags else (loss_type + loss_num) / 2
+        if loss == 0 and isinstance(loss, int):
+            loss = None
+
+        accuracy_type = accuracy_type if accuracy_type is not None else 0
+        accuracy_num = torch.mean(torch.stack(accuracy_num)) if accuracy_num is not None else 0
+        accuracy = (accuracy_tags + accuracy_type + accuracy_num) / 3 if accuracy_tags else (accuracy_type + accuracy_num) / 2
+        if accuracy == 0 and isinstance(accuracy, int):
+            accuracy = None
+
+        return self.output(equation_outputs, loss, accuracy)
+
+    def match_solver(self, n_num, n_nums, n_names):
+        if n_num > 3:
+            return 10
+        elif n_num >= 1 and n_nums >= 1:
             return 9
         return super().match_solver(n_num, n_nums, n_names)

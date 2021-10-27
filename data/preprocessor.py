@@ -213,6 +213,8 @@ class TrainingPreprocessor(Preprocessor):
                 equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
             elif eq_type == 8:
                 equation_target = self._make_max_sub_min2_target(i, batch, raw_batch)
+            elif eq_type == 10:
+                equation_target = self._make_count_from_compare_pivot2(i, batch, raw_batch)
             else:
                 equation_target = []
                 for token in eq_tokens:
@@ -280,6 +282,14 @@ class TrainingPreprocessor(Preprocessor):
         matched_num = batch['matched_num'][batch_idx]
         equation_target = [0. if num is None or num not in eq_token else 1. for num in matched_num]
         return torch.as_tensor(equation_target)
+
+    def _make_count_from_compare_pivot2(self, batch_idx, batch, raw_batch):
+        eq_token = batch['equation_tokens'][batch_idx]
+        matched_num = batch['matched_num'][batch_idx]
+        equation_target0 = torch.tensor([eq_token[0]])
+        equation_target1 = torch.tensor([matched_num.index(eq_token[1])])
+        equation_target2 = [0. if num is None or num not in eq_token[2:] else 1. for num in matched_num]
+        return equation_target0, equation_target1, torch.as_tensor(equation_target2)
 
 
 def _collate(batch):
