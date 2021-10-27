@@ -14,10 +14,10 @@ class AGCModel(LightningModule):
 
         try:
             language_model = ElectraModel.from_pretrained(language_model)
+            language_model.resize_token_embeddings(len(tokenizer.vocab))
         except OSError:
             config = ElectraConfig.from_pretrained(language_model)
             language_model = ElectraModel(config)
-        language_model.resize_token_embeddings(len(tokenizer.vocab))
         self.id_to_token = {token_id: token for token, token_id in zip(tokenizer.additional_special_tokens,
                                                                        tokenizer.additional_special_tokens_ids)}
         self.token_to_id = {token: token_id for token, token_id in zip(tokenizer.additional_special_tokens,

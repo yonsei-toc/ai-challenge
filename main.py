@@ -61,10 +61,10 @@ def infer():
     data_path = "problemsheet_5_00.json"
     output_path = "answersheet_5_00_greghahn.json"
 
-    tokenizer = init_tokenizer(lm_path)
+    tokenizer = ElectraTokenizerFast.from_pretrained(lm_path)
     model = AGCModel.load_from_checkpoint(model_path, tokenizer=tokenizer)
     datamodule = AGCPredictionDataModule(data_path, tokenizer, batch_size=32)
-    trainer = Trainer(resume_from_checkpoint=model_path, gpus=1)
+    trainer = Trainer(resume_from_checkpoint=model_path, gpus=1, logger=False)
     results = trainer.predict(model, datamodule=datamodule, return_predictions=True)
 
     answersheet = {}
@@ -76,7 +76,7 @@ def infer():
 
             answersheet[key] = {"answer": str(answer), "equation": code}
 
-    with open(output_path, 'w', encoding="utf-8-sig") as outfile:
+    with open(output_path, 'w', encoding="utf-8") as outfile:
         json.dump(answersheet, outfile, indent=4, ensure_ascii=False)
 
 
