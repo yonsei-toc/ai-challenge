@@ -105,15 +105,15 @@ class NumberToken(Token):
     def value(self):
         return self._value * self.sgn
 
-    @property
-    def token(self):
-        tkn = super().token
-        if self.sgn == 1:
-            return tkn
-        elif self.sgn == 0:
-            return '0' + tkn
-        elif self.sgn == -1:
-            return '-' + tkn
+    # @property
+    # def token(self):
+    #     tkn = super().token
+    #     if self.sgn == 1:
+    #         return tkn
+    #     elif self.sgn == 0:
+    #         return '0' + tkn
+    #     elif self.sgn == -1:
+    #         return '-' + tkn
 
     @property
     def unit(self):

@@ -843,6 +843,7 @@ def c6p5v2(sel,tokenpool,clskey):
     ))
 
 
+# TODO
 # @gen.problems.register
 def c7p5v0(sel,tokenpool,clskey):
     #철수, 영수, 영철, 경수, 경환 5명이 있습니다. 철수는 나이가 가장 적습니다. 영수는 경수에게는 동생이고 경환에게는 형입니다.
@@ -881,7 +882,7 @@ def c7p5v0(sel,tokenpool,clskey):
         '{name3}{#는} {num1}년 후에 {num2}살이 되고, {name2}{#이?}는 올해 {num3}살입니다.'
     ])
     question0 = '{name_num}명 중에서 나이가 {num4}번째로 적은 사람은 누구{ques_trailing}'
-    equation0 = gen.EqnRef('c7p5', name1_token,name2_token,name3_token,name4_token,name5_token,num4_token)
+    equation0 = gen.EqnRef('order_by_comp', name1_token,name2_token,name3_token,name4_token,name5_token,num4_token)
 
     return gen.build(
         body = body0,
@@ -902,6 +903,7 @@ def c7p5v0(sel,tokenpool,clskey):
             ques_trailing=ques_trailing
     ))
 
+# TODO
 # @gen.problems.register
 def c7p5v1(sel,tokenpool,clskey):
     #철수, 영수, 영철, 경수, 경환 5명이 있습니다. 철수는 나이가 가장 적습니다. 영수는 경수에게는 동생이고 경환에게는 형입니다.
@@ -928,20 +930,20 @@ def c7p5v1(sel,tokenpool,clskey):
     name4_token = tokenpool.new(name4)
     name5_token = tokenpool.new(name5)
 
-    num4_token = tokenpool.new(num4)
     timeline = random.choice(['지난주에', '그저께', '어제', '오늘', '이번주에'])
     name_aug = sel.get(clskey.name)
+    desc = random.choice(['가장 많은', '가장 적은'])
 
     # body1 -> name1, name2, name3, name4, name5, name_num, ques_trailing, num1, num2, num3, num4, timeline
-    body1 = '{timeline} {name1}, {name2}, {name3}, {name4}, {name5} {name_num}명이 모였습니다.'
+    body1 = '{timeline} ' + ', '.join(f'{{name{i+1}}}' for i in range(5)) + '{name_num}명이 모였습니다.'
     body1 += f' 오랜만에 모인 {gen.korutil.num2korunit(name_num)} 사람들은 서로의 나이가 기억나지 않아 나이를 물어보았습니다.'
     body1 += ' '.join([
         ' 가장 나이가 적은 사람은 {name1}{#이?}입니다.',
         '{name1}{#은} {name4}{#이?}보다 나이가 적고 {name5}보다 나이가 많습니다.',
         '{name3}{#는} {name5}보다 나이가 많고 {name4}보다 나이가 적습니다.'
     ])
-    question1 = '올해 {name2}의 나이가 {num3}살이고 {num1}년 후에 {name3}의 나이가 {num2}살이 될 때, 나이가 {num4}번째로 적은 사람을 구하시오.'
-    equation1 = gen.EqnRef('c7p5', name1_token,name2_token,name3_token,name4_token,name5_token,num4_token)
+    question1 = '올해 {name2}의 나이가 {num3}살이고 {num1}년 후에 {name3}의 나이가 {num2}살이 될 때, 나이가 ' + desc + ' 사람을 구하시오.'
+    equation1 = gen.EqnRef('c7p5', name1_token,name2_token,name3_token,name4_token,name5_token)
 
     return gen.build(
         body = body1,
@@ -957,7 +959,7 @@ def c7p5v1(sel,tokenpool,clskey):
             num1=num1,
             num2=num2,
             num3=num3,
-            num4=num4_token,
+            num4=num4,
             name_num=name_num,
             ques_trailing=ques_trailing,
             timeline=timeline

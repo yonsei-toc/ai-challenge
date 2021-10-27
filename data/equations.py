@@ -203,14 +203,10 @@ def half_sub(*_args_):
 # 6
 @equations.register
 def sum_num_sig(*_args_):
-    # return variable is ALWAYS [ans].
     def _equation():
         ans = sum(_args_)
 
     return _equation
-
-
-# def eqn_sum2(*_args_):
 
 
 # 7
@@ -279,6 +275,73 @@ def count_from_compare_pivot2(*_args_):
     return _equation
 
 
+# 11
+@equations.register
+def avg_num_sig(*_args_):
+    # return variable is ALWAYS [ans].
+    def _equation():
+        ans = sum(_args_) / len(_args_)
+
+    return _equation
+
+
+# 12
+@equations.register
+def mul_num(*_args_):
+    # return variable is ALWAYS [ans].
+    def _equation():
+        ans = 1
+        for i in _args_:
+            ans = (ans * i) if i > 0 else ans
+
+    return _equation
+
+
+# 13
+@equations.register
+def max_num(*_args_):
+    def _equation():
+        ans = max(_args_)
+
+    return _equation
+
+
+# 14
+@equations.register
+def min_num(*_args_):
+    def _equation():
+        ans = min(_args_)
+
+    return _equation
+
+
+# 15
+@equations.register
+def max_nums(*_args_):
+    def _equation():
+        ans = max(_args_[0])
+
+    return _equation
+
+
+# 16
+@equations.register
+def min_nums(*_args_):
+    def _equation():
+        ans = min(_args_[0])
+
+    return _equation
+
+
+# 17
+@equations.register
+def avg_nums(*_args_):
+    def _equation():
+        ans = sum(_args_[0]) / len(_args_[0])
+
+    return _equation
+
+
 @equations.register
 def eq_c5p2(n1, n2, n3, n4):
     # 상수 사용
@@ -333,11 +396,6 @@ def eq_c8p5(n1, n2):
 
 
 @equations.register
-def eqn_avg(*args):
-    return 'ans = sum({}) / {}'.format(repr(args), len(args))
-
-
-@equations.register
 def half_odd(*args):
     # return variable is ALWAYS [ans].
 
@@ -376,18 +434,6 @@ def split_oops_split(split_num, num, split, leftover=0):
     return 'ans = ({} * {} + {})//{}'.format(split_num, num, leftover, split)
 
 
-# multiple fraction
-@equations.register
-def multi_frac(origin, *args):
-    ans_str = 'ans = {}'.format(origin)
-    for i in range(len(args)):
-        if i % 2 == 0:
-            ans_str += ' * {}'.format(args[i])
-        else:
-            ans_str += ' / {}'.format(args[i])
-    return ans_str
-
-
 # select smallest from list
 @equations.register
 def select_small_from_three(*args):
@@ -418,20 +464,6 @@ def halfOdd(*args):
 
 
 @equations.register
-def getDeci(*args):
-    # return variable is ALWAYS [ans].
-
-    if args[1] == 2:
-        return 'ans = round(float((100*{})/99),2)'.format(args[0])
-    elif args[1] == 3:
-        return 'ans = round(float((1000*{})/999),2)'.format(args[0])
-    elif args[1] == 1:
-        return 'ans = round(float((10*{})/9),2)'.format(args[0])
-    else:
-        return 'ans = round(float((1*{}))/1,2)'.format(args[0])
-
-
-@equations.register
 def prob06_04(*args):
     # return variable is ALWAYS [ans].
     # args0 args1 args2
@@ -452,34 +484,6 @@ def prob07_04(name0, name1, name2, name3, *args):
 def prob04_03(over, *args):
     # return variable is ALWAYS [ans]..
     return 'ans = list(map(lambda x: x> {}, [{}])).count(True)'.format(int(over), ','.join(list(map(str, args))))
-
-
-@equations.register
-def prob04_02(n, *number_list):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, number_list))),
-        f"ans = min(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))"])
-
-
-@equations.register
-def prob04_02_02(n, *number_list):
-    """
-     > {L} 중에서 서로 다른 숫자 {n}개를 뽑아 만들 수 있는 가장 작은 {n} 자리 수
-    """
-    return "".join([
-        "L = [{}]\n".format(', '.join(map(str, number_list))),
-        f"ans = max(filter(",
-        f"lambda e: e >= 10 ** ({n} - 1),",
-        f"map(",
-        f"lambda e: int(''.join(map(str, e))),",
-        f"itertools.permutations(L, {n}))))"])
 
 
 @equations.register

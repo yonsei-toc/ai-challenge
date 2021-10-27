@@ -33,11 +33,11 @@ class Preprocessor:
         # Merge keys in batch
         batch = {key: [d[key] for d in batch] for key in batch[0]}
 
-        # Replace numeric tokens
-        batch['question'], batch['numerics'] = self.numeric_processor.replace_batch(batch['question'])
-
         # Replace name tokens
         batch['question'], batch['names'] = self.naming_processor.replace_batch(batch['question'])
+
+        # Replace numeric tokens
+        batch['question'], batch['numerics'] = self.numeric_processor.replace_batch(batch['question'])
 
         # Add Tokenized results
         batch.update(self.tokenizer(batch['question'], padding='longest', truncation=True))
@@ -209,9 +209,9 @@ class TrainingPreprocessor(Preprocessor):
                                                                                 raw_batch['equation_type'])):
             if eq_type == 4:
                 equation_target = self._make_order_by_comp_target(i, batch, raw_batch)
-            elif eq_type == 6:
+            elif eq_type in (6, 11, 12):
                 equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
-            elif eq_type == 8:
+            elif eq_type in (8, 13, 14):
                 equation_target = self._make_max_sub_min2_target(i, batch, raw_batch)
             elif eq_type == 10:
                 equation_target = self._make_count_from_compare_pivot2(i, batch, raw_batch)

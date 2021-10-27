@@ -15,12 +15,20 @@ class TemplateSolver(base.Module):
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
-            _SumNumSig(hidden_size, p_drop),
-            _MaxSubMin(hidden_size, p_drop),
-            _MaxSubMin2(hidden_size, p_drop),
+            _NumSig(hidden_size, p_drop, "SumNumSig", 6, -1),
+            _SingleNums(hidden_size, p_drop, "MaxSubMin", 7, 8),
+            _MultipleNum(hidden_size, p_drop, "MaxSubMin2", 8, 7),
             _CountFromComparePivot(hidden_size, p_drop),
-            _CountFromComparePivot2(hidden_size, p_drop)
+            _CountFromComparePivot2(hidden_size, p_drop),
+            _NumSig(hidden_size, p_drop, "AvgNumSig", 11, 17),
+            _NumSig(hidden_size, p_drop, "MulDivNum", 12),
+            _MultipleNum(hidden_size, p_drop, "MaxNum", 13, 15),
+            _MultipleNum(hidden_size, p_drop, "MinNum", 14, 16),
+            _SingleNums(hidden_size, p_drop, "MaxNums", 15, 13),
+            _SingleNums(hidden_size, p_drop, "MinNums", 16, 14),
+            _SingleNums(hidden_size, p_drop, "AvgNums", 17, 11)
         ])
+        self.n_models = 18
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
         self.n_solvers = len(self.solvers)
@@ -51,7 +59,7 @@ class TemplateSolver(base.Module):
                 else:
                     fetched.append((True, None, None, None, None, None, None))
         else:
-            for i, solver in enumerate(self.solvers[:11]):
+            for i, solver in enumerate(self.solvers[:self.n_models]):
                 batch_mask = (label_answer_type == i)
                 target_features = features[batch_mask, :]
                 if target_features.size(0) > 0:
@@ -73,7 +81,7 @@ class TemplateSolver(base.Module):
         solve_outputs = [None] * features.size(0)
         solve_results = {}
         fetched, answer_types = self.fetch_all(batch, answer_types, features, num_features, nums_features)
-        for i, solver in enumerate(self.solvers[:11]):
+        for i, solver in enumerate(self.solvers[:self.n_models]):
             skip_solver, batch_mask, target_features, batch_idxes, target_num, target_nums, equation_targets = fetched[i]
             if skip_solver:
                 continue
@@ -134,11 +142,13 @@ class _Equation(base.Module):
                 accuracy = torch.mean(torch.stack(accuracy)) if accuracy and accuracy[0] is not None else accuracy
         return equation_outputs, loss, accuracy, {self._key('loss'): loss, self._key('accuracy'): accuracy}
 
-    def _key(self, key):
+    def _key(self, key, cls_name=None):
+        if cls_name is None:
+            cls_name = type(self).__name__[1:]
         if self.training:
-            return f"solver(train)/{type(self).__name__[1:]}_{key}"
+            return f"solver(train)/{cls_name}_{key}"
         else:
-            return f"solver(valid)/{type(self).__name__[1:]}_{key}"
+            return f"solver(valid)/{cls_name}_{key}"
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num > 0:
@@ -151,19 +161,15 @@ class _Equation(base.Module):
 
 
 class _EmptyEquation(_Equation):
-    def __init__(self, eq_id, condition_fn, redirect_fn=None):
+    def __init__(self, condition_fn):
         super(_EmptyEquation, self).__init__()
-        self.eq_id = eq_id
         self.condition_fn = condition_fn
-        self.redirect_fn = redirect_fn
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         return None, None, None
 
     def match_solver(self, n_num, n_nums, n_names):
         if (r := self.condition_fn(n_num, n_nums, n_names)) is not None:
-            return r
-        if (r := self.redirect_fn_fn(n_num, n_nums, n_names)) is not None:
             return r
         return super().match_solver(n_num, n_nums, n_names)
 
@@ -345,10 +351,13 @@ class _HalfSub(_Equation):
         return super().match_solver(n_num, n_nums, n_names)
 
 
-class _SumNumSig(_Equation):
-    def __init__(self, hidden_size, p_drop):
-        super(_SumNumSig, self).__init__()
+class _NumSig(_Equation):
+    def __init__(self, hidden_size, p_drop, name, eq_id, alter_id=None):
+        super(_NumSig, self).__init__()
         self.num_classifier = base.SequenceTagging(hidden_size, 3, p_drop)
+        self.eq_id = eq_id
+        self.alter_id = alter_id
+        self.name = name
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         equation_outputs, loss, accuracy = [], [], []
@@ -366,14 +375,20 @@ class _SumNumSig(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:
-            return 6
-        return -1
+            return self.eq_id
+        return self.alter_id
+
+    def _key(self, key, cls_name=None):
+        return super()._key(key, self.name)
 
 
-class _MaxSubMin(_Equation):
-    def __init__(self, hidden_size, p_drop):
-        super(_MaxSubMin, self).__init__()
+class _SingleNums(_Equation):
+    def __init__(self, hidden_size, p_drop, name, eq_id, couple_id):
+        super(_SingleNums, self).__init__()
         self.nums_matcher = _NumberMatcher(hidden_size, p_drop, 1)
+        self.name = name
+        self.eq_id = eq_id
+        self.couple_id = couple_id
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         equation_outputs, loss, accuracy = self.nums_matcher(nums_features, targets)
@@ -384,16 +399,22 @@ class _MaxSubMin(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_nums >= 1:
-            return 7
+            return self.eq_id
         elif n_num >= 1:
-            return 8
-        return super(_MaxSubMin, self).match_solver(n_num, n_nums, n_names)
+            return self.couple_id
+        return super().match_solver(n_num, n_nums, n_names)
+
+    def _key(self, key, cls_name=None):
+        return super()._key(key, self.name)
 
 
-class _MaxSubMin2(_Equation):
-    def __init__(self, hidden_size, p_drop):
-        super(_MaxSubMin2, self).__init__()
+class _MultipleNum(_Equation):
+    def __init__(self, hidden_size, p_drop, name, eq_id, couple_id):
+        super(_MultipleNum, self).__init__()
         self.choose_num = base.BinaryTagging(hidden_size, p_drop)
+        self.name = name
+        self.eq_id = eq_id
+        self.couple_id = couple_id
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         equation_outputs, loss, accuracy = [], [], []
@@ -411,10 +432,13 @@ class _MaxSubMin2(_Equation):
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:
-            return 8
+            return self.eq_id
         elif n_nums >= 1:
-            return 7
+            return self.couple_id
         return super().match_solver(n_num, n_nums, n_names)
+
+    def _key(self, key, cls_name=None):
+        return super()._key(key, self.name)
 
 
 class _CountFromComparePivot(_Equation):
@@ -515,3 +539,26 @@ class _CountFromComparePivot2(_Equation):
         elif n_num >= 1 and n_nums >= 1:
             return 9
         return super().match_solver(n_num, n_nums, n_names)
+
+
+class _SingleNum(_Equation):
+    def __init__(self, hidden_size, p_drop, name, eq_id):
+        super(_SingleNum, self).__init__()
+        self.num_matcher = _NumberMatcher(hidden_size, p_drop, 1)
+        self.name = name
+        self.eq_id = eq_id
+
+    def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        equation_outputs, loss, accuracy = self.num_matcher(num_features, targets)
+        if targets is None:
+            return self.output(equation_outputs)
+
+        return self.output(equation_outputs, loss, accuracy)
+
+    def match_solver(self, n_num, n_nums, n_names):
+        if n_num >= 1:
+            return self.eq_id
+        return super().match_solver(n_num, n_nums, n_names)
+
+    def _key(self, key, cls_name=None):
+        return super()._key(key, self.name)
