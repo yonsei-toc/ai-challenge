@@ -16,19 +16,14 @@ class TemplateSolver(base.Module):
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
             _NumSig(hidden_size, p_drop, "SumNumSig", 6, lambda n_num, n_nums, n_names: -1 if n_nums > 0 else None),
-            _SingleNums(hidden_size, p_drop, "MaxSubMin", 7, 8),
-            _MultipleNum(hidden_size, p_drop, "MaxSubMin2", 8, 7),
+            _SingleNums(hidden_size, p_drop, "ExtractFromNums", 7, 8),
+            _MultipleNum(hidden_size, p_drop, "ExtractFromEachNum", 8, 7),
             _CountFromComparePivot(hidden_size, p_drop),
             _CountFromComparePivot2(hidden_size, p_drop),
-            _NumSig(hidden_size, p_drop, "AvgNumSig", 11, lambda n_num, n_nums, n_names: 17 if n_nums >= 1 else None),
+            _NumSig(hidden_size, p_drop, "AvgNumSig", 11, lambda n_num, n_nums, n_names: 7 if n_nums >= 1 else None),
             _NumSig(hidden_size, p_drop, "MulDivNum", 12),
-            _MultipleNum(hidden_size, p_drop, "MaxNum", 13, 15),
-            _MultipleNum(hidden_size, p_drop, "MinNum", 14, 16),
-            _SingleNums(hidden_size, p_drop, "MaxNums", 15, 13),
-            _SingleNums(hidden_size, p_drop, "MinNums", 16, 14),
-            _SingleNums(hidden_size, p_drop, "AvgNums", 17, 11)
         ])
-        self.n_models = 18
+        # self.n_models = 18
         self.extract_num = TokenFeatureExtractor('num', config)
         self.extract_nums = TokenFeatureExtractor('nums', config)
         self.n_solvers = len(self.solvers)
@@ -59,7 +54,7 @@ class TemplateSolver(base.Module):
                 else:
                     fetched.append((True, None, None, None, None, None, None))
         else:
-            for i, solver in enumerate(self.solvers[:self.n_models]):
+            for i, solver in enumerate(self.solvers):
                 batch_mask = (label_answer_type == i)
                 target_features = features[batch_mask, :]
                 if target_features.size(0) > 0:
@@ -81,7 +76,7 @@ class TemplateSolver(base.Module):
         solve_outputs = [None] * features.size(0)
         solve_results = {}
         fetched, answer_types = self.fetch_all(batch, answer_types, features, num_features, nums_features)
-        for i, solver in enumerate(self.solvers[:self.n_models]):
+        for i, solver in enumerate(self.solvers):
             skip_solver, batch_mask, target_features, batch_idxes, target_num, target_nums, equation_targets = fetched[i]
             if skip_solver:
                 continue
@@ -134,13 +129,16 @@ class _Equation(base.Module):
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
         raise NotImplementedError()
 
-    def output(self, equation_outputs, loss=None, accuracy=None):
+    def output(self, equation_outputs, loss=None, accuracy=None, additional=None):
         if loss is not None and accuracy is not None:
             if isinstance(loss, list):
                 loss = torch.mean(torch.stack(loss)) if loss and loss[0] is not None else None
             if isinstance(accuracy, list):
                 accuracy = torch.mean(torch.stack(accuracy)) if accuracy and accuracy[0] is not None else accuracy
-        return equation_outputs, loss, accuracy, {self._key('loss'): loss, self._key('accuracy'): accuracy}
+        log_results = {self._key('loss'): loss, self._key('accuracy'): accuracy}
+        if loss is not None and additional is not None:
+            log_results.update(additional)
+        return equation_outputs, loss, accuracy, log_results
 
     def _key(self, key, cls_name=None):
         if cls_name is None:
@@ -388,16 +386,37 @@ class _SingleNums(_Equation):
     def __init__(self, hidden_size, p_drop, name, eq_id, couple_id):
         super(_SingleNums, self).__init__()
         self.nums_matcher = _NumberMatcher(hidden_size, p_drop, 1)
+        self.type_matcher = base.SequenceClassifier(hidden_size, 6, p_drop)
         self.name = name
         self.eq_id = eq_id
         self.couple_id = couple_id
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
-        equation_outputs, loss, accuracy = self.nums_matcher(nums_features, targets)
+        if targets:
+            label_type, label_n = [], []
+            for t in targets:
+                label_type.append(t[1].squeeze())
+                label_n.append([t[0]])
+            label_type = torch.stack(label_type)
+        else:
+            label_type, label_n = None, None
+        type_outputs, type_loss, type_accuracy = self.type_matcher(features, label_type)
+        nums_outputs, nums_loss, nums_accuracy = self.nums_matcher(nums_features, label_n)
+        equation_outputs = list(zip(type_outputs.argmax(-1), nums_outputs))
         if targets is None:
             return self.output(equation_outputs)
 
-        return self.output(equation_outputs, loss, accuracy)
+        add = {self._key('type_loss'): type_loss, self._key('type_accuracy'): type_accuracy}
+        if nums_loss:
+            nums_loss = torch.mean(torch.stack(nums_loss))
+            nums_accuracy = torch.mean(torch.stack(nums_accuracy))
+            loss = (type_loss + nums_loss) / 2
+            accuracy = (type_accuracy + nums_accuracy) / 2
+            add.update({self._key('nums_loss'): nums_loss, self._key('nums_accuracy'): nums_accuracy})
+        else:
+            loss = type_loss
+            accuracy = type_accuracy
+        return self.output(equation_outputs, loss, accuracy, add)
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_nums >= 1:
@@ -413,24 +432,43 @@ class _SingleNums(_Equation):
 class _MultipleNum(_Equation):
     def __init__(self, hidden_size, p_drop, name, eq_id, couple_id):
         super(_MultipleNum, self).__init__()
+        self.match_type = base.SequenceClassifier(hidden_size, 6, p_drop)
         self.choose_num = base.BinaryTagging(hidden_size, p_drop)
         self.name = name
         self.eq_id = eq_id
         self.couple_id = couple_id
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
+        if targets is not None:
+            label_type, label_n = [], []
+            for t in targets:
+                label_type.append(t[0].squeeze())
+                label_n.append(t[1])
+            label_type = torch.stack(label_type)
+        else:
+            label_type, label_n = None, None
+        type_output, type_loss, type_accuracy = self.match_type(features, label_type)
         equation_outputs, loss, accuracy = [], [], []
         _target = None
         for i, num_feature in enumerate(num_features):
             if targets is not None:
-                _target = targets[i]
+                _target = label_n[i]
             _output, _loss, _accuracy = self.choose_num(num_feature, _target, None)
 
             equation_outputs.append(_output)
             loss.append(_loss)
             accuracy.append(_accuracy)
+        add = None
+        equation_outputs = list(zip(type_output.argmax(-1), equation_outputs))
+        if targets is not None:
+            loss = torch.mean(torch.stack(loss))
+            accuracy = torch.mean(torch.stack(accuracy))
+            add = {self._key('type_loss'): type_loss, self._key('num_loss'): loss,
+                   self._key('type_accuracy'): type_accuracy, self._key('num_accuracy'): accuracy}
+            loss = (loss + type_loss) / 2
+            accuracy = (accuracy + type_accuracy) / 2
 
-        return self.output(equation_outputs, loss, accuracy)
+        return self.output(equation_outputs, loss, accuracy, add)
 
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:

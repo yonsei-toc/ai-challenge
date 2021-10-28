@@ -212,7 +212,7 @@ class TrainingPreprocessor(Preprocessor):
             elif eq_type in (6, 11, 12):
                 equation_target = self._make_sum_num_sig_target(i, batch, raw_batch)
             elif eq_type in (8, 13, 14):
-                equation_target = self._make_max_sub_min2_target(i, batch, raw_batch)
+                equation_target = self._make_extract_from_each_num_target(i, batch, raw_batch)
             elif eq_type == 10:
                 equation_target = self._make_count_from_compare_pivot2(i, batch, raw_batch)
             else:
@@ -277,11 +277,12 @@ class TrainingPreprocessor(Preprocessor):
                 equation_target.append(2)
         return torch.as_tensor(equation_target)
 
-    def _make_max_sub_min2_target(self, batch_idx, batch, raw_batch):
+    def _make_extract_from_each_num_target(self, batch_idx, batch, raw_batch):
         eq_token = batch['equation_tokens'][batch_idx]
+        eq_type, eq_token = eq_token[0], eq_token[1:]
         matched_num = batch['matched_num'][batch_idx]
         equation_target = [0. if num is None or num not in eq_token else 1. for num in matched_num]
-        return torch.as_tensor(equation_target)
+        return torch.as_tensor(eq_type), torch.as_tensor(equation_target)
 
     def _make_count_from_compare_pivot2(self, batch_idx, batch, raw_batch):
         eq_token = batch['equation_tokens'][batch_idx]

@@ -113,7 +113,7 @@ def count_from_range(*_args_):
     """
 
     def _equation():
-        ans = len(list(filter(lambda e: _args_[2] == e, ''.join(map(str, range(_args_[0], _args_[1] + 1))))))
+        ans = len(list(filter(lambda e: str(_args_[2]) == e, ''.join(map(str, range(_args_[0], _args_[1] + 1))))))
 
     return _equation
 
@@ -224,12 +224,12 @@ def extract_from_nums(*_args_):
     elif _args_[1] == 3:  # Avg
         def _equation():
             ans = sum(_args_[0]) / len(_args_[0])
-    elif _args_[1] == 4:  # MaxAddMin
-        def _equation():
-            ans = max(_args_[0]) + min(_args_[0])
-    else:  # Sum
+    elif _args_[1] == 4:  # Sum
         def _equation():
             ans = sum(_args_[0])
+    else:  # Sum
+        def _equation():  # MaxAddMin
+            ans = max(_args_[0]) + min(_args_[0])
 
     return _equation
 
@@ -249,12 +249,12 @@ def extract_from_each_num(*_args_):
     elif _args_[0] == 3:  # Avg
         def _equation():
             ans = sum(_args_[1:]) / len(_args_[1:])
-    elif _args_[0] == 4:  # MaxAddMin
-        def _equation():
-            ans = max(_args_[1:]) + min(_args_[1:])
-    else:  # Sum
+    elif _args_[0] == 4:  # Sum
         def _equation():
             ans = sum(_args_[1:])
+    else:  # MaxAddMin
+        def _equation():
+            ans = max(_args_[1:]) + min(_args_[1:])
 
     return _equation
 
