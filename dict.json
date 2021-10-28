@@ -53,28 +53,28 @@
   "dictionary": {
     "children_of": {
       "entity.item": [
-        "entity.container",
-        "entity.fruit",
-        "entity.writable",
         "entity.flower",
+        "entity.container",
+        "entity.writable",
+        "entity.fruit",
         "entity.tool"
       ],
       "entity.place": [
-        "group.school",
-        "entity.field"
-      ],
-      "entity.group": [
-        "group.fruit",
-        "group.flower",
-        "group.animal",
-        "group.age",
-        "group.gender",
+        "entity.field",
         "group.school"
       ],
+      "entity.group": [
+        "group.age",
+        "group.fruit",
+        "group.flower",
+        "group.school",
+        "group.gender",
+        "group.animal"
+      ],
       "entity.tool": [
-        "entity.side",
+        "entity.tool.group",
         "entity.tool.wire",
-        "entity.tool.group"
+        "entity.side"
       ],
       "prop.relation.family": [
         "prop.relation.family.female",
@@ -1327,6 +1327,556 @@
       },
       {
         "text": "영수",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "슈가",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "지경",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "대철",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "준범",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "재석",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "준하",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "현지",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "혜진",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민지",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "윤아",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "예빈",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "태연",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "청하",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "유리",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "지은",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "시은",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "수영",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "세은",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "수민",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "재희",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "지혜",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "지원",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "지수",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "다은",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "수지",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "혜빈",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "다인",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민서",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "가람",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "예은",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민경",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민정",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "해리",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "혜리",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민아",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "다솜",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "보라",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "female",
+          "family_relation": "prop.relation.family.female"
+        }
+      },
+      {
+        "text": "민혁",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "민호",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "태민",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "민준",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "현우",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "동현",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "정민",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "준혁",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "세훈",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "시우민",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "지훈",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "준영",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "찬열",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "백현",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "현준",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "승민",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "요섭",
+        "tags": [
+          "entity.name"
+        ],
+        "props": {
+          "gender": "male",
+          "family_relation": "prop.relation.family.male"
+        }
+      },
+      {
+        "text": "세현",
         "tags": [
           "entity.name"
         ],
