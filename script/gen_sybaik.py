@@ -43,7 +43,7 @@ def prob1_1(selector, tokenpool, clskey):
     count2_k = tokenpool.new(count2)
 
     # unit string
-    unit = item1.of('unit')
+    unit = item1.of('unit') if 'unit' in item1.props else '개'
     count1_k.unit = unit
     count2_k.unit = unit
 
@@ -97,7 +97,7 @@ def prob1_2(selector, tokenpool, clskey):
     count3_k = tokenpool.new(count3)
 
     # unit string
-    unit = item1.of('unit')
+    unit = '개'
     count1_k.unit = unit
     count2_k.unit = unit
     count3_k.unit = unit
@@ -152,7 +152,7 @@ def prob1_3(selector, tokenpool, clskey):
     count3_k = tokenpool.new(count3)
 
     # unit string
-    unit = item1.of('unit')
+    unit = item1.of('unit') if 'unit' in item1.props else '개'
     count2_k.unit = unit
     count3_k.unit = unit
 
@@ -170,7 +170,7 @@ def prob1_3(selector, tokenpool, clskey):
         # what to ask
         question = '{item1}{#이} {item2}보다 {count2}{#가} 더 적다면 {item1}{#은} 몇 {unit} 있습니까?',
         # equation for question
-        equation = gen.EqnRef('avg', count3_k, -count2_k),
+        equation = gen.EqnRef('avg_num_sig', count3_k, -count2_k),
 
         # env
         env=gen.fnmap(
@@ -184,7 +184,7 @@ def prob1_3(selector, tokenpool, clskey):
         )
     )
 
-@gen.problems.register
+# @gen.problems.register
 def prob1_4(selector, tokenpool, clskey):
     # entities
     item1 = selector.get(clskey.item)
@@ -200,7 +200,7 @@ def prob1_4(selector, tokenpool, clskey):
     count4_k = tokenpool.new(count4)
 
     # unit
-    unit = item1.of('unit')
+    unit = item1.of('unit') if 'unit' in item1.props else '개'
     count1_k.unit = unit
     count2_k.unit = unit
     count3_k.unit = unit
@@ -236,7 +236,7 @@ def prob1_4(selector, tokenpool, clskey):
     )
     
 
-# @gen.problems.register
+@gen.problems.register
 def prob1_5(selector, tokenpool, clskey):
     
     # entities
@@ -256,10 +256,8 @@ def prob1_5(selector, tokenpool, clskey):
 
     # entity reference
     count1_k = tokenpool.new(count1)
-    count2_k = tokenpool.new(count2)
-    count3_k = tokenpool.new(count3)
-    count4_k = tokenpool.new(count4)
-    count5_k = tokenpool.new(count5)
+    rate1_k = tokenpool.new(count3/count2)
+    rate2_k = tokenpool.new(count5/count4)
 
     # syntactic randomize
     total = random.choice(['', '모든 ', '총 ', '전체 '])
@@ -268,24 +266,22 @@ def prob1_5(selector, tokenpool, clskey):
     return gen.build(
         # body(background of question)
         body = ' '.join([
-            '{name1}네 반 {total}학생 수는 {count1}명입니다. 그중에서 {group1} 학생은 전체의 {count3}/{count2}입니다.'
-            '{group1} 학생 중에서 {item1}{#을} 가진 학생은 {group1} 학생 전체의 {count5}/{count4}입니다.'
+            '{name1}네 반 {total}학생 수는 {count1}명입니다. 그중에서 {group1} 학생은 전체의 {rate1}입니다.'
+            '{group1} 학생 중에서 {item1}{#을} 가진 학생은 {group1} 학생 전체의 {rate2}입니다.'
         ]),
 
         # what to ask
         question = '{name1}네 반에서 {item1}{#을} 가지지 못한 학생 {group1} 학생은 몇 명{ques_trailing}',
         # equation for question
-        equation = gen.EqnRef('multi_frac',count1_k,count3_k,count2_k,count5_k,count4_k),
+        equation = gen.EqnRef('mul_num',count1_k,rate1_k, rate2_k),
 
         env=gen.fnmap(
             name1 = name1,
             group1 = group1,
             item1 = item1,
             count1 = count1_k,
-            count2 = count2_k,
-            count3 = count3_k,
-            count4 = count4_k,
-            count5 = count5_k,
+            rate1=rate1_k,
+            rate2=rate2_k,
             total = total,
             ques_trailing = ques_trailing
         )
@@ -321,6 +317,7 @@ def prob6_1(selector, tokenpool, clskey):
         )
     )
 
+# TODO
 # @gen.problems.register
 def prob7_1(selector, tokenpool, clskey):
     
@@ -344,7 +341,7 @@ def prob7_1(selector, tokenpool, clskey):
     count3_k = tokenpool.new(count3)
 
     # unit
-    unit = item1.of('unit')
+    unit = item1.of('unit') if 'unit' in item1.props else '개'
     count1_k.unit = unit
     count2_k.unit = unit
     count3_k.unit = unit
@@ -365,7 +362,7 @@ def prob7_1(selector, tokenpool, clskey):
         # what to ask
         question = '{item1}{#를} {num_smallest}가지고 있는 사람은 누구{ques_trailing}',
         # equation for question
-        equation = gen.EqnRef('select_small_from_three',name1_k,name2_k,name3_k,count1_k,count2_k,count3_k),
+        equation = gen.EqnRef('order_by_comp',name1_k,name2_k,name3_k,count1_k,count2_k,count3_k),
         env=gen.fnmap(
             name1 = name1_k,
             name2 = name2_k,

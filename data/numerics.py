@@ -14,6 +14,7 @@ class NumericProcessor:
         '십': 10, '백': 100, '천': 1000, '만': 10000
     }
     _units = ['개', '살', '송이', '알', '자루', '권', '장', '켤레', '병', '대', '척', '다스', '판', '알', '통', '자리', '숫자', '수', '의 자리',
+              '각형',
               '킬로미터', 'km', '㎞', '미터', 'm', '센티미터', 'cm', '㎝', '밀리미터', 'mm', '㎜',
               '킬로리터', 'kl', '㎘', '리터', 'l', 'ℓ', '밀리리터', 'ml', '㎖',
               '세제곱미터', 'm3', 'm^3', '㎥', '세제곱센티미터', 'cm3', 'cm^3', '㎤',
@@ -31,10 +32,10 @@ class NumericProcessor:
     _exp_kor = f"(?:(?:{_over_10_with_1}\\s*{_1})|(?:{_over_10_only}|{_1}))"
     _exp_kor_units = f"{_exp_kor}\\s*{_exp_units}"
     _exp_kor_nonunits = f"{_over_10_with_1}\\s*{_1_others}"
-    _exp_chn_over_10 = f"(?:{_exp_chinese_1}?{_exp_chinese_10n}\\s*)+(?:{_exp_chinese_1})?"
-    _exp_chn = f"(?:{_exp_chn_over_10})"
-    _exp_chn_units = f"(?:{_exp_chn}\\s*{_exp_units})|(?:일의 자리)"
-    _exp_total_kor = f"(?:{_exp_kor_units})|(?:{_exp_kor_nonunits})|(?:{_exp_chn_units})|(?:{_exp_chn}\\b)"
+    _exp_chn_over_10 = f"(?:(?:{_exp_chinese_1}?{_exp_chinese_10n}\\s*)+(?:{_exp_chinese_1})?)"
+    _exp_chn = f"(?:{_exp_chn_over_10})|(?:{_exp_chinese_1})"
+    _exp_chn_units = f"(?:{_exp_chn_over_10}\\s*{_exp_units})|(?:일의 자리)|(?:정?{_exp_chn}각형)"
+    _exp_total_kor = f"(?:{_exp_kor_units})|(?:{_exp_kor_nonunits})|(?:{_exp_chn_units})|(?:{_exp_chn_over_10}\\b)"
     _exp_num = f"\\b(?:(?:{_exp_total_kor})|(?:{_exp_arabic}\\s*(?:{_exp_units}|의\\s*자리)?))"
     _exp_nums = f"(?:{_exp_num})(?:,\\s*(?:{_exp_num}))+"
     _exp_all = f"(?:{_exp_nums})|(?:{_exp_num})"
@@ -42,7 +43,7 @@ class NumericProcessor:
 
     def __init__(self, num_token, nums_token):
         self.unit_pattern = re.compile(self._exp_units)
-        self.c10n_pattern = re.compile(self._exp_chinese_10n)
+        self.c10n_pattern = re.compile(f'({self._exp_chinese_10n})')
         self.kor_pattern = re.compile(self._exp_kor)
         self.chn_pattern = re.compile(self._exp_chn)
         self.arabic_pattern = re.compile(self._exp_arabic)
@@ -135,3 +136,4 @@ if __name__ == "__main__":
                            "길이가 186mm인 전선으로 직사각형을 만들었더니, 전선이 딱 맞아 떨어졌다."))
     print(np.replace_token("많은 배를 가진사람의 개수에서 가장 작은 배를 가진 사람의 개수를 뺀 수는 몇 개입니까? 윤기 , 유나 은 각각 배를 10, 39 개를 가지고 있습니다."))
     print(np.replace_token("5개의 수 1.4, 9/10, 1, 0.5, 13/10이 있습니다.이 중에서 1보다 큰 수는 모두 몇 개입니까?"))
+    print(np.replace_token("삼각형의 변의 개수와 정삼십이각형의 넓이의 합을 구하시오. 백삼십칠 개의 숫자는 오백이십육"))
