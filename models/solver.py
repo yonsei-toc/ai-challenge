@@ -15,12 +15,12 @@ class TemplateSolver(base.Module):
             _WrongMultiply(hidden_size, p_drop),
             _OrderByCompare(hidden_size, p_drop, config),
             _HalfSub(hidden_size, p_drop),
-            _NumSig(hidden_size, p_drop, "SumNumSig", 6, -1),
+            _NumSig(hidden_size, p_drop, "SumNumSig", 6, lambda n_num, n_nums, n_names: -1 if n_nums > 0 else None),
             _SingleNums(hidden_size, p_drop, "MaxSubMin", 7, 8),
             _MultipleNum(hidden_size, p_drop, "MaxSubMin2", 8, 7),
             _CountFromComparePivot(hidden_size, p_drop),
             _CountFromComparePivot2(hidden_size, p_drop),
-            _NumSig(hidden_size, p_drop, "AvgNumSig", 11, 17),
+            _NumSig(hidden_size, p_drop, "AvgNumSig", 11, lambda n_num, n_nums, n_names: 17 if n_nums >= 1 else None),
             _NumSig(hidden_size, p_drop, "MulDivNum", 12),
             _MultipleNum(hidden_size, p_drop, "MaxNum", 13, 15),
             _MultipleNum(hidden_size, p_drop, "MinNum", 14, 16),
@@ -352,11 +352,11 @@ class _HalfSub(_Equation):
 
 
 class _NumSig(_Equation):
-    def __init__(self, hidden_size, p_drop, name, eq_id, alter_id=None):
+    def __init__(self, hidden_size, p_drop, name, eq_id, alter_fn=None):
         super(_NumSig, self).__init__()
         self.num_classifier = base.SequenceTagging(hidden_size, 3, p_drop)
         self.eq_id = eq_id
-        self.alter_id = alter_id
+        self.alter_fn = alter_fn
         self.name = name
 
     def forward(self, batch, features, num_features, nums_features, targets, batch_mask):
@@ -376,7 +376,9 @@ class _NumSig(_Equation):
     def match_solver(self, n_num, n_nums, n_names):
         if n_num >= 1:
             return self.eq_id
-        return self.alter_id
+        if self.alter_fn and (r := self.alter_fn(n_num, n_nums, n_names)) is not None:
+            return r
+        return super().match_solver(n_num, n_nums, n_names)
 
     def _key(self, key, cls_name=None):
         return super()._key(key, self.name)
