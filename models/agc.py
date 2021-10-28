@@ -117,8 +117,8 @@ class AGCModel(LightningModule):
         for ans_type, model_output, key, input_ids, num, nums, names in zip(answer_types, model_outputs, batch['key'],
                                                                             batch['input_ids'], batch_num_list, batch_nums_list, batch_names):
             ans_type = ans_type.item()
-            answer = 0
-            code = 'print(0)  # Failed to solve\n'
+            answer = 3
+            code = 'print(3)  # Failed to solve\n'
             equation_fn = lambda *x: code
             if ans_type >= 0:
                 equation_fn = equations.equations[ans_type]
@@ -140,16 +140,7 @@ class AGCModel(LightningModule):
                     num_idxes = model_output[:-1]
                     type_idx = model_output[-1]
                     params = [(num[ni] if ni >= 0 else 1) for ni in num_idxes]
-                    if len(num) == 6:
-                        code = equation_fn(3, *params[1:], type_idx)
-                    elif len(num) == 5:
-                        code = equation_fn(3, *params[1:], type_idx)
-                    elif len(num) == 4:
-                        code = equation_fn(3, 1, *params[2:], type_idx)
-                    elif len(num) == 3:
-                        code = equation_fn(3, 1, 2, *params[3:], type_idx)
-                    else:
-                        code = equation_fn(3, *params[0:], type_idx)
+                    code = equation_fn(3, *params[1:], type_idx)
                 elif ans_type == 4:  # OrderByCompare
                     if len(names) > 0:
                         name_mask = input_ids >= min_name_id
@@ -174,9 +165,10 @@ class AGCModel(LightningModule):
                     num_idxes = model_output
                     params = [(num[ni] if ni >= 0 else 1) for ni in num_idxes]
                     code = equation_fn(*params)
-                elif ans_type == 6:  # SumNumSig
+                elif ans_type in (6, 11):  # SumNumSig or AvgNumSig
                     if len(num) > 0:
-                        sigs = [(m if m >= 0 else -1) for m in model_output.numpy()]
+                        ms = model_output.cpu().numpy()
+                        sigs = [(m if m >= 0 else -1) for m in ms]
                         params = [s * n for s, n in zip(sigs, num)]
                         code = equation_fn(*params)
                     else:
@@ -184,10 +176,10 @@ class AGCModel(LightningModule):
                         for n in nums:
                             params.extend(n)
                         code = equation_fn(*params)
-                elif ans_type == 7:  # MaxSubMin
+                elif ans_type in (7, 15, 16, 17):  # MaxSubMin
                     nums_idx = model_output[0]
                     code = equation_fn(nums[nums_idx])
-                elif ans_type == 8:  # MaxSubMin2
+                elif ans_type in (8, 13, 14):  # MaxSubMin2, MaxNum, MinNum
                     num_mask = (model_output >= 0.5)
                     params = [n for n, m in zip(num, num_mask) if m]
                     if len(params) > 1:
@@ -201,7 +193,33 @@ class AGCModel(LightningModule):
                     if len(nums) > 0:
                         code = equation_fn(type_idx, num[num_idx], nums[nums_idx])
                     else:
-                        code = equation_fn(type_idx, num[num_idx], num)
+                        ns = num.copy()
+                        ns.pop(num_idx)
+                        code = equation_fn(type_idx, num[num_idx], ns)
+                elif ans_type == 10:  # CountFromComparePivot2
+                    _type, _pivot, _selects = model_output
+                    _type = _type.item()
+                    _pivot = _pivot.item()
+                    _selects = _selects.cpu().numpy()
+                    if len(num) > 0:
+                        ns = [n for n, s in zip(num, _selects) if s >= 0.5]
+                        code = equation_fn(_type, num[_pivot], *ns)
+                    else:
+                        ns = next((n for n in nums if n), [3])
+                        code = equation_fn(_type, 1, ns)
+                elif ans_type == 12:  # Multiply Num
+                    if len(num) > 0:
+                        ms = model_output.cpu().numpy()
+                        sigs = [(m if m >= 0 else -1) for m in ms]
+                        params = [n ** s for s, n in zip(sigs, num)]
+                        code = equation_fn(*params)
+                    else:
+                        params = [1]
+                        for n in nums:
+                            if len(n) > 0:
+                                params = n
+                                break
+                        code = equation_fn(*params)
                 else:
                     if len(nums) > 0:
                         answer = sum(nums[0])
