@@ -70,8 +70,12 @@ def infer():
     for batch in results:
         for key, answer, code in zip(*batch):
             if isinstance(answer, float):
-                answer = round(answer, 2)
-                code = code.replace('print(ans)\n', 'print(round(ans, 2))\n')
+                if int(answer) == answer:
+                    answer = int(answer)
+                    code = code.replace('print(ans)\n', 'print(int(ans))\n')
+                else:
+                    answer = round(answer, 2)
+                    code = code.replace('print(ans)\n', 'print(round(ans, 2))\n')
 
             answersheet[key] = {"answer": str(answer), "equation": code}
 
