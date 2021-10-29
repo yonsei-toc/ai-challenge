@@ -176,16 +176,19 @@ class AGCModel(LightningModule):
                         for n in nums:
                             params.extend(n)
                         code = equation_fn(*params)
-                elif ans_type in (7, 15, 16, 17):  # MaxSubMin
-                    nums_idx = model_output[0]
-                    code = equation_fn(nums[nums_idx])
-                elif ans_type in (8, 13, 14):  # MaxSubMin2, MaxNum, MinNum
-                    num_mask = (model_output >= 0.5)
+                elif ans_type == 7:  # MaxSubMin
+                    type_idx = model_output[0].item()
+                    nums_idx = model_output[1].item()
+                    code = equation_fn(nums[nums_idx], type_idx)
+                elif ans_type == 8:  # MaxSubMin2, MaxNum, MinNum
+                    type_idx, num_output = model_output
+                    type_idx = type_idx.item()
+                    num_mask = (num_output >= 0.5)
                     params = [n for n, m in zip(num, num_mask) if m]
                     if len(params) > 1:
-                        code = equation_fn(*params)
+                        code = equation_fn(type_idx, *params)
                     else:
-                        code = equation_fn(*num)
+                        code = equation_fn(type_idx, *num)
                 elif ans_type == 9:  # CountFromComparePivot
                     type_idx = model_output[0]
                     num_idx = model_output[1]

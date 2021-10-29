@@ -29,7 +29,7 @@ def prob4_01_01(selector, tokenpool, clskey):
         # body is the background of problem settings
         body='{nums}가 ' + body_trailing,
         question='그 중에서 가장 큰 수에서 가장 작은 수를 뺀 값은 얼마{ques_trailing}',
-        equation=gen.EqnRef('max_sub_min', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 0),
         env=envdict)
 
 
@@ -55,7 +55,7 @@ def prob4_01_01max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body='{nums}가 ' + body_trailing,
         question='그 중에서 가장 큰 수는 얼마{ques_trailing}',
-        equation=gen.EqnRef('max_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 1),
         env=envdict)
 
 
@@ -80,15 +80,15 @@ def prob4_01_01min(selector, tokenpool, clskey):
     return gen.build(
         # body is the background of problem settings
         body='{nums}가 ' + body_trailing,
-        question='그 중에서 가장 큰 수는 얼마{ques_trailing}',
-        equation=gen.EqnRef('min_nums', nums_k),
+        question='그 중에서 가장 작은 수는 얼마{ques_trailing}',
+        equation=gen.EqnRef('extract_from_nums', nums_k, 2),
         env=envdict)
 
 
 @gen.problems.register
 def prob4_01_01avg(selector, tokenpool, clskey):
     '''
-    - 43, 92, 71, 64가 있습니다. 그중에서 가장 작은 수는 얼마입니까?
+    - 43, 92, 71, 64가 있습니다. 평균은 얼마입니까?
     '''
     # this may be a meta-token (e.g., #1), referring a number.
     nums_len = random.randint(2, 5)
@@ -107,7 +107,7 @@ def prob4_01_01avg(selector, tokenpool, clskey):
         # body is the background of problem settings
         body='{nums}가 ' + body_trailing,
         question='이 수들의 평균은 얼마{ques_trailing}',
-        equation=gen.EqnRef('avg_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 3),
         env=envdict)
 
 
@@ -148,7 +148,7 @@ def prob4_01_02(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='많은 {item}{#를} 가진 사람의 개수에서 가장 작은 {item}{#를} 가진 사람의 개수를 뺀 수는 몇 {unit_}' + ques_trailing,
-        equation=gen.EqnRef('max_sub_min', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 0),
         env=envdict)
 
 
@@ -189,7 +189,7 @@ def prob4_01_02max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 많은 {item}{#를} 가진 사람은 몇 {unit_}' + ques_trailing,
-        equation=gen.EqnRef('max_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 1),
         env=envdict)
 
 
@@ -230,7 +230,7 @@ def prob4_01_02min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 적은 {item}{#를} 가진 사람은 몇 {unit_}' + ques_trailing,
-        equation=gen.EqnRef('min_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 2),
         env=envdict)
 
 
@@ -271,7 +271,7 @@ def prob4_01_02avg(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='모두 평균적으로 {item}{#를} 몇 {unit_} ' + ques_trailing,
-        equation=gen.EqnRef('avg_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 3),
         env=envdict)
 
 
@@ -310,7 +310,7 @@ def prob4_01_03(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='많은 {item}{#를} 마신 사람의 l에서 가장 적은 {item}{#를} 마신 사람의 l를 뺀 수는 몇 l' + ques_trailing,
-        equation=gen.EqnRef('max_sub_min', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 0),
         env=envdict)
 
 
@@ -349,7 +349,7 @@ def prob4_01_03max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 많은 {item}{#를} 마신 사람은 몇l' + ques_trailing,
-        equation=gen.EqnRef('max_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 1),
         env=envdict)
 
 
@@ -388,7 +388,7 @@ def prob4_01_03min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 적은 {item}{#를} 마신 사람은 몇l' + ques_trailing,
-        equation=gen.EqnRef('min_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 2),
         env=envdict)
 
 
@@ -427,7 +427,7 @@ def prob4_01_03avg(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{item}{#를} 모두 평균 몇l' + ques_trailing,
-        equation=gen.EqnRef('avg_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 3),
         env=envdict)
 
 
@@ -459,7 +459,7 @@ def prob4_01_04(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{item}{#이} 가장 많이 담긴 {item} 수에서 {item}{#이} 가장 적게 담긴 수를 뺀 수는 몇{ques_trailing}',
-        equation=gen.EqnRef('max_sub_min', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 0),
         env=envdict)
 
 
@@ -491,7 +491,7 @@ def prob4_01_04max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{item}{#이} 가장 많이 담긴 {item} 수는 몇{ques_trailing}',
-        equation=gen.EqnRef('max_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 1),
         env=envdict)
 
 
@@ -523,12 +523,12 @@ def prob4_01_04min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{item}{#이} 가장 적게 담긴 {item} 수는 몇{ques_trailing}',
-        equation=gen.EqnRef('min_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 2),
         env=envdict)
 
 
 @gen.problems.register
-def prob4_01_04min(selector, tokenpool, clskey):
+def prob4_01_04avg(selector, tokenpool, clskey):
     '''
     - 상자에 사탕이 각각 43, 92, 71, 64 개 들어있습니다. 사탕이 가장 적은 상자의 사탕수는 ?
     '''
@@ -555,7 +555,7 @@ def prob4_01_04min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{item}{#은} 평균 몇 {unit}{ques_trailing}',
-        equation=gen.EqnRef('avg_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 3),
         env=envdict)
 
 
@@ -594,7 +594,7 @@ def prob4_01_05(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 나이가 많은 {cent_trailing}의 나이에서 가장 나이가 적은 {cent_trailing}의 나이를 뺀{ques_trailing}?',
-        equation=gen.EqnRef('max_sub_min2', *nums_k),
+        equation=gen.EqnRef('extract_from_each_num', 0, *nums_k),
         env=envdict)
 
 
@@ -633,7 +633,7 @@ def prob4_01_05max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 나이가 많은 {cent_trailing}의 나이는 {ques_trailing}?',
-        equation=gen.EqnRef('max_num', *nums_k),
+        equation=gen.EqnRef('extract_from_each_num', 1, *nums_k),
         env=envdict)
 
 
@@ -672,53 +672,14 @@ def prob4_01_05min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 나이가 적은 {cent_trailing}의 나이는 {ques_trailing}?',
-        equation=gen.EqnRef('min_num', *nums_k),
-        env=envdict)
-
-
-@gen.problems.register
-def prob4_01_05max(selector, tokenpool, clskey):
-    '''
-    - 외숙모의 나이는. 외삼촌의 나이는, ... 가장 많은 나이는?
-    '''
-    # this may be a meta-token (e.g., #1), referring a number.
-    l = random.randint(2, 5)
-    name = [selector.get(clskey.female_family_relation) for _ in range(0, l)]
-    nums = [random.randint(0, 100) for _ in range(0, l)]
-
-    ## name overlab check
-    while len(set(name)) != len(name):
-        name = [selector.get(clskey.female_family_relation) for _ in range(0, l)]
-    nums_k = list(map(tokenpool.new, nums))
-
-    # syntactic randomize
-    ques_trailing = random.choice(['얼마입니까?', '얼마인지 구하시오.'])
-    cent_trailing = random.choice(['사람', '가족'])
-
-    body = ' '.join(['유나의',
-                     ', '.join('{' + 'name{}'.format(x) + '}' +
-                               '의 나이는 {' + 'nums{}'.format(x) + '}살' for x in range(l)),
-                     '입니다.'
-                     ])
-
-    envdict = {f'name{i}': name[i] for i in range(l)}
-    envdict.update({f'nums{i}': nums_k[i] for i in range(l)})
-    envdict['ques_trailing'] = ques_trailing
-    envdict['cent_trailing'] = cent_trailing
-
-    # print 포함
-    return gen.build(
-        # body is the background of problem settings
-        body=body,
-        question='가장 나이가 많은 {cent_trailing}의 나이는 {ques_trailing}?',
-        equation=gen.EqnRef('max_num', *nums_k),
+        equation=gen.EqnRef('extract_from_each_num', 2, *nums_k),
         env=envdict)
 
 
 @gen.problems.register
 def prob4_01_05avg(selector, tokenpool, clskey):
     '''
-    - 외숙모의 나이는. 외삼촌의 나이는, ... 평균 나이는?
+    - 외숙모의 나이는. 외삼촌의 나이는, ... 가장 적은 나이는?
     '''
     # this may be a meta-token (e.g., #1), referring a number.
     l = random.randint(2, 5)
@@ -750,7 +711,7 @@ def prob4_01_05avg(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{cent_trailing}의 평균 나이는 {ques_trailing}?',
-        equation=gen.EqnRef('avg_num_sig', *nums_k),
+        equation=gen.EqnRef('extract_from_each_num', 3, *nums_k),
         env=envdict)
 
 
@@ -781,7 +742,7 @@ def prob4_01_06(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='1등의 점수에서 {end}의 점수를 뺀 값{ques_trailing}',
-        equation=gen.EqnRef('max_sub_min', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 0),
         env=envdict)
 
 
@@ -811,7 +772,7 @@ def prob4_01_06max(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='가장 높은 점수{ques_trailing}',
-        equation=gen.EqnRef('max_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 1),
         env=envdict)
 
 
@@ -842,7 +803,7 @@ def prob4_01_06min(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='{end} 점수{ques_trailing}',
-        equation=gen.EqnRef('min_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 2),
         env=envdict)
 
 
@@ -872,7 +833,7 @@ def prob4_01_06avg(selector, tokenpool, clskey):
         # body is the background of problem settings
         body=body,
         question='학생들의 평균 점수{ques_trailing}',
-        equation=gen.EqnRef('min_nums', nums_k),
+        equation=gen.EqnRef('extract_from_nums', nums_k, 3),
         env=envdict)
 
 

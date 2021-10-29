@@ -113,7 +113,7 @@ def count_from_range(*_args_):
     """
 
     def _equation():
-        ans = len(list(filter(lambda e: _args_[2] == e, ''.join(map(str, range(_args_[0], _args_[1] + 1))))))
+        ans = len(list(filter(lambda e: str(_args_[2]) == e, ''.join(map(str, range(_args_[0], _args_[1] + 1))))))
 
     return _equation
 
@@ -211,18 +211,50 @@ def sum_num_sig(*_args_):
 
 # 7
 @equations.register
-def max_sub_min(*_args_):
-    def _equation():
-        ans = max(_args_[0]) - min(_args_[0])
+def extract_from_nums(*_args_):
+    if _args_[1] == 0:  # MaxSubMin
+        def _equation():
+            ans = max(_args_[0]) - min(_args_[0])
+    elif _args_[1] == 1:  # Max
+        def _equation():
+            ans = max(_args_[0])
+    elif _args_[1] == 2:  # Min
+        def _equation():
+            ans = min(_args_[0])
+    elif _args_[1] == 3:  # Avg
+        def _equation():
+            ans = sum(_args_[0]) / len(_args_[0])
+    elif _args_[1] == 4:  # Sum
+        def _equation():
+            ans = sum(_args_[0])
+    else:  # Sum
+        def _equation():  # MaxAddMin
+            ans = max(_args_[0]) + min(_args_[0])
 
     return _equation
 
 
 # 8
 @equations.register
-def max_sub_min2(*_args_):
-    def _equation():
-        ans = max(_args_) - min(_args_)
+def extract_from_each_num(*_args_):
+    if _args_[0] == 0:  # MaxSubMin
+        def _equation():
+            ans = max(_args_[1:]) - min(_args_[1:])
+    elif _args_[0] == 1:  # Max
+        def _equation():
+            ans = max(_args_[1:])
+    elif _args_[0] == 2:  # Min
+        def _equation():
+            ans = min(_args_[1:])
+    elif _args_[0] == 3:  # Avg
+        def _equation():
+            ans = sum(_args_[1:]) / len(_args_[1:])
+    elif _args_[0] == 4:  # Sum
+        def _equation():
+            ans = sum(_args_[1:])
+    else:  # MaxAddMin
+        def _equation():
+            ans = max(_args_[1:]) + min(_args_[1:])
 
     return _equation
 
@@ -293,51 +325,6 @@ def mul_num(*_args_):
         ans = 1
         for i in _args_:
             ans = (ans * i) if i > 0 else ans
-
-    return _equation
-
-
-# 13
-@equations.register
-def max_num(*_args_):
-    def _equation():
-        ans = max(_args_)
-
-    return _equation
-
-
-# 14
-@equations.register
-def min_num(*_args_):
-    def _equation():
-        ans = min(_args_)
-
-    return _equation
-
-
-# 15
-@equations.register
-def max_nums(*_args_):
-    def _equation():
-        ans = max(_args_[0])
-
-    return _equation
-
-
-# 16
-@equations.register
-def min_nums(*_args_):
-    def _equation():
-        ans = min(_args_[0])
-
-    return _equation
-
-
-# 17
-@equations.register
-def avg_nums(*_args_):
-    def _equation():
-        ans = sum(_args_[0]) / len(_args_[0])
 
     return _equation
 
